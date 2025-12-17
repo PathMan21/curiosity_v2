@@ -1,0 +1,20 @@
+import { configDotenv } from "dotenv";
+import { Sequelize } from "sequelize";
+import sequelizeDb from "./dbInit";
+import User from "../Models/User.tsx";
+import "../Models/index";
+
+const connectDB = async () => {
+  try {
+    await sequelizeDb.authenticate();
+    console.log("✅ Sequelize & mariadb fonctionnel");
+    
+    await sequelizeDb.sync({ alter: true });
+    console.log("✅ Sequelize a synchronisé les tables");
+  } catch (err) {
+    console.error("❌ Erreur connection/sync :", err);
+    throw err;
+  }
+};
+
+export default connectDB;

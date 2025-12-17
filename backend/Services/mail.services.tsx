@@ -1,0 +1,124 @@
+
+import User from "../Models/User";
+import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from 'uuid';
+import { transport } from "../Config/emailConfig";
+import UserVerifications from "../Models/UserVerifications";
+import path from "path";
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+
+const verifyUser = async (req, res) => {
+  try {
+    console.log("verify access")
+    let { userId, uniqueString } = req.params;
+
+    const result = await UserVerifications.findOne({ 
+      where: { userId: userId }
+    });
+
+    if (!result) {
+      return res.status(404).json({ 
+        message: "L'account n'existe pas ou le lien de vérification est invalide" 
+      });
+    }
+
+    if (result.get('expiresAt') < new Date()) {
+      await UserVerifications.destroy({ where: { userId: userId } });
+      return res.status(400).json({ 
+        message: "Le lien de vérification a expiré" 
+      });
+    }
+
+    const isValid = await bcrypt.compare(uniqueString, result.get('uniqueString'));
+    
+    if (!isValid) {
+      return res.status(400).json({ 
+        message: "Lien de vérification invalide" 
+      });
+    }
+
+    await User.update(
+      { verified: true }, 
+      { where: { id: userId } }
+    );
+
+    await UserVerifications.destroy({ where: { userId: userId } });
+
+    return res.redirect('/api/users/verified');
+
+  } catch (error) {
+    console.error("Erreur vérification:", error);
+    return res.status(500).json({ 
+      message: "Erreur lors de la vérification de l'email" 
+    });
+  }
+};
+
+const verifiedPage = async (req, res) => {
+  const __filename = fileURLToPath(import.meta.url);
+  console.log("fonctionne");
+  res.sendFile(path.join(dirname(__filename), "../Assets/Page/VerifyPage.html"));
+};
+
+const sendVerificationEmail = async ({ id, email }, res) => {
+  try {
+    const currentUrl = `http://localhost:3000/`;
+    const uniqueString = uuidv4() + id;
+    
+    console.log("Token généré:", uniqueString);
+
+    const options = {
+      from: process.env.AUTH_MAIL,
+      to: email,
+      subject: "Vérifiez votre email",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Bienvenue ! 🎉</h2>
+          <p>Merci de vous être inscrit. Veuillez vérifier votre email pour activer votre compte.</p>
+          <p><b>⏰ Ce lien expire dans 10 minutes</b></p>
+          <br>
+          <a href="${currentUrl}api/users/verify/${id}/${uniqueString}" 
+             style="background-color: #4CAF50; color: white; padding: 12px 24px; 
+                    text-decoration: none; border-radius: 4px; display: inline-block;">
+            Vérifier mon email
+          </a>
+          <br><br>
+          <p style="color: #666; font-size: 12px;">
+            Si vous n'avez pas créé ce compte, ignorez cet email.
+          </p>
+        </div>
+      `,
+    };
+
+    const saltRounds = 10;
+    const hasheduniqueString = await bcrypt.hash(uniqueString, saltRounds);
+    
+    console.log("Token haché:", hasheduniqueString);
+
+    await UserVerifications.create({
+      userId: id,  
+      uniqueString: hasheduniqueString,
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 600000),
+    });
+
+    await transport.sendMail(options);
+
+    res.status(200).json({
+      status: "PENDING",
+      message: "Email de vérification envoyé avec succès"
+    });
+
+  } catch (error) {
+    console.error("Erreur envoi email:", error);
+    res.status(500).json({
+      status: "Failed",
+      message: "Erreur lors de l'envoi de l'email de vérification"
+    });
+  }
+};
+
+export { sendVerificationEmail, verifyUser, verifiedPage };
+

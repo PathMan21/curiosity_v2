@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "rootDir": "./",
+    "jsx": "react-jsx",          
+    "jsxImportSource": "react",
+  },
+  "include": ["backend/**/*", "frontend/**/*"]
+}
