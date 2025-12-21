@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelizeDb from "../Config/dbInit";
+import bcrypt from "bcrypt";
 
 // 1️⃣ Interface des attributs
 interface UserAttributes {
@@ -72,7 +73,19 @@ User.init(
   {
     sequelize: sequelizeDb,
     tableName: "User",
-    timestamps: false
+    timestamps: false,
+    hooks: {
+      beforeCreate: async (user) => {
+        if (user.password && !user.password.startsWith("$2")) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.changed("password")) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+      }
+    }
   }
 );
 

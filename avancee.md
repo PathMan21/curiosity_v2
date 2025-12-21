@@ -273,5 +273,12 @@ Options qui détermines si on transmet un token de rafraichissement pour l'utili
 **---------------------------------- 16/12 ----------------------------------**
 
 -> Finir inscription avec oauth
-    -> Création de l'utilisateur avec oauth
+    -> Création de l'utilisateur avec oauth X
     -> Protéger les routes invisible
+
+**---------------------------------- 21/12 ----------------------------------**
+
+-> Finir inscription avec oauth
+    -> Finir l'inscription via complete register - avec interests X
+    -> Protéger les routes invisible X
+    -> Ajouter les interests dans la finalisation du profil

@@ -26,18 +26,20 @@ const validateUser = (req, res, next) => {
 };
 
 
-const authentificatedUser = async (req, res) => {
+const authentificatedUser = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token || token == undefined) {
-    return res.sendStatus(404);
+    return res.status(401).json({ message: "Token manquant" });
   }
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
         return res.status(403).json({ message: "Erreur", error: err.message });
     }
+    req.user = user;
+    next();
   });
 
 }

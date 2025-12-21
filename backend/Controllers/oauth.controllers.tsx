@@ -93,8 +93,9 @@ console.log("vous avez appelé le callback de oAuth");
         { expiresIn: "1h" }
       );
 
+      // on passe le token via le jwt - et cookies
       res.cookie("jwt", jwtToken, { httpOnly: true, secure: true });
-      res.redirect(`${baseUrl}complete-inscription`);
+      res.redirect(`${baseUrl}complete-inscription?token=${jwtToken}`);
 
 
     }
@@ -103,17 +104,22 @@ console.log("vous avez appelé le callback de oAuth");
 
 
 const updateProfile = async (req, res) => {
- const { username, password } = req.body;
-
+ const { username, password, interests } = req.body;
+  console.log(req.body)
+  let selectedinterests = JSON.stringify(interests);
+  console.log("selectedinterests " + selectedinterests);
   const user = await User.findByPk(req.user.userId);
   if (!user) {
     return res.status(404).json({ error: "Utilisateur introuvable" });
   }
   user.username = username || user.username;
   user.password = password || user.password;
+  user.interests = selectedinterests;
   user.isTemporary = false;
 
   await user.save();
+
+  console.log(user);
   res.status(200).json({ message: "Profil complété", user });
 };
 

@@ -4,21 +4,28 @@ import RegisterPage from "./Pages/Register";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./Pages/Login";
 import CompleteInscription from "./Components/completeRegister";
+import ProtectedRoute from "./Services/ProtectedRoute";
+import { AuthProvider } from "./Context/AuthContext";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<h1>Home</h1>} />
-        <Route path='/complete-inscription' element={<CompleteInscription/>} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<h1>Home</h1>} />
+          
 
-        {/* <Route element={<PrivateRoutes/>}>
-              <Route path='/complete-inscription' element={<completeInscription/>} />
-        </Route> */}
-      </Routes>
-    </BrowserRouter>
+          {/* Les routes protégés */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/complete-inscription" element={<CompleteInscription />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
+
 export default App;
+
