@@ -281,4 +281,22 @@ Options qui détermines si on transmet un token de rafraichissement pour l'utili
 -> Finir inscription avec oauth
     -> Finir l'inscription via complete register - avec interests X
     -> Protéger les routes invisible X
-    -> Ajouter les interests dans la finalisation du profil
+    -> Ajouter les interests dans la finalisation du profil X
+
+**---------------------------------- 22/12 - 23/12 ----------------------------------**
+
+-> Faire une page profile dans routes protégés X
+-> Profile rajouter les informations de l'utilisateurs
+-> Rediriger avec les routes non protégés à protégés : X
+    en gros si on n'est pas connecté on va sur login automatiquement si on essais d'accéder à autre chose
+    et si on est connecté - login et register sont remplacés par Home
+
+
+-> Mise en place de docker
+-> Faire une page template principal
+
+-> Pas de suppression de jwt ou refresh - a corriger X 
+    -> C'est corrigé X
+
+*Remplacement de technologie* : Pure css par bootstrap -  bootstrap offre une large gamme de composants déjà fait
+donc ça sera bien plus simple pour la rapidité
