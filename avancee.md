@@ -293,10 +293,15 @@ Options qui détermines si on transmet un token de rafraichissement pour l'utili
 
 
 -> Mise en place de docker
--> Faire une page template principal
+-> Faire une page template principal X
 
 -> Pas de suppression de jwt ou refresh - a corriger X 
     -> C'est corrigé X
 
 *Remplacement de technologie* : Pure css par bootstrap -  bootstrap offre une large gamme de composants déjà fait
 donc ça sera bien plus simple pour la rapidité
+
+
+**---------------------------------- 26/12 ----------------------------------**
+
+-> Profile rajouter les informations de l'utilisateurs

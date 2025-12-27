@@ -87,16 +87,32 @@ console.log("vous avez appelé le callback de oAuth");
     console.log("Nouvel utilisateur créé :", existingUser.toJSON());
 
 
-      const jwtToken = jwt.sign(
-        { userId: existingUser.id, email: existingUser.email },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
-      );
+const signToken = (payload, secret, options) => {
+  return new Promise((resolve, reject) => {
+    jwt.sign(payload, secret, options, (err, token) => {
+      if (err) reject(err);
+      else resolve(token);
+    });
+  });
+};
 
-      // on passe le token via le jwt - et cookies
-      res.cookie("jwt", jwtToken, { httpOnly: true, secure: true });
-      res.redirect(`${baseUrl}complete-inscription?token=${jwtToken}`);
+try {
+  const jwtToken = await signToken(
+    { userId: existingUser.id, email: existingUser.email },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "1h" }
+  );
 
+  res.cookie("jwt", jwtToken, { 
+    httpOnly: true, 
+    secure: true,
+    sameSite: 'strict'
+  });
+
+  res.redirect(`${baseUrl}complete-inscription?token=${jwtToken}`);
+} catch (err) {
+  return res.status(500).json({ error: 'Erreur génération token' });
+}
 
     }
 

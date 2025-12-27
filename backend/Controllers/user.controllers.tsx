@@ -12,8 +12,8 @@ const createUser = async (req, res) => {
   try {
     const { username, password, email, interests } = req.body;
     
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
+    const user = await User.findOne({ where: { email } });
+    if (user) {
       return res.status(400).json({ 
         status: "Failed",
         message: "Cet email existe déjà" 
@@ -72,7 +72,7 @@ const loginUser = async (req, res) => {
 
     // Créer un JWT
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, username: user.username, interests: user.interests, email: user.email, img: user.picture },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1h" }
     );

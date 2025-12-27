@@ -2,6 +2,12 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
+
+const PrivateRoutes: React.FC = () => {
+
+};
+
+
 const NonProtectedRoute: React.FC = () => {
   const { token, isLoading } = useAuth();
 
@@ -18,6 +24,8 @@ const NonProtectedRoute: React.FC = () => {
 
 const ProtectedRoute: React.FC = () => {
   const { token, isLoading } = useAuth();
+
+
 
   if (isLoading) {
     return <div>Chargement...</div>;
