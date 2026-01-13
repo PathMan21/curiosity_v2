@@ -24,6 +24,33 @@ const generateTokens = (userId: number, username: string,  email: string, intere
   return { accessToken, refreshToken };
 };
 
+const updatedProfile = async (req, res) => {
+ try {
+    console.log(req.body)
+    const { username, password, email, interests } = req.body;
+    let stringInterests = JSON.stringify(interests);
+    const user = await User.findOne({ where: { email } });
+    if (user) {
+    const newUser = await user.update({
+      username,
+      email,
+      password,
+      interests: stringInterests,
+      verified: false,
+    });
+    console.log(newUser);
+
+    }
+    // const { accessToken, refreshToken } = generateTokens( username, email, interests, picture, verified);
+
+  } catch (err) {
+    console.error("Erreur d'update utilisateur :", err);
+    res.status(500).json({
+      status: "Failed",
+      message: "Erreur lors de la création de l'utilisateur"
+    });
+  }
+};
 
 const createUser = async (req, res) => {
   try {
@@ -144,7 +171,7 @@ const refreshTokenHandler = async (req, res) => {
         message: "Refresh token invalide"
       });
     }
-
+    
     // Générer un nouveau access token
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(
       user.id,
@@ -173,4 +200,4 @@ const refreshTokenHandler = async (req, res) => {
   }
 };
 
-export { createUser, loginUser, refreshTokenHandler };
+export { createUser, loginUser, refreshTokenHandler, updatedProfile};

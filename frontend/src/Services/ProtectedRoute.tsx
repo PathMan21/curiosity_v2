@@ -62,4 +62,4 @@ const SimpleProtectedRoute: React.FC = () => {
 
   return <Outlet />;
 };
-export { AdminProtectedRoute, NonProtectedRoute };
+export { AdminProtectedRoute, SimpleProtectedRoute, NonProtectedRoute };

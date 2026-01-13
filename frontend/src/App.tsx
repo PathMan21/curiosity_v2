@@ -5,8 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./Pages/Auth/Login";
 import CompleteInscription from "./Pages/Auth/completeRegister";
 import TokenLoader from "./Pages/Auth/TokenLoader";
-import { ProtectedRoute } from "./Services/ProtectedRoute";
-import { NonProtectedRoute } from "./Services/ProtectedRoute";
+import { NonProtectedRoute, AdminProtectedRoute, SimpleProtectedRoute } from "./Services/ProtectedRoute";
 
 import { AuthProvider } from "./Context/AuthContext";
 import Profile from "./Pages/Profile/ProfilePage";
@@ -29,10 +28,10 @@ function AppContent() {
           <Route path="/" element={<LoginPage />} />
         </Route>
 
-        <Route element={<SimpleProtectedRoute />}>
+        {/* <Route element={<SimpleProtectedRoute />}> */}
           <Route path="/load-token" element={<TokenLoader />} />
           <Route path="/complete-inscription" element={<CompleteInscription />} />
-        </Route>
+        {/* </Route> */}
 
         <Route element={<AdminProtectedRoute />}>
 

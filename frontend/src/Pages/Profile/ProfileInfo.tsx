@@ -1,6 +1,7 @@
 function ProfileInfo(props) {
   let interestArray;
   if (props.interests) {
+    console.log(props);
     interestArray = JSON.parse(props.interests);
   }
   return (

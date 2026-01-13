@@ -321,3 +321,5 @@ donc ça sera bien plus simple pour la rapidité
 
 -> Mettre à jour le token pour qu'il prenne les nouvelles infos quand je m'inscris - réglé : j'ai rajouter des infos au token X
 -> Egalement j'aimerais mettre plusieurs niveau de vérification - verified - non verified => qui me permettent de voir des routes selon le niveau avancés qu'ils ont 
+
+-> Ajout de l'update pour le profile
