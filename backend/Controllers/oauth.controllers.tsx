@@ -1,6 +1,8 @@
 import router from "backend/Routes/user.routes";
 import User from "backend/Models/User";
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from 'express';
+
 const baseUrl = process.env.BASE_URL_FRONT;
 
 const googleAuthId = process.env.ID_OAUTH;
@@ -20,11 +22,44 @@ const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
 const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuthId}&redirect_uri=${googleAuthCallback}&access_type=offline&response_type=code&state=${state}
 &scope=${encodeURIComponent(scopes)}`;
 
+// Fonction utilitaire pour générer les tokens
+const generateTokens = (userId: number, email: string) => {
+  const accessToken = jwt.sign(
+    { userId, email },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  const refreshToken = jwt.sign(
+    { userId },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return { accessToken, refreshToken };
+};
+
 const oauthVerify = async (req, res) => {
     res.json({
         url: GOOGLE_OAUTH_CONSENT_SCREEN_URL
     });
 };
+
+
+const verifyToken = async (req: Request, res: Response) => {
+
+  try {
+  console.log("nous sommes dans le backend, et nous vérifions nos token");
+  return res.json({ success: true, message: "on a réussis à authentifié le token" });
+
+  }
+  catch (err) {
+    console.log("error : ", err);
+  }
+
+
+};
+
 
 const oauthToken = async (req, res) => {
 console.log("vous avez appelé le callback de oAuth");
@@ -86,30 +121,19 @@ console.log("vous avez appelé le callback de oAuth");
 
     console.log("Nouvel utilisateur créé :", existingUser.toJSON());
 
-
-const signToken = (payload, secret, options) => {
-  return new Promise((resolve, reject) => {
-    jwt.sign(payload, secret, options, (err, token) => {
-      if (err) reject(err);
-      else resolve(token);
-    });
-  });
-};
-
 try {
-  const jwtToken = await signToken(
-    { userId: existingUser.id, email: existingUser.email },
-    process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "1h" }
-  );
+  const { accessToken, refreshToken } = generateTokens(existingUser.id, existingUser.email);
 
-  res.cookie("jwt", jwtToken, { 
+  // Stocker le refresh token en base
+  await existingUser.update({ refreshToken });
+
+  res.cookie("jwt", accessToken, { 
     httpOnly: true, 
     secure: true,
     sameSite: 'strict'
   });
 
-  res.redirect(`${baseUrl}complete-inscription?token=${jwtToken}`);
+  res.redirect(`${baseUrl}load-token?token=${accessToken}&refreshToken=${refreshToken}`);
 } catch (err) {
   return res.status(500).json({ error: 'Erreur génération token' });
 }
@@ -136,8 +160,33 @@ const updateProfile = async (req, res) => {
   await user.save();
 
   console.log(user);
-  res.status(200).json({ message: "Profil complété", user });
+  // Générer un nouveau token JWT reflétant les nouvelles infos
+  try {
+    const { accessToken, refreshToken } = generateTokens(user.id, user.email);
+
+    // Mettre à jour le refresh token en base
+    await user.update({ refreshToken });
+
+    // Optionnel: mettre à jour le cookie côté serveur
+    try {
+      res.cookie("jwt", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+    } catch (cookieErr) {
+      console.warn("Impossible de définir le cookie jwt:", cookieErr);
+    }
+
+    return res.status(200).json({ message: "Profil complété", user, accessToken, refreshToken });
+  } catch (err) {
+    console.error("Erreur génération token après updateProfile:", err);
+    return res.status(500).json({ error: "Erreur lors de la génération du token" });
+  }
 };
 
 
-export { oauthVerify, oauthToken, updateProfile};
+
+
+
+export { oauthVerify, oauthToken, updateProfile, verifyToken};

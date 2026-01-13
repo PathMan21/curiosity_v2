@@ -2,15 +2,15 @@ import FooterSite from "../../Components/FooterSite";
 import NavbarSite from "../../Components/NavbarSite";
 import { useAuth } from "../../Context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import interestsValues from "../../Assets/interests.json";
 
 function ProfileSettings() {
     
+
       const { token } = useAuth();
       let tokenDecoded = jwtDecode(token);
-      let interest = tokenDecoded['interests'];
-        let interestArray = JSON.parse(interest);
-
-      console.log(tokenDecoded);
+      let interest = tokenDecoded ? tokenDecoded['interests'] : null;
+        let interestArray = interest ? JSON.parse(interest) : null;
 
     return(
         <>
@@ -30,19 +30,23 @@ function ProfileSettings() {
                                 </div>
                                 <div className="mb-3">
                                     <h6 className="form-label">interests</h6>
-                                            {interestArray.map((object, i) => (
-                                            <div className="form-check" key={i}>
+                                    {interestsValues.interestsSchema.map((value, index) => {
+                                        const valueCleaned = value.split("_").join(" ");
+                                        return (
+                                            <div key={index} className="col-md-6 mb-2">
+                                            <div className="form-check">
                                                 <input 
-                                                className="form-check-input" 
                                                 type="checkbox" 
-                                                id={`interest-${i}`}
-                                                value={object}
+                                                className="form-check-input"
+                                                id={`interest-${index}`}
                                                 />
-                                                <label className="form-check-label" htmlFor={`interest-${i}`}>
-                                                {object}
+                                                <label className="form-check-label" htmlFor={`interest-${index}`}>
+                                                {valueCleaned}
                                                 </label>
                                             </div>
-                                            ))}
+                                            </div>
+                                        );
+                                        })}
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="email" className="form-label">Email</label>

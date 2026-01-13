@@ -3,9 +3,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 
-const PrivateRoutes: React.FC = () => {
+// const PrivateRoutes: React.FC = () => {
 
-};
+// };
 
 
 const NonProtectedRoute: React.FC = () => {
@@ -16,6 +16,7 @@ const NonProtectedRoute: React.FC = () => {
   }
 
   if (token) {
+    console.log("token ", token);
     return <Navigate to="/Home" replace />;
   }
 
@@ -32,6 +33,8 @@ const ProtectedRoute: React.FC = () => {
   }
 
   if (!token) {
+    console.log("pas de token");
+
     return <Navigate to="/login" replace />;
   }
 

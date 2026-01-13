@@ -9,8 +9,7 @@ function Profile() {
 
   const { token } = useAuth();
   let tokenDecoded = jwtDecode(token);
-  console.log(tokenDecoded);
-
+  console.log(" tokenDecoded ", tokenDecoded)
   return (
     
     <><NavbarSite />

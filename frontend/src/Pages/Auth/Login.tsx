@@ -32,6 +32,9 @@ function Login() {
           <div className="card shadow">
             <div className="card-body p-5">
               <h1 className="text-center mb-4">Connectez vous</h1>
+              <p className="text-center mb-4"><a className="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="/register">
+                Ou vous inscrire ?
+              </a></p>
               {error && <div className="alert alert-danger" role="alert">{error}</div>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">

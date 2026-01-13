@@ -7,6 +7,23 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendVerificationEmail } from "../Services/mail.services";
 import jwt from "jsonwebtoken";
 
+// Fonction utilitaire pour générer les tokens
+const generateTokens = (userId: number, username: string, interests: string, email: string, img?: string) => {
+  const accessToken = jwt.sign(
+    { userId, username, interests, email, img },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  const refreshToken = jwt.sign(
+    { userId },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return { accessToken, refreshToken };
+};
+
 
 const createUser = async (req, res) => {
   try {
@@ -27,7 +44,7 @@ const createUser = async (req, res) => {
       interests,
       verified: false,
     });
-
+    console.log(newUser);
     await sendVerificationEmail({ id: newUser.get('id'), email: newUser.get('email') }, res);
 
   } catch (err) {
@@ -71,15 +88,21 @@ const loginUser = async (req, res) => {
     }
 
     // Créer un JWT
-    const token = jwt.sign(
-      { userId: user.id, username: user.username, interests: user.interests, email: user.email, img: user.picture },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1h" }
+    const { accessToken, refreshToken } = generateTokens(
+      user.id,
+      user.username,
+      user.interests,
+      user.email,
+      user.picture
     );
+
+    // Stocker le refresh token en base de données
+    await user.update({ refreshToken });
 
     res.json({
       status: "Success",
-      token,
+      accessToken,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -97,5 +120,55 @@ const loginUser = async (req, res) => {
   }
 };
 
+const refreshTokenHandler = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
 
-export { createUser, loginUser };
+    if (!refreshToken) {
+      return res.status(401).json({
+        status: "Failed",
+        message: "Refresh token manquant"
+      });
+    }
+
+    // Vérifier le refresh token
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET) as any;
+
+    // Vérifier que le token existe en base de données
+    const user = await User.findByPk(decoded.userId);
+
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(401).json({
+        status: "Failed",
+        message: "Refresh token invalide"
+      });
+    }
+
+    // Générer un nouveau access token
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(
+      user.id,
+      user.username,
+      user.interests,
+      user.email,
+      user.picture
+    );
+
+    // Mettre à jour le refresh token en base
+    await user.update({ refreshToken: newRefreshToken });
+
+    res.json({
+      status: "Success",
+      accessToken,
+      refreshToken: newRefreshToken
+    });
+
+  } catch (err) {
+    console.error("Erreur refresh token:", err);
+    res.status(401).json({
+      status: "Failed",
+      message: "Refresh token invalide ou expiré"
+    });
+  }
+};
+
+export { createUser, loginUser, refreshTokenHandler };

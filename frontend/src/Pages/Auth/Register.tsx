@@ -49,6 +49,9 @@ function Register() {
           <div className="card shadow">
             <div className="card-body p-5">
               <h1 className="text-center mb-4">Inscrivez vous</h1>
+              <p className="text-center mb-4"><a className="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="/login">
+                Ou vous connecter ?
+              </a></p>
               <form onSubmit={handleForm}>
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">Username</label>

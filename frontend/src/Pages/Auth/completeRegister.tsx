@@ -50,7 +50,7 @@ function CompleteInscription() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${activeToken}`,
         },
-        body: JSON.stringify({ username, password, interests}),
+        body: JSON.stringify({ username, password, interests }),
       });
 
       if (!response.ok) {
@@ -58,7 +58,13 @@ function CompleteInscription() {
         throw new Error(data.error || "Erreur lors de la mise à jour du profil");
       }
 
-      navigate("/");
+      const data = await response.json();
+      if (data.token) {
+        setToken(data.token);
+      }
+
+      navigate('/Home');
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la mise à jour");
     } finally {

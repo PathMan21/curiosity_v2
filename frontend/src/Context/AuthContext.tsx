@@ -1,4 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiCall } from "../Services/apiClient";
 
 interface User {
   id: string;
@@ -12,7 +14,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  setToken: (token: string) => void;
+  setToken: (token: string, refreshToken?: string) => void;
   isLoading: boolean;
 }
 
@@ -23,13 +25,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [token, setTokenState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+useEffect(() => {
+  const initAuth = async () => {
     const storedToken = localStorage.getItem("authToken");
     if (storedToken) {
       setTokenState(storedToken);
     }
-    setIsLoading(false);
-  }, []);
+    setIsLoading(false); 
+  };
+
+  initAuth();
+}, []);
 
   const login = async (email: string, password: string) => {
     try {
@@ -46,8 +52,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const data = await response.json();
       
-      localStorage.setItem("authToken", data.token);
-      setTokenState(data.token);
+      localStorage.setItem("authToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      setTokenState(data.accessToken);
       setUser(data.user);
     } catch (error) {
       console.error("Login error:", error);
@@ -55,14 +62,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const logout = () => {
+  function logout() {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
     setTokenState(null);
     setUser(null);
   };
 
-  const setToken = (newToken: string) => {
+  const setToken = (newToken: string, refreshToken?: string) => {
     localStorage.setItem("authToken", newToken);
+    if (refreshToken) {
+      localStorage.setItem("refreshToken", refreshToken);
+    }
     setTokenState(newToken);
   };
 

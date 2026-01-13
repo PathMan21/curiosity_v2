@@ -7,6 +7,7 @@ import UserVerifications from "../Models/UserVerifications";
 import path from "path";
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import jwt from "jsonwebtoken";
 
 
 const verifyUser = async (req, res) => {
@@ -39,6 +40,8 @@ const verifyUser = async (req, res) => {
       });
     }
 
+    const user = await User.findByPk(userId);
+    
     await User.update(
       { verified: true }, 
       { where: { id: userId } }
@@ -46,7 +49,14 @@ const verifyUser = async (req, res) => {
 
     await UserVerifications.destroy({ where: { userId: userId } });
 
-    return res.redirect('/api/users/verified');
+    // Générer un JWT token pour la redirection
+    const jwtToken = jwt.sign(
+      { userId: user.id, email: user.email, username: user.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.redirect(`/api/users/verified?token=${jwtToken}`);
 
   } catch (error) {
     console.error("Erreur vérification:", error);

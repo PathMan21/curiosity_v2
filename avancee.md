@@ -305,3 +305,12 @@ donc ça sera bien plus simple pour la rapidité
 **---------------------------------- 26/12 ----------------------------------**
 
 -> Profile rajouter les informations de l'utilisateurs
+-> Bugs trouvés : les routes de complete-register sont protégés, mais il n'a pas eu le temps de créer un jwt pour l'authentifier
+-> Bugs trouvés : pas tout les éléments sélectionnés dans complete inscription s'inscrive
+
+
+**---------------------------------- 10/01-12/01 ----------------------------------**
+
+-> La vérification de token ne fonctionne pas
+
+-> Réglage des bugs concernants le profil et l'affichage, également il n'affichait plus mes routes

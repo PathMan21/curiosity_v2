@@ -54,8 +54,22 @@
 <body>
   <div class="container">
     <h1>✅ Vérification réussie !</h1>
-    <p>Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant vous connecter à votre compte.</p>
-    <a href="http://localhost:5173/login">Se connecter</a>
+    <p>Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant continuer votre inscription.</p>
+    <a href="#" id="continueLink" onclick="handleSubmit()">Continuer votre inscription</a>
   </div>
+
+  <script>
+    function handleSubmit() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      
+      const continueLink = document.getElementById('continueLink');
+      if (token) {
+        continueLink.href = `http://localhost:5173/load-token?token=${token}`;
+      } else {
+        continueLink.href = 'http://localhost:5173/login';
+      }
+    }
+  </script>
 </body>
 </html>
