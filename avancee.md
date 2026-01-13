@@ -328,3 +328,19 @@ Changement d'architecture, le jwt qui contiens les informations est trop sensibl
 j'ai remplacé par un microservice qui va récupérer les infos utilisateurs et les mets a jours si besoin
 
 également le jwt était assez gros en terme de données
+
+*Choix pour les api*
+
+Le principal de l'application réside dans les api appelées externes, qui vont avoir du de certains thèmes récupérés, 
+cela aide à controller ce qui va sur le site
+à empêcher à ce que le site parte sur des choses négatives
+à empêcher les contenus de dériver sur des choses qui ne refèterais pas la plateforme
+à faire la modération par intéraction
+
+Je fais donc une liste des api gratuite, légale et ouverte qui pourrons nous aider dans le fichier : api_lists.md
+
+
+*V1* => 2 domaines - 4 - 5 api qui s'affiche sur un fil d'actualité, avec vidéo contenu textuel etc... 
+pas d'affichage sur le site des articles etc.. renvoie sur le site en question 
+*V2* => 4 domaines, un système de filtre et de likes
+*V3* => 5-7 domaines, une gestion par ia légère (algorithme) de ce qui doit apparaitre 
