@@ -7,10 +7,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendVerificationEmail } from "../Services/mail.services";
 import jwt from "jsonwebtoken";
 
-// Fonction utilitaire pour générer les tokens
-const generateTokens = (userId: number, username: string,  email: string, interests?: string, picture?: string, verified?: boolean) => {
+// Fonction utilitaire pour générer les tokens (JWT minimal)
+const generateTokens = (userId: number) => {
   const accessToken = jwt.sign(
-    { userId, username, interests, email, picture, verified },
+    { userId },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
@@ -27,27 +27,54 @@ const generateTokens = (userId: number, username: string,  email: string, intere
 const updatedProfile = async (req, res) => {
  try {
     console.log(req.body)
-    const { username, password, email, interests } = req.body;
+    const { username, email, interests, picture } = req.body;
+    const userId = req.user.userId; // Récupérer l'ID du token
+    
     let stringInterests = JSON.stringify(interests);
-    const user = await User.findOne({ where: { email } });
-    if (user) {
-    const newUser = await user.update({
+    const user = await User.findByPk(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "Utilisateur non trouvé"
+      });
+    }
+    
+    const updatedUser = await user.update({
       username,
       email,
-      password,
       interests: stringInterests,
-      verified: false,
+      picture, 
     });
-    console.log(newUser);
-
-    }
-    // const { accessToken, refreshToken } = generateTokens( username, email, interests, picture, verified);
+    
+    console.log("Utilisateur mis à jour:", updatedUser);
+    
+    // Générer de nouveaux tokens (JWT minimal)
+    const { accessToken, refreshToken } = generateTokens(user.id);
+    
+    // Mettre à jour le refresh token en base de données
+    await user.update({ refreshToken });
+    
+    res.json({
+      status: "Success",
+      message: "Profil mis à jour avec succès",
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        verified: user.verified,
+        interests: stringInterests,
+        picture
+      }
+    });
 
   } catch (err) {
     console.error("Erreur d'update utilisateur :", err);
     res.status(500).json({
       status: "Failed",
-      message: "Erreur lors de la création de l'utilisateur"
+      message: "Erreur lors de la mise à jour du profil"
     });
   }
 };
@@ -114,15 +141,8 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Créer un JWT
-    const { accessToken, refreshToken } = generateTokens(
-      user.id,
-      user.username,
-      user.email,
-      user.interests,
-      user.picture,
-      user.verified
-    );
+    // Créer un JWT minimal
+    const { accessToken, refreshToken } = generateTokens(user.id);
 
     // Stocker le refresh token en base de données
     await user.update({ refreshToken });
@@ -135,7 +155,9 @@ const loginUser = async (req, res) => {
         id: user.id,
         email: user.email,
         username: user.username,
-        verified: user.verified
+        verified: user.verified,
+        interests: user.interests,
+        picture: user.picture
       }
     });
 
@@ -172,15 +194,8 @@ const refreshTokenHandler = async (req, res) => {
       });
     }
     
-    // Générer un nouveau access token
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(
-      user.id,
-      user.username,
-      user.interests,
-      user.email,
-      user.picture,
-      user.verified,
-    );
+    // Générer un nouveau access token minimal
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.id);
 
     // Mettre à jour le refresh token en base
     await user.update({ refreshToken: newRefreshToken });
@@ -200,4 +215,42 @@ const refreshTokenHandler = async (req, res) => {
   }
 };
 
-export { createUser, loginUser, refreshTokenHandler, updatedProfile};
+// Endpoint GET /me - Récupérer le profil complet de l'utilisateur
+const getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user.userId; // Extrait du JWT minimal
+
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary']
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "Utilisateur non trouvé"
+      });
+    }
+
+    res.json({
+      status: "Success",
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        verified: user.verified,
+        interests: user.interests,
+        picture: user.picture,
+        isTemporary: user.isTemporary
+      }
+    });
+
+  } catch (err) {
+    console.error("Erreur récupération profil:", err);
+    res.status(500).json({
+      status: "Failed",
+      message: "Erreur lors de la récupération du profil"
+    });
+  }
+};
+
+export { createUser, loginUser, refreshTokenHandler, updatedProfile, getCurrentUser};

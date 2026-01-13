@@ -22,16 +22,16 @@ const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
 const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuthId}&redirect_uri=${googleAuthCallback}&access_type=offline&response_type=code&state=${state}
 &scope=${encodeURIComponent(scopes)}`;
 
-// Fonction utilitaire pour générer les tokens
-const generateTokens = (userId: number, username: string, email: string, interests: string, picture: string, verified: boolean) => {
+// Fonction utilitaire pour générer les tokens (JWT minimal)
+const generateTokens = (userId: number) => {
   const accessToken = jwt.sign(
-    { userId, username, email, interests, picture, verified},
+    { userId },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
 
   const refreshToken = jwt.sign(
-    { userId, username, email, interests, picture, verified},
+    { userId },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "1d" }
   );
@@ -49,7 +49,6 @@ const oauthVerify = async (req, res) => {
 const verifyToken = async (req: Request, res: Response) => {
 
   try {
-  console.log("nous sommes dans le backend, et nous vérifions nos token");
   return res.json({ success: true, message: "on a réussis à authentifié le token" });
 
   }
@@ -123,7 +122,7 @@ console.log("vous avez appelé le callback de oAuth");
 
 try {
 
-  const { accessToken, refreshToken } = generateTokens(existingUser.id, existingUser.username, existingUser.email, existingUser.interests, existingUser.picture, existingUser.verified);
+  const { accessToken, refreshToken } = generateTokens(existingUser.id);
 
   // Stocker le refresh token en base
   await existingUser.update({ refreshToken });
@@ -162,7 +161,7 @@ const updateProfile = async (req, res) => {
 
   console.log(user);
   try {
-    const { accessToken, refreshToken } = generateTokens(user.id, user.username, user.email, user.interests, user.picture, user.verified);
+    const { accessToken, refreshToken } = generateTokens(user.id);
     await user.update({ refreshToken });
 
     try {
@@ -175,7 +174,19 @@ const updateProfile = async (req, res) => {
       console.warn("Impossible de définir le cookie jwt:", cookieErr);
     }
 
-    return res.status(200).json({ message: "Profil complété", user, accessToken, refreshToken });
+    return res.status(200).json({ 
+      message: "Profil complété", 
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        interests: user.interests,
+        picture: user.picture,
+        verified: user.verified
+      },
+      accessToken, 
+      refreshToken 
+    });
   } catch (err) {
     console.error("Erreur génération token après updateProfile:", err);
     return res.status(500).json({ error: "Erreur lors de la génération du token" });

@@ -9,7 +9,7 @@ function CompleteInscription() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { token, setToken } = useAuth();
+  const { token, setToken, fetchUserProfile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [SelectedInterests, SetSelectedInterests] = useState([]);
@@ -59,9 +59,10 @@ function CompleteInscription() {
       }
 
       const data = await response.json();
-      if (data.token) {
-        console.log(data);
-        setToken(data.token);
+      if (data.accessToken && data.refreshToken) {
+        setToken(data.accessToken, data.refreshToken);
+        // Récupérer le profil complet
+        await fetchUserProfile();
       }
 
       navigate('/Home');

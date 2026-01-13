@@ -4,7 +4,7 @@ import { useAuth } from "../../Context/AuthContext";
 
 function TokenLoader() {
   const [searchParams] = useSearchParams();
-  const { setToken } = useAuth();
+  const { setToken, fetchUserProfile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,12 +14,18 @@ function TokenLoader() {
 
     if (urlToken) {
       setToken(urlToken, urlRefreshToken || undefined);
-      navigate("/complete-inscription", { replace: true });
+      // Récupérer le profil complet après avoir défini le token
+      fetchUserProfile().then(() => {
+        navigate("/complete-inscription", { replace: true });
+      }).catch((error) => {
+        console.error("Erreur lors du chargement du profil:", error);
+        navigate("/complete-inscription", { replace: true });
+      });
     } else {
       console.log("est censé se rediriger sur login");
       navigate("/login", { replace: true });
     }
-  }, [searchParams, setToken, navigate]);
+  }, [searchParams, setToken, navigate, fetchUserProfile]);
 
   return (
     <div className="container mt-5">

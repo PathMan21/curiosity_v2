@@ -323,3 +323,8 @@ donc ça sera bien plus simple pour la rapidité
 -> Egalement j'aimerais mettre plusieurs niveau de vérification - verified - non verified => qui me permettent de voir des routes selon le niveau avancés qu'ils ont 
 
 -> Ajout de l'update pour le profile
+
+Changement d'architecture, le jwt qui contiens les informations est trop sensibles aux attaque  xss donc simplement
+j'ai remplacé par un microservice qui va récupérer les infos utilisateurs et les mets a jours si besoin
+
+également le jwt était assez gros en terme de données

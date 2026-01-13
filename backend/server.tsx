@@ -40,6 +40,5 @@ app.use(
   });
 
   server.listen(PORT, () => {
-    console.log(`🚀 Serveur HTTP + WebSocket lancé sur http://localhost:${PORT}`);
   });
 })();

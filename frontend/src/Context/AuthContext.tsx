@@ -1,12 +1,15 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiCall } from "../Services/apiClient";
+import { apiCall, fetchWithAuth } from "../Services/apiClient";
 
 interface User {
   id: string;
   email: string;
   username: string;
   verified: boolean;
+  interests?: string;
+  picture?: string;
+  isTemporary?: boolean;
 }
 
 interface AuthContextType {
@@ -15,6 +18,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   setToken: (token: string, refreshToken?: string) => void;
+  updateProfile: (newToken: string, newRefreshToken: string) => void;
+  fetchUserProfile: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -25,17 +30,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [token, setTokenState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-useEffect(() => {
-  const initAuth = async () => {
-    const storedToken = localStorage.getItem("authToken");
-    if (storedToken) {
-      setTokenState(storedToken);
-    }
-    setIsLoading(false); 
-  };
+  useEffect(() => {
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem("authToken");
+      if (storedToken) {
+        setTokenState(storedToken);
+        // Récupérer le profil complet après avoir défini le token
+        try {
+          await fetchUserProfile();
+        } catch (error) {
+          console.error("Erreur lors du chargement du profil:", error);
+          // Si le profil ne peut pas être chargé, on reste avec le token seulement
+        }
+      }
+      setIsLoading(false); 
+    };
 
-  initAuth();
-}, []);
+    initAuth();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetchWithAuth("/users/me");
+      
+      if (!response.ok) {
+        throw new Error("Impossible de récupérer le profil");
+      }
+
+      const data = await response.json();
+      if (data.status === "Success") {
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération du profil:", error);
+      // Ne pas lever l'erreur pour éviter de déconnecter l'utilisateur
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -55,7 +85,9 @@ useEffect(() => {
       localStorage.setItem("authToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       setTokenState(data.accessToken);
-      setUser(data.user);
+      
+      // Récupérer le profil complet
+      await fetchUserProfile();
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -77,8 +109,15 @@ useEffect(() => {
     setTokenState(newToken);
   };
 
+  const updateProfile = (newToken: string, newRefreshToken: string) => {
+    localStorage.setItem("authToken", newToken);
+    localStorage.setItem("refreshToken", newRefreshToken);
+    setTokenState(newToken);
+    // Le profil sera mis à jour au prochain appel de fetchUserProfile()
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, setToken, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, setToken, updateProfile, fetchUserProfile, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
