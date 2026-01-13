@@ -21,19 +21,21 @@ function AppContent() {
   return (
     <BrowserRouter>
       <Routes>
-      <Route element={<NonProtectedRoute />}>
+          
 
-        <Route path="/load-token" element={<TokenLoader />} />
-        
+        <Route element={<NonProtectedRoute />}>
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
-
         </Route>
 
-        <Route element={<ProtectedRoute />}>
-
+        <Route element={<SimpleProtectedRoute />}>
+          <Route path="/load-token" element={<TokenLoader />} />
           <Route path="/complete-inscription" element={<CompleteInscription />} />
+        </Route>
+
+        <Route element={<AdminProtectedRoute />}>
+
           <Route path="/Home" element={<ArticlePage />} />
           <Route path="/Profile" element={<Profile />} />
           <Route path="/Profile/settings" element={<ProfileSettings />} />

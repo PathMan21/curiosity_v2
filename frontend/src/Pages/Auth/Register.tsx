@@ -28,15 +28,23 @@ function Register() {
   const [interests, setInterests] = useState("");
 
   const handleForm = async (e: React.FormEvent) => {
-    console.log(username);
-    console.log(password);
+
+    let btn = document.querySelector('button[type="submit"]');
+    btn.innerHTML = "Chargement ..."
 
     e.preventDefault();
     const response = await fetch("http://localhost:3000/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password, interests }),
-    });
+
+    },
+
+  );        
+      if (response.ok) {
+        console.log(response);
+        btn.innerHTML = "Valider";
+      }
     const data = await response.json();
     console.log(data);
   };
@@ -95,7 +103,7 @@ function Register() {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100 mb-3">Submit</button>
+                <button type="submit" className="btn btn-primary w-100 mb-3">Valider</button>
               </form>
               <button
                 className="btn btn-outline-primary w-100"

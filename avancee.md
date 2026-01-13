@@ -311,6 +311,13 @@ donc ça sera bien plus simple pour la rapidité
 
 **---------------------------------- 10/01-12/01 ----------------------------------**
 
--> La vérification de token ne fonctionne pas
+-> La vérification de token ne fonctionne pas X
 
--> Réglage des bugs concernants le profil et l'affichage, également il n'affichait plus mes routes
+-> Réglage des bugs concernants le profil et l'affichage, également il n'affichait plus mes routes X
+
+-> Bugs sur les routes protégés / non protégés - se redirige quand je les places dans non protected or protected 
+
+**---------------------------------- 13/01 ----------------------------------**
+
+-> Mettre à jour le token pour qu'il prenne les nouvelles infos quand je m'inscris - réglé : j'ai rajouter des infos au token X
+-> Egalement j'aimerais mettre plusieurs niveau de vérification - verified - non verified => qui me permettent de voir des routes selon le niveau avancés qu'ils ont 

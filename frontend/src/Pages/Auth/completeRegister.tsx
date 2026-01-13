@@ -60,6 +60,7 @@ function CompleteInscription() {
 
       const data = await response.json();
       if (data.token) {
+        console.log(data);
         setToken(data.token);
       }
 

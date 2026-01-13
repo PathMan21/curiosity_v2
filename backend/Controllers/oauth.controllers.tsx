@@ -23,17 +23,17 @@ const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuth
 &scope=${encodeURIComponent(scopes)}`;
 
 // Fonction utilitaire pour générer les tokens
-const generateTokens = (userId: number, email: string) => {
+const generateTokens = (userId: number, username: string, email: string, interests: string, picture: string, verified: boolean) => {
   const accessToken = jwt.sign(
-    { userId, email },
+    { userId, username, email, interests, picture, verified},
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
 
   const refreshToken = jwt.sign(
-    { userId },
+    { userId, username, email, interests, picture, verified},
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "1d" }
   );
 
   return { accessToken, refreshToken };
@@ -122,7 +122,8 @@ console.log("vous avez appelé le callback de oAuth");
     console.log("Nouvel utilisateur créé :", existingUser.toJSON());
 
 try {
-  const { accessToken, refreshToken } = generateTokens(existingUser.id, existingUser.email);
+
+  const { accessToken, refreshToken } = generateTokens(existingUser.id, existingUser.username, existingUser.email, existingUser.interests, existingUser.picture, existingUser.verified);
 
   // Stocker le refresh token en base
   await existingUser.update({ refreshToken });
@@ -160,14 +161,10 @@ const updateProfile = async (req, res) => {
   await user.save();
 
   console.log(user);
-  // Générer un nouveau token JWT reflétant les nouvelles infos
   try {
-    const { accessToken, refreshToken } = generateTokens(user.id, user.email);
-
-    // Mettre à jour le refresh token en base
+    const { accessToken, refreshToken } = generateTokens(user.id, user.username, user.email, user.interests, user.picture, user.verified);
     await user.update({ refreshToken });
 
-    // Optionnel: mettre à jour le cookie côté serveur
     try {
       res.cookie("jwt", accessToken, {
         httpOnly: true,

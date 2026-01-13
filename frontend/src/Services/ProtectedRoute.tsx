@@ -23,7 +23,9 @@ const NonProtectedRoute: React.FC = () => {
   return <Outlet />;
 };
 
-const ProtectedRoute: React.FC = () => {
+const AdminProtectedRoute: React.FC = () => {
+
+  // vérifier si il a l'accès verified
   const { token, isLoading } = useAuth();
 
 
@@ -34,11 +36,30 @@ const ProtectedRoute: React.FC = () => {
 
   if (!token) {
     console.log("pas de token");
-
     return <Navigate to="/login" replace />;
   }
+  
 
   return <Outlet />;
 };
 
-export { ProtectedRoute, NonProtectedRoute };
+const SimpleProtectedRoute: React.FC = () => {
+
+  // ne pas vérifier si il a besoin d'être vérifié
+  const { token, isLoading } = useAuth();
+
+
+
+  if (isLoading) {
+    return <div>Chargement...</div>;
+  }
+
+  if (!token) {
+    console.log("pas de token");
+    return <Navigate to="/login" replace />;
+  }
+  
+
+  return <Outlet />;
+};
+export { AdminProtectedRoute, NonProtectedRoute };

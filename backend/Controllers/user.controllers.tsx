@@ -8,9 +8,9 @@ import { sendVerificationEmail } from "../Services/mail.services";
 import jwt from "jsonwebtoken";
 
 // Fonction utilitaire pour générer les tokens
-const generateTokens = (userId: number, username: string, interests: string, email: string, img?: string) => {
+const generateTokens = (userId: number, username: string,  email: string, interests?: string, picture?: string, verified?: boolean) => {
   const accessToken = jwt.sign(
-    { userId, username, interests, email, img },
+    { userId, username, interests, email, picture, verified },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
@@ -91,9 +91,10 @@ const loginUser = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(
       user.id,
       user.username,
-      user.interests,
       user.email,
-      user.picture
+      user.interests,
+      user.picture,
+      user.verified
     );
 
     // Stocker le refresh token en base de données
@@ -150,7 +151,8 @@ const refreshTokenHandler = async (req, res) => {
       user.username,
       user.interests,
       user.email,
-      user.picture
+      user.picture,
+      user.verified,
     );
 
     // Mettre à jour le refresh token en base
