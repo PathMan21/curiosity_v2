@@ -61,7 +61,6 @@ function CompleteInscription() {
       const data = await response.json();
       if (data.accessToken && data.refreshToken) {
         setToken(data.accessToken, data.refreshToken);
-        // Récupérer le profil complet
         await fetchUserProfile();
       }
 

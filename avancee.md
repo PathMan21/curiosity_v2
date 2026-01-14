@@ -342,5 +342,17 @@ Je fais donc une liste des api gratuite, légale et ouverte qui pourrons nous ai
 
 *V1* => 2 domaines - 4 - 5 api qui s'affiche sur un fil d'actualité, avec vidéo contenu textuel etc... 
 pas d'affichage sur le site des articles etc.. renvoie sur le site en question 
-*V2* => 4 domaines, un système de filtre et de likes
-*V3* => 5-7 domaines, une gestion par ia légère (algorithme) de ce qui doit apparaitre 
+*V2* => 4 domaines avec des sous domaines tel que : informatique > ia > machine learning
+*V3* => Rajouter les notifications push, un système de filtre et de likes
+*V4* => 5-7 domaines, une gestion par ia légère (algorithme) de ce qui doit apparaitre 
+
+**---------------------------------- 14/01 ----------------------------------**
+
+- *comment fonctionne arxiv*
+
+Je vais commencer par l'api arxiv car il possède toutes les données nécessaires, pour tout les articles scientifiques
+
+voilà comment l'utiliser : on appelle en GET / POST le site via une requête HTTP: 
+- http://export.arxiv.org/api/{method_name}?{parameters} 
+
+Il faudra ensuite parser le xml avec npm install xml2js

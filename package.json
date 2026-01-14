@@ -21,7 +21,8 @@
     "router": "^2.2.0",
     "sequelize": "^6.37.7",
     "vite": "^5.0.0",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "xml2js": "^0.6.2"
   },
   "scripts": {
     "start": "tsx backend/server.ts",

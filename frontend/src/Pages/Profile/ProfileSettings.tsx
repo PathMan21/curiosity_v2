@@ -15,7 +15,6 @@ function ProfileSettings() {
 
   const { user, updateProfile, fetchUserProfile } = useAuth();
 
-  // Parser les intérêts s'ils sont en JSON
   const parseInterests = (interests: string | undefined): string[] => {
     if (!interests) return [];
     try {
@@ -32,7 +31,6 @@ function ProfileSettings() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Mettre à jour les champs si le user change
   useEffect(() => {
     if (user) {
       setUsername(user.username);
@@ -68,9 +66,7 @@ function ProfileSettings() {
       console.log("Réponse mise à jour:", data);
       
       if (data.status === "Success") {
-        // Mettre à jour les tokens dans le contexte
         updateProfile(data.accessToken, data.refreshToken);
-        // Récupérer le profil à jour
         await fetchUserProfile();
         setSuccess("Profil mis à jour avec succès!");
         setTimeout(() => {

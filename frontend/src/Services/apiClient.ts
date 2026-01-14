@@ -39,23 +39,19 @@ export const fetchWithAuth = async (
 
   let response = await fetch(`${API_URL}${endpoint}`, mergedOptions);
 
-  // Si 401 (unauthorized), essayer de rafraîchir le token
   if (response.status === 401 && refreshToken) {
     try {
       const refreshed = await refreshAccessToken(refreshToken);
       
-      // Mettre à jour les tokens
       localStorage.setItem("authToken", refreshed.accessToken);
       localStorage.setItem("refreshToken", refreshed.refreshToken);
 
-      // Réessayer la requête avec le nouveau token
       headers.Authorization = `Bearer ${refreshed.accessToken}`;
       response = await fetch(`${API_URL}${endpoint}`, {
         ...mergedOptions,
         headers,
       });
     } catch (error) {
-      // Si le refresh échoue, supprimer les tokens et rediriger vers login
       localStorage.removeItem("authToken");
       localStorage.removeItem("refreshToken");
       window.location.href = "/login";

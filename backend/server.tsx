@@ -7,6 +7,7 @@ import { json } from "sequelize";
 import { createServer } from "http";
 import userRoutes from "./Routes/user.routes";
 import authRoutes from "./Routes/auth.routes";
+import apiroutes from "./Routes/api.routes";
 
 import cors from "cors";
 
@@ -34,11 +35,13 @@ app.use(
   app.use(cors({ origin: "http://localhost:5173" }));
   app.use("/api/users", userRoutes);
   app.use("/api/auth", authRoutes);
+  app.use("/api/data", apiroutes);
 
   app.get("/api/ping", (req, res: Response) => {
     res.send("Pong");
   });
 
   server.listen(PORT, () => {
+    console.log(`✅ Serveur lancé sur le port ${PORT}`);
   });
 })();

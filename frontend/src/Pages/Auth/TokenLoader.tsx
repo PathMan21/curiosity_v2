@@ -14,7 +14,6 @@ function TokenLoader() {
 
     if (urlToken) {
       setToken(urlToken, urlRefreshToken || undefined);
-      // Récupérer le profil complet après avoir défini le token
       fetchUserProfile().then(() => {
         navigate("/complete-inscription", { replace: true });
       }).catch((error) => {
