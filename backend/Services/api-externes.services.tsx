@@ -2,15 +2,32 @@
 
 import { configDotenv } from "dotenv";
 import { parseStringPromise } from "xml2js";
+import User from "../Models/User";
+
+let randomizeStart: string;
 
 async function handleArxiv(req, res) {
     try {
         console.log("arxiv - récupération des données");
+        const userJWT = req.user.userId;
+        const user = await User.findOne({ where: { id: userJWT} })
+        let randomizeStart = JSON.stringify(Math.floor(Math.random() * 100));
+        let maxResult = JSON.parse(randomizeStart) + 20;
+
+
+        let interests = JSON.parse(user.interests);
+        let interestsShuffles = shuffleInterests(interests);
+
+        let interestArray = interestsShuffles.join(" OR ");
+        console.log(interestArray);
+
         
         let params = new URLSearchParams({
-            search_query: 'ti:quantum computing',
-            start: '0',
-            max_results: '10'
+            search_query: interestArray,
+            start: randomizeStart,
+            sortBy: "relevance",
+            sortOrder: "descending",
+            max_results: maxResult
         });
         
         let url_complete = process.env.BASE_URL_ARXIV + "query?" + params.toString();
@@ -28,10 +45,8 @@ async function handleArxiv(req, res) {
         const xml_text = await response.text();
         console.log("XML reçu (premiers 500 caractères):", xml_text.substring(0, 500));
 
-        // Parser le XML avec xml2js
         const jsonData = await parseStringPromise(xml_text);
         
-        // Extraire les articles du parseur XML
         const entries = jsonData.feed?.entry || [];
         
         const articles = entries.map((entry: any) => ({
@@ -60,5 +75,26 @@ async function handleArxiv(req, res) {
         });
     }
 }
+
+function shuffleInterests(interests) {
+    console.log("interests ", interests);
+
+    // Extraire les valeurs des catégories arXiv
+    let interestsValues = interests.map((interest: any) => 
+        typeof interest === 'string' ? interest : interest.value
+    );
+
+    // Utiliser tous les intérêts avec OR pour chercher dans tous les domaines
+    let interestsParameters = interestsValues.map((elem) => "cat:" + elem );    
+    console.log("interestsParameters", interestsParameters);
+    return interestsParameters;
+
+}
+
+function randomI(interests) {
+    let index = JSON.stringify(Math.floor(Math.random() * interests.length));
+    return index;
+}
+
 
 export default handleArxiv;

@@ -35,12 +35,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const storedToken = localStorage.getItem("authToken");
       if (storedToken) {
         setTokenState(storedToken);
-        // Récupérer le profil complet après avoir défini le token
         try {
           await fetchUserProfile();
         } catch (error) {
           console.error("Erreur lors du chargement du profil:", error);
-          // Si le profil ne peut pas être chargé, on reste avec le token seulement
         }
       }
       setIsLoading(false); 
@@ -63,7 +61,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch (error) {
       console.error("Erreur lors de la récupération du profil:", error);
-      // Ne pas lever l'erreur pour éviter de déconnecter l'utilisateur
     }
   };
 

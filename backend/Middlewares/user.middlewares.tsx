@@ -27,6 +27,7 @@ const validateUser = (req, res, next) => {
 
 
 const authentificatedUser = async (req, res, next) => {
+    console.log("anthentifie l'utilisateur - rentre dans le middleware")
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(" ")[1];
 

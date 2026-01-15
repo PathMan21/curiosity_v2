@@ -1,9 +1,84 @@
 {
   "interestsSchema": [
-    "computer_science",
-    "biology",
-    "physics",
-    "ecology",
-    "medical_field"
+    {
+      "label": "Intelligence Artificielle",
+      "value": "cs.AI"
+    },
+    {
+      "label": "Traitement du Langage Naturel",
+      "value": "cs.CL"
+    },
+    {
+      "label": "Apprentissage Automatique",
+      "value": "cs.LG"
+    },
+    {
+      "label": "Vision par Ordinateur",
+      "value": "cs.CV"
+    },
+    {
+      "label": "Économie et Économétrie",
+      "value": "econ.EM"
+    },
+    {
+      "label": "Traitement du Signal",
+      "value": "eess.SP"
+    },
+    {
+      "label": "Traitement d'Images",
+      "value": "eess.IV"
+    },
+    {
+      "label": "Acoustique et Audio",
+      "value": "eess.AS"
+    },
+    {
+      "label": "Géométrie Algébrique",
+      "value": "math.AG"
+    },
+    {
+      "label": "Équations Différentielles",
+      "value": "math.AP"
+    },
+    {
+      "label": "Théorie des Groupes",
+      "value": "math.GR"
+    },
+    {
+      "label": "Optique",
+      "value": "physics.optics"
+    },
+    {
+      "label": "Physique Générale",
+      "value": "physics.gen-ph"
+    },
+    {
+      "label": "Physique Atomique",
+      "value": "physics.atom-ph"
+    },
+    {
+      "label": "Biologie Moléculaire",
+      "value": "q-bio.BM"
+    },
+    {
+      "label": "Neurosciences",
+      "value": "q-bio.NC"
+    },
+    {
+      "label": "Finance Statistique",
+      "value": "q-fin.ST"
+    },
+    {
+      "label": "Finance Générale",
+      "value": "q-fin.GN"
+    },
+    {
+      "label": "Statistiques et Apprentissage",
+      "value": "stat.ML"
+    },
+    {
+      "label": "Théorie Statistique",
+      "value": "stat.TH"
+    }
   ]
 }

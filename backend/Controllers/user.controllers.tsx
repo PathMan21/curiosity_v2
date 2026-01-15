@@ -215,11 +215,10 @@ const refreshTokenHandler = async (req, res) => {
   }
 };
 
-// Endpoint GET /me - Récupérer le profil complet de l'utilisateur
 const getCurrentUser = async (req, res) => {
   try {
-    const userId = req.user.userId; // Extrait du JWT minimal
-
+    const userId = req.user.userId;
+    
     const user = await User.findByPk(userId, {
       attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary']
     });

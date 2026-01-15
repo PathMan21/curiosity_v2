@@ -144,8 +144,7 @@ function ProfileSettings() {
                       </div>
                       <div className="mb-3">
                         <h6 className="form-label">Intérêts</h6>
-                    {interestsValues.interestsSchema.map((value, index) => {
-                      const valueCleaned = value.split("_").join(" ");
+                    {interestsValues.interestsSchema.map((interest, index) => {
                       return (
                         <div key={index} className="col-md-6 mb-2">
                           <div className="form-check">
@@ -153,12 +152,12 @@ function ProfileSettings() {
                               type="checkbox" 
                               className="form-check-input"
                               id={`interest-${index}`}
-                              checked={interests.includes(value)}
-                              onChange={() => handleInterests(value)}
-                              value={value}
+                              checked={interests.includes(interest.value)}
+                              onChange={() => handleInterests(interest.value)}
+                              value={interest.value}
                             />
                             <label className="form-check-label" htmlFor={`interest-${index}`}>
-                              {valueCleaned}
+                              {interest.label}
                             </label>
                           </div>
                         </div>
