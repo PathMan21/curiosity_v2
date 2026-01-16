@@ -1,0 +1,189 @@
+{
+  "interests": [
+    {
+      "id": "ai-ml",
+      "label": "Intelligence Artificielle & Machine Learning",
+      "category": "informatique",
+      "description": "IA, apprentissage automatique, deep learning, réseaux de neurones",
+      "openalex_concept_id": "C154945302"
+    },
+    {
+      "id": "computer-science",
+      "label": "Informatique & Programmation",
+      "category": "informatique",
+      "description": "Algorithmes, structures de données, développement logiciel",
+      "openalex_concept_id": "C41008148"
+    },
+    {
+      "id": "data-science",
+      "label": "Data Science & Analytics",
+      "category": "informatique",
+      "description": "Analyse de données, statistiques appliquées, visualisation",
+      "openalex_concept_id": "C2522767166"
+    },
+    {
+      "id": "cybersecurity",
+      "label": "Cybersécurité",
+      "category": "informatique",
+      "description": "Sécurité informatique, cryptographie, protection des données",
+      "openalex_concept_id": "C38652104"
+    },
+    {
+      "id": "robotics",
+      "label": "Robotique",
+      "category": "informatique",
+      "description": "Robots, automatisation, systèmes autonomes",
+      "openalex_concept_id": "C107769122"
+    },
+    {
+      "id": "mathematics",
+      "label": "Mathématiques",
+      "category": "sciences-exactes",
+      "description": "Algèbre, analyse, géométrie, théorie des nombres",
+      "openalex_concept_id": "C33923547"
+    },
+    {
+      "id": "physics",
+      "label": "Physique",
+      "category": "sciences-exactes",
+      "description": "Physique fondamentale, mécanique quantique, physique des particules",
+      "openalex_concept_id": "C121332964"
+    },
+    {
+      "id": "chemistry",
+      "label": "Chimie",
+      "category": "sciences-exactes",
+      "description": "Chimie organique, inorganique, biochimie",
+      "openalex_concept_id": "C185592680"
+    },
+    {
+      "id": "biology",
+      "label": "Biologie",
+      "category": "sciences-vie",
+      "description": "Biologie moléculaire, génétique, écologie",
+      "openalex_concept_id": "C86803240"
+    },
+    {
+      "id": "medicine",
+      "label": "Médecine & Santé",
+      "category": "sciences-vie",
+      "description": "Médecine, santé publique, recherche médicale",
+      "openalex_concept_id": "C71924100"
+    },
+    {
+      "id": "neuroscience",
+      "label": "Neurosciences",
+      "category": "sciences-vie",
+      "description": "Cerveau, cognition, psychologie cognitive",
+      "openalex_concept_id": "C203014093"
+    },
+    {
+      "id": "ecology",
+      "label": "Écologie & Environnement",
+      "category": "environnement",
+      "description": "Biodiversité, conservation, écosystèmes",
+      "openalex_concept_id": "C149923435"
+    },
+    {
+      "id": "climate",
+      "label": "Climat & Météorologie",
+      "category": "environnement",
+      "description": "Changement climatique, météo, sciences atmosphériques",
+      "openalex_concept_id": "C132651083"
+    },
+    {
+      "id": "energy",
+      "label": "Énergie & Durabilité",
+      "category": "environnement",
+      "description": "Énergies renouvelables, efficacité énergétique, développement durable",
+      "openalex_concept_id": "C78519656"
+    },
+    {
+      "id": "economics",
+      "label": "Économie",
+      "category": "sciences-sociales",
+      "description": "Économie, marchés, politiques économiques",
+      "openalex_concept_id": "C162324750"
+    },
+    {
+      "id": "finance",
+      "label": "Finance & Investissement",
+      "category": "sciences-sociales",
+      "description": "Marchés financiers, investissement, fintech",
+      "openalex_concept_id": "C49040817"
+    },
+    {
+      "id": "psychology",
+      "label": "Psychologie",
+      "category": "sciences-sociales",
+      "description": "Comportement humain, psychologie sociale, développement",
+      "openalex_concept_id": "C15744967"
+    },
+    {
+      "id": "sociology",
+      "label": "Sociologie",
+      "category": "sciences-sociales",
+      "description": "Société, culture, interactions sociales",
+      "openalex_concept_id": "C144024400"
+    },
+    {
+      "id": "engineering",
+      "label": "Ingénierie",
+      "category": "ingenierie",
+      "description": "Génie civil, mécanique, électrique, matériaux",
+      "openalex_concept_id": "C127413603"
+    },
+    {
+      "id": "space",
+      "label": "Espace & Astronomie",
+      "category": "espace",
+      "description": "Astronomie, astrophysique, exploration spatiale",
+      "openalex_concept_id": "C1276947"
+    }
+  ],
+  
+  "categories": [
+    {
+      "id": "informatique",
+      "label": "Informatique & Technologies",
+      "icon": "💻",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "sciences-exactes",
+      "label": "Sciences Exactes",
+      "icon": "🔬",
+      "color": "#8B5CF6"
+    },
+    {
+      "id": "sciences-vie",
+      "label": "Sciences de la Vie & Santé",
+      "icon": "🧬",
+      "color": "#10B981"
+    },
+    {
+      "id": "environnement",
+      "label": "Environnement & Climat",
+      "icon": "🌍",
+      "color": "#059669"
+    },
+    {
+      "id": "sciences-sociales",
+      "label": "Sciences Sociales & Économie",
+      "icon": "📊",
+      "color": "#F59E0B"
+    },
+    {
+      "id": "ingenierie",
+      "label": "Ingénierie",
+      "icon": "⚙️",
+      "color": "#EF4444"
+    },
+    {
+      "id": "espace",
+      "label": "Espace & Astronomie",
+      "icon": "🚀",
+      "color": "#6366F1"
+    }
+  ]
+}

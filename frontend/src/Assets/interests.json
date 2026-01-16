@@ -1,84 +1,265 @@
 {
-  "interestsSchema": [
+  "interests": [
     {
+      "id": "ai",
       "label": "Intelligence Artificielle",
-      "value": "cs.AI"
+      "category": "informatique",
+      "subcategory": "ai-ml",
+      "description": "Systèmes intelligents, apprentissage automatique, réseaux de neurones",
+      "arxiv_category": "cs.AI"
     },
     {
-      "label": "Traitement du Langage Naturel",
-      "value": "cs.CL"
-    },
-    {
+      "id": "ml",
       "label": "Apprentissage Automatique",
-      "value": "cs.LG"
+      "category": "informatique",
+      "subcategory": "ai-ml",
+      "description": "Machine learning, deep learning, modèles prédictifs",
+      "arxiv_category": "cs.LG"
     },
     {
+      "id": "nlp",
+      "label": "Traitement du Langage Naturel",
+      "category": "informatique",
+      "subcategory": "ai-ml",
+      "description": "NLP, linguistique computationnelle, modèles de langage",
+      "arxiv_category": "cs.CL"
+    },
+    {
+      "id": "cv",
       "label": "Vision par Ordinateur",
-      "value": "cs.CV"
+      "category": "informatique",
+      "subcategory": "ai-ml",
+      "description": "Reconnaissance d'images, traitement vidéo, détection d'objets",
+      "arxiv_category": "cs.CV"
     },
     {
-      "label": "Économie et Économétrie",
-      "value": "econ.EM"
+      "id": "robotics",
+      "label": "Robotique",
+      "category": "informatique",
+      "subcategory": "robotique",
+      "description": "Robots autonomes, navigation, manipulation",
+      "arxiv_category": "cs.RO"
     },
     {
-      "label": "Traitement du Signal",
-      "value": "eess.SP"
+      "id": "algorithms",
+      "label": "Algorithmes & Structures de Données",
+      "category": "informatique",
+      "subcategory": "software-engineering",
+      "description": "Complexité, optimisation, structures de données",
+      "arxiv_category": "cs.DS"
     },
     {
-      "label": "Traitement d'Images",
-      "value": "eess.IV"
+      "id": "cryptography",
+      "label": "Cryptographie & Sécurité",
+      "category": "informatique",
+      "subcategory": "cybersecurity",
+      "description": "Chiffrement, sécurité informatique, blockchain",
+      "arxiv_category": "cs.CR"
     },
     {
-      "label": "Acoustique et Audio",
-      "value": "eess.AS"
+      "id": "economics",
+      "label": "Économie",
+      "category": "sciences-sociales",
+      "subcategory": "economie",
+      "description": "Théorie économique, marchés, politique économique",
+      "arxiv_category": "econ.GN"
     },
     {
-      "label": "Géométrie Algébrique",
-      "value": "math.AG"
+      "id": "econometrics",
+      "label": "Économétrie",
+      "category": "sciences-sociales",
+      "subcategory": "economie",
+      "description": "Modélisation économique, analyse de données économiques",
+      "arxiv_category": "econ.EM"
     },
     {
-      "label": "Équations Différentielles",
-      "value": "math.AP"
+      "id": "finance",
+      "label": "Finance Quantitative",
+      "category": "sciences-sociales",
+      "subcategory": "economie",
+      "description": "Marchés financiers, modèles de pricing, risk management",
+      "arxiv_category": "q-fin.GN"
     },
     {
-      "label": "Théorie des Groupes",
-      "value": "math.GR"
-    },
-    {
-      "label": "Optique",
-      "value": "physics.optics"
-    },
-    {
-      "label": "Physique Générale",
-      "value": "physics.gen-ph"
-    },
-    {
-      "label": "Physique Atomique",
-      "value": "physics.atom-ph"
-    },
-    {
-      "label": "Biologie Moléculaire",
-      "value": "q-bio.BM"
-    },
-    {
-      "label": "Neurosciences",
-      "value": "q-bio.NC"
-    },
-    {
+      "id": "finance-stat",
       "label": "Finance Statistique",
-      "value": "q-fin.ST"
+      "category": "sciences-sociales",
+      "subcategory": "economie",
+      "description": "Analyse statistique des marchés, séries temporelles financières",
+      "arxiv_category": "q-fin.ST"
     },
     {
-      "label": "Finance Générale",
-      "value": "q-fin.GN"
+      "id": "signal-processing",
+      "label": "Traitement du Signal",
+      "category": "ingenierie",
+      "subcategory": "electronique",
+      "description": "DSP, filtrage, analyse spectrale",
+      "arxiv_category": "eess.SP"
     },
     {
-      "label": "Statistiques et Apprentissage",
-      "value": "stat.ML"
+      "id": "image-processing",
+      "label": "Traitement d'Images",
+      "category": "ingenierie",
+      "subcategory": "image-processing",
+      "description": "Traitement et analyse d'images, reconstruction",
+      "arxiv_category": "eess.IV"
     },
     {
-      "label": "Théorie Statistique",
-      "value": "stat.TH"
+      "id": "audio",
+      "label": "Audio & Acoustique",
+      "category": "ingenierie",
+      "subcategory": "audio-acoustique",
+      "description": "Traitement audio, acoustique, reconnaissance vocale",
+      "arxiv_category": "eess.AS"
+    },
+    {
+      "id": "algebra",
+      "label": "Algèbre",
+      "category": "sciences-exactes",
+      "subcategory": "mathematiques",
+      "description": "Géométrie algébrique, théorie des groupes",
+      "arxiv_category": "math.AG"
+    },
+    {
+      "id": "group-theory",
+      "label": "Théorie des Groupes",
+      "category": "sciences-exactes",
+      "subcategory": "mathematiques",
+      "description": "Structures algébriques, symétrie",
+      "arxiv_category": "math.GR"
+    },
+    {
+      "id": "analysis",
+      "label": "Analyse Mathématique",
+      "category": "sciences-exactes",
+      "subcategory": "mathematiques",
+      "description": "Équations différentielles, analyse fonctionnelle",
+      "arxiv_category": "math.AP"
+    },
+    {
+      "id": "statistics",
+      "label": "Statistiques",
+      "category": "sciences-exactes",
+      "subcategory": "mathematiques",
+      "description": "Théorie statistique, inférence",
+      "arxiv_category": "stat.TH"
+    },
+    {
+      "id": "stat-ml",
+      "label": "Statistiques & Apprentissage",
+      "category": "sciences-exactes",
+      "subcategory": "mathematiques",
+      "description": "Méthodes statistiques pour le ML",
+      "arxiv_category": "stat.ML"
+    },
+    {
+      "id": "quantum",
+      "label": "Physique Quantique",
+      "category": "sciences-exactes",
+      "subcategory": "physique",
+      "description": "Mécanique quantique, information quantique",
+      "arxiv_category": "quant-ph"
+    },
+    {
+      "id": "optics",
+      "label": "Optique",
+      "category": "sciences-exactes",
+      "subcategory": "physique",
+      "description": "Optique physique, photonique",
+      "arxiv_category": "physics.optics"
+    },
+    {
+      "id": "general-physics",
+      "label": "Physique Générale",
+      "category": "sciences-exactes",
+      "subcategory": "physique",
+      "description": "Physique fondamentale",
+      "arxiv_category": "physics.gen-ph"
+    },
+    {
+      "id": "atomic-physics",
+      "label": "Physique Atomique",
+      "category": "sciences-exactes",
+      "subcategory": "physique",
+      "description": "Atomes, molécules, physique atomique",
+      "arxiv_category": "physics.atom-ph"
+    },
+    {
+      "id": "astrophysics",
+      "label": "Astrophysique",
+      "category": "espace",
+      "subcategory": "astronomy",
+      "description": "Cosmologie, galaxies, étoiles",
+      "arxiv_category": "astro-ph"
+    },
+    {
+      "id": "molecular-bio",
+      "label": "Biologie Moléculaire",
+      "category": "sciences-vie",
+      "subcategory": "biologie",
+      "description": "Génétique, ADN, protéines",
+      "arxiv_category": "q-bio.BM"
+    },
+    {
+      "id": "neuroscience",
+      "label": "Neurosciences",
+      "category": "sciences-vie",
+      "subcategory": "biologie",
+      "description": "Cerveau, cognition, neurones",
+      "arxiv_category": "q-bio.NC"
+    },
+    {
+      "id": "climate",
+      "label": "Physique Atmosphérique & Climat",
+      "category": "environnement",
+      "subcategory": "climate",
+      "description": "Climat, atmosphère, océanographie",
+      "arxiv_category": "physics.ao-ph"
+    }
+  ],
+  
+  "categories": [
+    {
+      "id": "informatique",
+      "label": "Informatique & Technologies",
+      "icon": "💻",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "sciences-exactes",
+      "label": "Sciences Exactes",
+      "icon": "🔬",
+      "color": "#8B5CF6"
+    },
+    {
+      "id": "sciences-vie",
+      "label": "Sciences de la Vie",
+      "icon": "🧬",
+      "color": "#10B981"
+    },
+    {
+      "id": "sciences-sociales",
+      "label": "Sciences Sociales & Économie",
+      "icon": "📊",
+      "color": "#F59E0B"
+    },
+    {
+      "id": "ingenierie",
+      "label": "Ingénierie",
+      "icon": "⚙️",
+      "color": "#EF4444"
+    },
+    {
+      "id": "espace",
+      "label": "Espace & Astronomie",
+      "icon": "🚀",
+      "color": "#6366F1"
+    },
+    {
+      "id": "environnement",
+      "label": "Environnement & Climat",
+      "icon": "🌍",
+      "color": "#059669"
     }
   ]
 }

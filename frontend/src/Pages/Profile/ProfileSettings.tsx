@@ -1,7 +1,7 @@
 import FooterSite from "../../Components/FooterSite";
 import NavbarSite from "../../Components/NavbarSite";
 import { useAuth } from "../../Context/AuthContext";
-import interestsValues from "../../Assets/interests.json";
+import interestsData from "../../Assets/interests.json";
 import { useState, useEffect } from "react";
 import { fetchWithAuth } from "../../Services/apiClient";
 
@@ -40,14 +40,14 @@ function ProfileSettings() {
     }
   }, [user]);
 
-  const handlesubmit = async (e: React.FormEvent) => { 
+  const handlesubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    
+
     let btn = document.querySelector('button[type="submit"]');
     if (btn) btn.innerHTML = "Chargement ...";
-    
+
     try {
       const response = await fetchWithAuth(
         "/users/updated-profile",
@@ -56,15 +56,15 @@ function ProfileSettings() {
           body: JSON.stringify({ username, email, interests, picture }),
         }
       );
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Erreur lors de la mise à jour");
       }
-      
+
       const data = await response.json();
       console.log("Réponse mise à jour:", data);
-      
+
       if (data.status === "Success") {
         updateProfile(data.accessToken, data.refreshToken);
         await fetchUserProfile();
@@ -114,73 +114,98 @@ function ProfileSettings() {
                 <div className="card shadow">
                   <div className="card-body">
                     <h3 className="card-title mb-4">Paramètres de profil</h3>
-                    
+
                     {error && (
                       <div className="alert alert-danger alert-dismissible fade show" role="alert">
                         {error}
                         <button type="button" className="btn-close" onClick={() => setError("")}></button>
                       </div>
                     )}
-                    
+
                     {success && (
                       <div className="alert alert-success alert-dismissible fade show" role="alert">
                         {success}
                         <button type="button" className="btn-close" onClick={() => setSuccess("")}></button>
                       </div>
                     )}
-                    
-                      <div className="mb-3">
-                        <label htmlFor="username" className="form-label">
-                          Username
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="username"
-                          placeholder={user.username}
-                          onChange={(e) => setUsername(e.target.value)}
-                          value={username}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <h6 className="form-label">Intérêts</h6>
-                    {interestsValues.interestsSchema.map((interest, index) => {
-                      return (
-                        <div key={index} className="col-md-6 mb-2">
-                          <div className="form-check">
-                            <input 
-                              type="checkbox" 
-                              className="form-check-input"
-                              id={`interest-${index}`}
-                              checked={interests.includes(interest.value)}
-                              onChange={() => handleInterests(interest.value)}
-                              value={interest.value}
-                            />
-                            <label className="form-check-label" htmlFor={`interest-${index}`}>
-                              {interest.label}
-                            </label>
+
+                    <div className="mb-3">
+                      <label htmlFor="username" className="form-label">
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="username"
+                        placeholder={user.username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        value={username}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <h6 className="form-label">Sélectionnez vos intérêts</h6>
+
+                      {/* Parcourir chaque catégorie */}
+                      {interestsData.categories.map((category) => {
+
+                        // Filtrer les intérêts de cette catégorie
+                        const categoryInterests = interestsData.interests.filter(
+                          interest => interest.category === category.id
+                        );
+
+                        return (
+                          <div key={category.id} className="mb-4">
+                            {/* Header de catégorie */}
+                            <h6 className="text-primary mb-3">
+                              <span className="me-2">{category.icon}</span>
+                              {category.label}
+                            </h6>
+
+                            {/* Intérêts de cette catégorie */}
+                            <div className="row">
+                              {categoryInterests.map((interest) => (
+                                <div key={interest.id} className="col-md-6 mb-2">
+                                  <div className="form-check">
+                                    <input
+                                      type="checkbox"
+                                      className="form-check-input"
+                                      id={`interest-${interest.id}`}
+                                      checked={interests.includes(interest.id)}
+                                      onChange={() => handleInterests(interest.id)}
+                                      value={interest.id}
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`interest-${interest.id}`}
+                                      title={interest.description}
+                                    >
+                                      {interest.label}
+                                    </label>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="email" className="form-label">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          placeholder={user.email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          value={email}
-                        />
-                      </div>
-                      <button type="submit" className="btn btn-primary w-100">
-                        Valider les modifications
-                      </button>
-                    
+                        );
+                      })}
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="email" className="form-label">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        placeholder={user.email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        value={email}
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-primary w-100">
+                      Valider les modifications
+                    </button>
+
                   </div>
                 </div>
               </div>

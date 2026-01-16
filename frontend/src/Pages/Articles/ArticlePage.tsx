@@ -27,7 +27,7 @@ function ArticlePage(props) {
         }
 
         const data = await response.json();
-        console.log("Articles reçus:", data);
+        console.log("Articles reçus : ", data);
 
         if (data.articles && Array.isArray(data.articles)) {
           setArticles(data.articles);
@@ -37,7 +37,6 @@ function ArticlePage(props) {
       } catch (err) {
         console.error("Erreur:", err);
         setError(err.message);
-        // Articles par défaut en cas d'erreur
         const sampleArticles = [
           {
             title: "Comment apprendre React",
@@ -96,10 +95,11 @@ function ArticlePage(props) {
                 key={idx}
                 title={a.title}
                 date={a.published || a.date}
+                concepts={ a.concepts }
                 excerpt={a.summary || a.excerpt}
                 author={a.authors?.[0] || a.author}
-                thumbnail={a.thumbnail}
-                url={a.arxivUrl}
+                type={a.type}
+                url={a.link}
               />
             ))}
           </div>

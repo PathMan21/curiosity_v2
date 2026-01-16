@@ -356,3 +356,43 @@ voilà comment l'utiliser : on appelle en GET / POST le site via une requête HT
 - http://export.arxiv.org/api/{method_name}?{parameters} 
 
 Il faudra ensuite parser le xml avec npm install xml2js
+
+**---------------------------------- 15/01 ----------------------------------**
+
+*tâches à faire :*
+
+- Allez chercher 20 recherches techniques d'après les volontées de l'utilisateur X
+    j'ai décidé de stocker dans un json interests tout les intéret par grande catégorie
+
+- Faire un système qui récupère plutot des catégories générale pour limiter les appels api
+
+- Mettre une autre api plus accessible actuellement arxiv est trop technique et donc peu ludique
+
+
+*choix technique*
+
+- après réflexion il vaut mieux 5-8 api pas plus, cela pourrait provoqué :
+    - trop d'api différente - ingérable le système le temps d'appels étant trop différent
+    - chaotique et très ingérable
+
+- donc nous allons avoir 3 api principales : données globales intéressantes qui couvre tt les intérets
+- et des sous api qui sont plus spécialisés par branche ( informatique, science, astronomie etc....)
+
+- également je vais remplacer arxiv par quelque chose de plus intelligible et retirer le coté trop technique de l'application, également organiser
+quelles api sont le mieux
+
+**Indispensable**
+    - OpenAlex ( même chose que arxiv sur tout les domaines mais, plus facile à digérer )      
+    - Wikipedia ( global - pour avoir des résumés et différents sujets )
+    - Unsplash ( image, intêret visuel )
+    - Youtube ( rajouter du visuel intéressant )
+
+**Ludique**
+    - Open Trivia : ( questions à poser, interactif )
+
+**Spécialisation**
+    - NewsAPI : Rester au courant des dernières avancées selon les domaines
+
+**Facultatif**
+    - Wolfram Alpha : des jeux / calculs / graphiques interactifs - pour mieux apprendre
+    - NASA API : des images magnifiques qui permettrait d'être un peu wow
