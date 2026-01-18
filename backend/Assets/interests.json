@@ -5,140 +5,237 @@
       "label": "Intelligence Artificielle & Machine Learning",
       "category": "informatique",
       "description": "IA, apprentissage automatique, deep learning, réseaux de neurones",
-      "openalex_concept_id": "C154945302"
+      "openalex_field_id": "17"
     },
     {
       "id": "computer-science",
       "label": "Informatique & Programmation",
       "category": "informatique",
       "description": "Algorithmes, structures de données, développement logiciel",
-      "openalex_concept_id": "C41008148"
-    },
-    {
-      "id": "data-science",
-      "label": "Data Science & Analytics",
-      "category": "informatique",
-      "description": "Analyse de données, statistiques appliquées, visualisation",
-      "openalex_concept_id": "C2522767166"
+      "openalex_field_id": "17"
     },
     {
       "id": "cybersecurity",
       "label": "Cybersécurité",
       "category": "informatique",
       "description": "Sécurité informatique, cryptographie, protection des données",
-      "openalex_concept_id": "C38652104"
+      "openalex_field_id": "17"
     },
     {
       "id": "robotics",
       "label": "Robotique",
-      "category": "informatique",
+      "category": "ingenierie",
       "description": "Robots, automatisation, systèmes autonomes",
-      "openalex_concept_id": "C107769122"
+      "openalex_field_id": "22"
     },
     {
       "id": "mathematics",
       "label": "Mathématiques",
       "category": "sciences-exactes",
       "description": "Algèbre, analyse, géométrie, théorie des nombres",
-      "openalex_concept_id": "C33923547"
+      "openalex_field_id": "26"
     },
     {
       "id": "physics",
       "label": "Physique",
       "category": "sciences-exactes",
       "description": "Physique fondamentale, mécanique quantique, physique des particules",
-      "openalex_concept_id": "C121332964"
+      "openalex_field_id": "31"
     },
     {
       "id": "chemistry",
       "label": "Chimie",
       "category": "sciences-exactes",
       "description": "Chimie organique, inorganique, biochimie",
-      "openalex_concept_id": "C185592680"
+      "openalex_field_id": "16"
     },
     {
       "id": "biology",
       "label": "Biologie",
       "category": "sciences-vie",
       "description": "Biologie moléculaire, génétique, écologie",
-      "openalex_concept_id": "C86803240"
+      "openalex_field_id": "13"
     },
     {
       "id": "medicine",
       "label": "Médecine & Santé",
       "category": "sciences-vie",
       "description": "Médecine, santé publique, recherche médicale",
-      "openalex_concept_id": "C71924100"
+      "openalex_field_id": "27"
     },
     {
       "id": "neuroscience",
       "label": "Neurosciences",
       "category": "sciences-vie",
       "description": "Cerveau, cognition, psychologie cognitive",
-      "openalex_concept_id": "C203014093"
+      "openalex_field_id": "28"
     },
     {
       "id": "ecology",
       "label": "Écologie & Environnement",
       "category": "environnement",
       "description": "Biodiversité, conservation, écosystèmes",
-      "openalex_concept_id": "C149923435"
+      "openalex_field_id": "23"
     },
     {
       "id": "climate",
-      "label": "Climat & Météorologie",
+      "label": "Climat & Sciences de la Terre",
       "category": "environnement",
-      "description": "Changement climatique, météo, sciences atmosphériques",
-      "openalex_concept_id": "C132651083"
+      "description": "Changement climatique, météo, géologie, océanographie",
+      "openalex_field_id": "19"
     },
     {
       "id": "energy",
       "label": "Énergie & Durabilité",
       "category": "environnement",
       "description": "Énergies renouvelables, efficacité énergétique, développement durable",
-      "openalex_concept_id": "C78519656"
+      "openalex_field_id": "21"
     },
     {
       "id": "economics",
       "label": "Économie",
       "category": "sciences-sociales",
       "description": "Économie, marchés, politiques économiques",
-      "openalex_concept_id": "C162324750"
+      "openalex_field_id": "20"
     },
     {
       "id": "finance",
       "label": "Finance & Investissement",
       "category": "sciences-sociales",
       "description": "Marchés financiers, investissement, fintech",
-      "openalex_concept_id": "C49040817"
+      "openalex_field_id": "20"
     },
     {
       "id": "psychology",
       "label": "Psychologie",
       "category": "sciences-sociales",
       "description": "Comportement humain, psychologie sociale, développement",
-      "openalex_concept_id": "C15744967"
+      "openalex_field_id": "33"
     },
     {
       "id": "sociology",
       "label": "Sociologie",
       "category": "sciences-sociales",
       "description": "Société, culture, interactions sociales",
-      "openalex_concept_id": "C144024400"
+      "openalex_field_id": "33"
     },
     {
       "id": "engineering",
       "label": "Ingénierie",
       "category": "ingenierie",
       "description": "Génie civil, mécanique, électrique, matériaux",
-      "openalex_concept_id": "C127413603"
+      "openalex_field_id": "22"
     },
     {
       "id": "space",
       "label": "Espace & Astronomie",
       "category": "espace",
       "description": "Astronomie, astrophysique, exploration spatiale",
-      "openalex_concept_id": "C1276947"
+      "openalex_field_id": "31"
+    },
+    {
+      "id": "art",
+      "label": "Arts & Humanités",
+      "category": "arts-culture",
+      "description": "Histoire de l'art, littérature, philosophie, études culturelles",
+      "openalex_field_id": "12"
+    },
+    {
+      "id": "sport",
+      "label": "Sport & Sciences du Mouvement",
+      "category": "sante-sport",
+      "description": "Sciences du sport, physiologie de l'exercice, performance athlétique",
+      "openalex_field_id": "29"
+    },
+    {
+      "id": "business",
+      "label": "Business & Management",
+      "category": "sciences-sociales",
+      "description": "Gestion, entrepreneuriat, stratégie d'entreprise",
+      "openalex_field_id": "14"
+    }
+  ],
+  
+  "fields": [
+    {
+      "id": "12",
+      "name": "Arts and Humanities",
+      "domain": "Social Sciences"
+    },
+    {
+      "id": "13",
+      "name": "Biochemistry, Genetics and Molecular Biology",
+      "domain": "Life Sciences"
+    },
+    {
+      "id": "14",
+      "name": "Business, Management and Accounting",
+      "domain": "Social Sciences"
+    },
+    {
+      "id": "16",
+      "name": "Chemistry",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "17",
+      "name": "Computer Science",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "19",
+      "name": "Earth and Planetary Sciences",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "20",
+      "name": "Economics, Econometrics and Finance",
+      "domain": "Social Sciences"
+    },
+    {
+      "id": "21",
+      "name": "Energy",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "22",
+      "name": "Engineering",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "23",
+      "name": "Environmental Science",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "26",
+      "name": "Mathematics",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "27",
+      "name": "Medicine",
+      "domain": "Health Sciences"
+    },
+    {
+      "id": "28",
+      "name": "Neuroscience",
+      "domain": "Life Sciences"
+    },
+    {
+      "id": "29",
+      "name": "Health Professions (includes Sports Science)",
+      "domain": "Health Sciences"
+    },
+    {
+      "id": "31",
+      "name": "Physics and Astronomy",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "33",
+      "name": "Social Sciences",
+      "domain": "Social Sciences"
     }
   ],
   
@@ -147,43 +244,64 @@
       "id": "informatique",
       "label": "Informatique & Technologies",
       "icon": "💻",
-      "color": "#3B82F6"
+      "color": "#3B82F6",
+      "fields": ["17"]
     },
     {
       "id": "sciences-exactes",
       "label": "Sciences Exactes",
       "icon": "🔬",
-      "color": "#8B5CF6"
+      "color": "#8B5CF6",
+      "fields": ["16", "26", "31"]
     },
     {
       "id": "sciences-vie",
       "label": "Sciences de la Vie & Santé",
       "icon": "🧬",
-      "color": "#10B981"
+      "color": "#10B981",
+      "fields": ["13", "27", "28"]
     },
     {
       "id": "environnement",
       "label": "Environnement & Climat",
       "icon": "🌍",
-      "color": "#059669"
+      "color": "#059669",
+      "fields": ["19", "21", "23"]
     },
     {
       "id": "sciences-sociales",
       "label": "Sciences Sociales & Économie",
       "icon": "📊",
-      "color": "#F59E0B"
+      "color": "#F59E0B",
+      "fields": ["20", "33", "14"]
     },
     {
       "id": "ingenierie",
       "label": "Ingénierie",
       "icon": "⚙️",
-      "color": "#EF4444"
+      "color": "#EF4444",
+      "fields": ["22"]
     },
     {
       "id": "espace",
       "label": "Espace & Astronomie",
       "icon": "🚀",
-      "color": "#6366F1"
+      "color": "#6366F1",
+      "fields": ["31"]
+    },
+    {
+      "id": "arts-culture",
+      "label": "Arts & Culture",
+      "icon": "🎨",
+      "color": "#EC4899",
+      "fields": ["12"]
+    },
+    {
+      "id": "sante-sport",
+      "label": "Santé & Sport",
+      "icon": "⚽",
+      "color": "#14B8A6",
+      "fields": ["29"]
     }
   ]
 }

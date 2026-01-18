@@ -1,220 +1,241 @@
 {
   "interests": [
     {
-      "id": "ai",
-      "label": "Intelligence Artificielle",
+      "id": "ai-ml",
+      "label": "Intelligence Artificielle & Machine Learning",
       "category": "informatique",
-      "subcategory": "ai-ml",
-      "description": "Systèmes intelligents, apprentissage automatique, réseaux de neurones",
-      "arxiv_category": "cs.AI"
+      "description": "IA, apprentissage automatique, deep learning, réseaux de neurones",
+      "openalex_field_id": "17"
     },
     {
-      "id": "ml",
-      "label": "Apprentissage Automatique",
+      "id": "computer-science",
+      "label": "Informatique & Programmation",
       "category": "informatique",
-      "subcategory": "ai-ml",
-      "description": "Machine learning, deep learning, modèles prédictifs",
-      "arxiv_category": "cs.LG"
+      "description": "Algorithmes, structures de données, développement logiciel",
+      "openalex_field_id": "17"
     },
     {
-      "id": "nlp",
-      "label": "Traitement du Langage Naturel",
+      "id": "cybersecurity",
+      "label": "Cybersécurité",
       "category": "informatique",
-      "subcategory": "ai-ml",
-      "description": "NLP, linguistique computationnelle, modèles de langage",
-      "arxiv_category": "cs.CL"
-    },
-    {
-      "id": "cv",
-      "label": "Vision par Ordinateur",
-      "category": "informatique",
-      "subcategory": "ai-ml",
-      "description": "Reconnaissance d'images, traitement vidéo, détection d'objets",
-      "arxiv_category": "cs.CV"
+      "description": "Sécurité informatique, cryptographie, protection des données",
+      "openalex_field_id": "17"
     },
     {
       "id": "robotics",
       "label": "Robotique",
-      "category": "informatique",
-      "subcategory": "robotique",
-      "description": "Robots autonomes, navigation, manipulation",
-      "arxiv_category": "cs.RO"
-    },
-    {
-      "id": "algorithms",
-      "label": "Algorithmes & Structures de Données",
-      "category": "informatique",
-      "subcategory": "software-engineering",
-      "description": "Complexité, optimisation, structures de données",
-      "arxiv_category": "cs.DS"
-    },
-    {
-      "id": "cryptography",
-      "label": "Cryptographie & Sécurité",
-      "category": "informatique",
-      "subcategory": "cybersecurity",
-      "description": "Chiffrement, sécurité informatique, blockchain",
-      "arxiv_category": "cs.CR"
-    },
-    {
-      "id": "economics",
-      "label": "Économie",
-      "category": "sciences-sociales",
-      "subcategory": "economie",
-      "description": "Théorie économique, marchés, politique économique",
-      "arxiv_category": "econ.GN"
-    },
-    {
-      "id": "econometrics",
-      "label": "Économétrie",
-      "category": "sciences-sociales",
-      "subcategory": "economie",
-      "description": "Modélisation économique, analyse de données économiques",
-      "arxiv_category": "econ.EM"
-    },
-    {
-      "id": "finance",
-      "label": "Finance Quantitative",
-      "category": "sciences-sociales",
-      "subcategory": "economie",
-      "description": "Marchés financiers, modèles de pricing, risk management",
-      "arxiv_category": "q-fin.GN"
-    },
-    {
-      "id": "finance-stat",
-      "label": "Finance Statistique",
-      "category": "sciences-sociales",
-      "subcategory": "economie",
-      "description": "Analyse statistique des marchés, séries temporelles financières",
-      "arxiv_category": "q-fin.ST"
-    },
-    {
-      "id": "signal-processing",
-      "label": "Traitement du Signal",
       "category": "ingenierie",
-      "subcategory": "electronique",
-      "description": "DSP, filtrage, analyse spectrale",
-      "arxiv_category": "eess.SP"
+      "description": "Robots, automatisation, systèmes autonomes",
+      "openalex_field_id": "22"
     },
     {
-      "id": "image-processing",
-      "label": "Traitement d'Images",
-      "category": "ingenierie",
-      "subcategory": "image-processing",
-      "description": "Traitement et analyse d'images, reconstruction",
-      "arxiv_category": "eess.IV"
-    },
-    {
-      "id": "audio",
-      "label": "Audio & Acoustique",
-      "category": "ingenierie",
-      "subcategory": "audio-acoustique",
-      "description": "Traitement audio, acoustique, reconnaissance vocale",
-      "arxiv_category": "eess.AS"
-    },
-    {
-      "id": "algebra",
-      "label": "Algèbre",
+      "id": "mathematics",
+      "label": "Mathématiques",
       "category": "sciences-exactes",
-      "subcategory": "mathematiques",
-      "description": "Géométrie algébrique, théorie des groupes",
-      "arxiv_category": "math.AG"
+      "description": "Algèbre, analyse, géométrie, théorie des nombres",
+      "openalex_field_id": "26"
     },
     {
-      "id": "group-theory",
-      "label": "Théorie des Groupes",
+      "id": "physics",
+      "label": "Physique",
       "category": "sciences-exactes",
-      "subcategory": "mathematiques",
-      "description": "Structures algébriques, symétrie",
-      "arxiv_category": "math.GR"
+      "description": "Physique fondamentale, mécanique quantique, physique des particules",
+      "openalex_field_id": "31"
     },
     {
-      "id": "analysis",
-      "label": "Analyse Mathématique",
+      "id": "chemistry",
+      "label": "Chimie",
       "category": "sciences-exactes",
-      "subcategory": "mathematiques",
-      "description": "Équations différentielles, analyse fonctionnelle",
-      "arxiv_category": "math.AP"
+      "description": "Chimie organique, inorganique, biochimie",
+      "openalex_field_id": "16"
     },
     {
-      "id": "statistics",
-      "label": "Statistiques",
-      "category": "sciences-exactes",
-      "subcategory": "mathematiques",
-      "description": "Théorie statistique, inférence",
-      "arxiv_category": "stat.TH"
-    },
-    {
-      "id": "stat-ml",
-      "label": "Statistiques & Apprentissage",
-      "category": "sciences-exactes",
-      "subcategory": "mathematiques",
-      "description": "Méthodes statistiques pour le ML",
-      "arxiv_category": "stat.ML"
-    },
-    {
-      "id": "quantum",
-      "label": "Physique Quantique",
-      "category": "sciences-exactes",
-      "subcategory": "physique",
-      "description": "Mécanique quantique, information quantique",
-      "arxiv_category": "quant-ph"
-    },
-    {
-      "id": "optics",
-      "label": "Optique",
-      "category": "sciences-exactes",
-      "subcategory": "physique",
-      "description": "Optique physique, photonique",
-      "arxiv_category": "physics.optics"
-    },
-    {
-      "id": "general-physics",
-      "label": "Physique Générale",
-      "category": "sciences-exactes",
-      "subcategory": "physique",
-      "description": "Physique fondamentale",
-      "arxiv_category": "physics.gen-ph"
-    },
-    {
-      "id": "atomic-physics",
-      "label": "Physique Atomique",
-      "category": "sciences-exactes",
-      "subcategory": "physique",
-      "description": "Atomes, molécules, physique atomique",
-      "arxiv_category": "physics.atom-ph"
-    },
-    {
-      "id": "astrophysics",
-      "label": "Astrophysique",
-      "category": "espace",
-      "subcategory": "astronomy",
-      "description": "Cosmologie, galaxies, étoiles",
-      "arxiv_category": "astro-ph"
-    },
-    {
-      "id": "molecular-bio",
-      "label": "Biologie Moléculaire",
+      "id": "biology",
+      "label": "Biologie",
       "category": "sciences-vie",
-      "subcategory": "biologie",
-      "description": "Génétique, ADN, protéines",
-      "arxiv_category": "q-bio.BM"
+      "description": "Biologie moléculaire, génétique, écologie",
+      "openalex_field_id": "13"
+    },
+    {
+      "id": "medicine",
+      "label": "Médecine & Santé",
+      "category": "sciences-vie",
+      "description": "Médecine, santé publique, recherche médicale",
+      "openalex_field_id": "27"
     },
     {
       "id": "neuroscience",
       "label": "Neurosciences",
       "category": "sciences-vie",
-      "subcategory": "biologie",
-      "description": "Cerveau, cognition, neurones",
-      "arxiv_category": "q-bio.NC"
+      "description": "Cerveau, cognition, psychologie cognitive",
+      "openalex_field_id": "28"
+    },
+    {
+      "id": "ecology",
+      "label": "Écologie & Environnement",
+      "category": "environnement",
+      "description": "Biodiversité, conservation, écosystèmes",
+      "openalex_field_id": "23"
     },
     {
       "id": "climate",
-      "label": "Physique Atmosphérique & Climat",
+      "label": "Climat & Sciences de la Terre",
       "category": "environnement",
-      "subcategory": "climate",
-      "description": "Climat, atmosphère, océanographie",
-      "arxiv_category": "physics.ao-ph"
+      "description": "Changement climatique, météo, géologie, océanographie",
+      "openalex_field_id": "19"
+    },
+    {
+      "id": "energy",
+      "label": "Énergie & Durabilité",
+      "category": "environnement",
+      "description": "Énergies renouvelables, efficacité énergétique, développement durable",
+      "openalex_field_id": "21"
+    },
+    {
+      "id": "economics",
+      "label": "Économie",
+      "category": "sciences-sociales",
+      "description": "Économie, marchés, politiques économiques",
+      "openalex_field_id": "20"
+    },
+    {
+      "id": "finance",
+      "label": "Finance & Investissement",
+      "category": "sciences-sociales",
+      "description": "Marchés financiers, investissement, fintech",
+      "openalex_field_id": "20"
+    },
+    {
+      "id": "psychology",
+      "label": "Psychologie",
+      "category": "sciences-sociales",
+      "description": "Comportement humain, psychologie sociale, développement",
+      "openalex_field_id": "33"
+    },
+    {
+      "id": "sociology",
+      "label": "Sociologie",
+      "category": "sciences-sociales",
+      "description": "Société, culture, interactions sociales",
+      "openalex_field_id": "33"
+    },
+    {
+      "id": "engineering",
+      "label": "Ingénierie",
+      "category": "ingenierie",
+      "description": "Génie civil, mécanique, électrique, matériaux",
+      "openalex_field_id": "22"
+    },
+    {
+      "id": "space",
+      "label": "Espace & Astronomie",
+      "category": "espace",
+      "description": "Astronomie, astrophysique, exploration spatiale",
+      "openalex_field_id": "31"
+    },
+    {
+      "id": "art",
+      "label": "Arts & Humanités",
+      "category": "arts-culture",
+      "description": "Histoire de l'art, littérature, philosophie, études culturelles",
+      "openalex_field_id": "12"
+    },
+    {
+      "id": "sport",
+      "label": "Sport & Sciences du Mouvement",
+      "category": "sante-sport",
+      "description": "Sciences du sport, physiologie de l'exercice, performance athlétique",
+      "openalex_field_id": "29"
+    },
+    {
+      "id": "business",
+      "label": "Business & Management",
+      "category": "sciences-sociales",
+      "description": "Gestion, entrepreneuriat, stratégie d'entreprise",
+      "openalex_field_id": "14"
+    }
+  ],
+  
+  "fields": [
+    {
+      "id": "12",
+      "name": "Arts and Humanities",
+      "domain": "Social Sciences"
+    },
+    {
+      "id": "13",
+      "name": "Biochemistry, Genetics and Molecular Biology",
+      "domain": "Life Sciences"
+    },
+    {
+      "id": "14",
+      "name": "Business, Management and Accounting",
+      "domain": "Social Sciences"
+    },
+    {
+      "id": "16",
+      "name": "Chemistry",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "17",
+      "name": "Computer Science",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "19",
+      "name": "Earth and Planetary Sciences",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "20",
+      "name": "Economics, Econometrics and Finance",
+      "domain": "Social Sciences"
+    },
+    {
+      "id": "21",
+      "name": "Energy",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "22",
+      "name": "Engineering",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "23",
+      "name": "Environmental Science",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "26",
+      "name": "Mathematics",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "27",
+      "name": "Medicine",
+      "domain": "Health Sciences"
+    },
+    {
+      "id": "28",
+      "name": "Neuroscience",
+      "domain": "Life Sciences"
+    },
+    {
+      "id": "29",
+      "name": "Health Professions (includes Sports Science)",
+      "domain": "Health Sciences"
+    },
+    {
+      "id": "31",
+      "name": "Physics and Astronomy",
+      "domain": "Physical Sciences"
+    },
+    {
+      "id": "33",
+      "name": "Social Sciences",
+      "domain": "Social Sciences"
     }
   ],
   
@@ -223,43 +244,64 @@
       "id": "informatique",
       "label": "Informatique & Technologies",
       "icon": "💻",
-      "color": "#3B82F6"
+      "color": "#3B82F6",
+      "fields": ["17"]
     },
     {
       "id": "sciences-exactes",
       "label": "Sciences Exactes",
       "icon": "🔬",
-      "color": "#8B5CF6"
+      "color": "#8B5CF6",
+      "fields": ["16", "26", "31"]
     },
     {
       "id": "sciences-vie",
-      "label": "Sciences de la Vie",
+      "label": "Sciences de la Vie & Santé",
       "icon": "🧬",
-      "color": "#10B981"
-    },
-    {
-      "id": "sciences-sociales",
-      "label": "Sciences Sociales & Économie",
-      "icon": "📊",
-      "color": "#F59E0B"
-    },
-    {
-      "id": "ingenierie",
-      "label": "Ingénierie",
-      "icon": "⚙️",
-      "color": "#EF4444"
-    },
-    {
-      "id": "espace",
-      "label": "Espace & Astronomie",
-      "icon": "🚀",
-      "color": "#6366F1"
+      "color": "#10B981",
+      "fields": ["13", "27", "28"]
     },
     {
       "id": "environnement",
       "label": "Environnement & Climat",
       "icon": "🌍",
-      "color": "#059669"
+      "color": "#059669",
+      "fields": ["19", "21", "23"]
+    },
+    {
+      "id": "sciences-sociales",
+      "label": "Sciences Sociales & Économie",
+      "icon": "📊",
+      "color": "#F59E0B",
+      "fields": ["20", "33", "14"]
+    },
+    {
+      "id": "ingenierie",
+      "label": "Ingénierie",
+      "icon": "⚙️",
+      "color": "#EF4444",
+      "fields": ["22"]
+    },
+    {
+      "id": "espace",
+      "label": "Espace & Astronomie",
+      "icon": "🚀",
+      "color": "#6366F1",
+      "fields": ["31"]
+    },
+    {
+      "id": "arts-culture",
+      "label": "Arts & Culture",
+      "icon": "🎨",
+      "color": "#EC4899",
+      "fields": ["12"]
+    },
+    {
+      "id": "sante-sport",
+      "label": "Santé & Sport",
+      "icon": "⚽",
+      "color": "#14B8A6",
+      "fields": ["29"]
     }
   ]
 }

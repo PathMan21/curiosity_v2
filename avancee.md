@@ -396,3 +396,10 @@ quelles api sont le mieux
 **Facultatif**
     - Wolfram Alpha : des jeux / calculs / graphiques interactifs - pour mieux apprendre
     - NASA API : des images magnifiques qui permettrait d'être un peu wow
+
+
+**---------------------------------- 18/01 ----------------------------------**
+
+**Problème de Openalex**
+- problème rencontré : les champs globaux sont trop larges et allez chercher des articles trop différents du sujet de base, donc les sous champs sont plus correspondant
+    - la solution est de les mettres en sous champs c'est plus précis

@@ -13,7 +13,7 @@ function Article({ title, date, excerpt, author, type, url, concepts }: any) {
             return dateStr;
         }
     };
-    const conceptArray = concepts.join(" - ");
+    const conceptArray = concepts;
     const truncateExcerpt = (text: string, maxLength: number = 300) => {
         if (!text) return "";
         return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;

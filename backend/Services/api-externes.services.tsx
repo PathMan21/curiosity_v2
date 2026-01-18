@@ -1,11 +1,8 @@
-// commencer par arXiv
-
 import { configDotenv } from "dotenv";
 import { parseStringPromise } from "xml2js";
 import User from "../Models/User";
 import interestsData from '../Assets/interests.json';
 import { link } from "fs";
-
 async function handleOpenAlex(req, res) {
     try {
         console.log("OpenAlex - récupération des données");
@@ -15,67 +12,106 @@ async function handleOpenAlex(req, res) {
         let userInterests = JSON.parse(user.interests);
         console.log("Intérêts utilisateur:", userInterests);
         
-        // Convertir les intérêts en IDs de concepts OpenAlex
-        let conceptIds = mapInterestsToConceptIds(userInterests);
-        console.log("Concept IDs:", conceptIds);
+        let subfieldIds = mapInterestsToSubfields(userInterests);
+        console.log("Subfield IDs:", subfieldIds);
         
-        if (conceptIds.length === 0) {
+        if (subfieldIds.length === 0) {
             return res.status(400).json({
                 status: "Failed",
                 message: "Aucun intérêt valide trouvé"
             });
         }
         
-        // Combiner les IDs avec | (OR)
-        let conceptFilter = conceptIds.join("|");
+        const currentYear = new Date().getFullYear();
+        let allResults = [];
         
-        // Pagination aléatoire
-        let randomPage = Math.floor(Math.random() * 100) + 1;
+        // Calculer combien d'articles par subfield
+        const articlesPerSubfield = Math.ceil(20 / subfieldIds.length);
+        const recentPerSubfield = Math.ceil(14 / subfieldIds.length); // 70%
+        const mediumPerSubfield = Math.ceil(4 / subfieldIds.length);  // 20%
+        const oldPerSubfield = Math.ceil(2 / subfieldIds.length);     // 10%
         
-        // 🎯 FILTRAGE PAR CONCEPTS
-        let url_complete = `https://api.openalex.org/works?filter=concepts.id:${conceptFilter}&per_page=20&page=${randomPage}&sort=cited_by_count:desc`;
-        
-        console.log("URL appelée:", url_complete);
-
-        const response = await fetch(url_complete, {
-            method: "GET",
-            headers: { 
-                "Accept": "application/json",
-                "User-Agent": "mailto:[email protected]" // CHANGEZ CECI
+        // Faire une requête séparée pour CHAQUE subfield
+        for (const subfieldId of subfieldIds) {
+            const randomPage = Math.floor(Math.random() * 20) + 1;
+            
+            // Articles récents pour ce subfield
+            let recentUrl = `https://api.openalex.org/works?filter=topics.subfield.id:${subfieldId},is_oa:true,publication_year:${currentYear-1}-${currentYear}&per_page=${recentPerSubfield}&page=${randomPage}&sort=cited_by_count:desc`;
+            
+            console.log(`📅 Récents [${subfieldId}]:`, recentUrl);
+            
+            const recentResponse = await fetch(recentUrl, {
+                method: "GET",
+                headers: { 
+                    "Accept": "application/json",
+                    "User-Agent": "mailto:curiosity.the.social.network@gmail.com" 
+                }
+            });
+            
+            if (recentResponse.ok) {
+                const recentData = await recentResponse.json();
+                allResults = [...allResults, ...(recentData.results || [])];
+                console.log(`  ✅ ${recentData.results?.length || 0} articles récents`);
             }
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Erreur OpenAlex:", errorText);
-            throw new Error(`Erreur HTTP OpenAlex: ${response.status}`);
+            
+            // Articles moyens pour ce subfield
+            let mediumUrl = `https://api.openalex.org/works?filter=topics.subfield.id:${subfieldId},is_oa:true,publication_year:${currentYear-5}-${currentYear-2}&per_page=${mediumPerSubfield}&page=${randomPage}&sort=cited_by_count:desc`;
+            
+            console.log(`📆 Moyens [${subfieldId}]:`, mediumUrl);
+            
+            const mediumResponse = await fetch(mediumUrl, {
+                method: "GET",
+                headers: { 
+                    "Accept": "application/json",
+                    "User-Agent": "mailto:curiosity.the.social.network@gmail.com" 
+                }
+            });
+            
+            if (mediumResponse.ok) {
+                const mediumData = await mediumResponse.json();
+                allResults = [...allResults, ...(mediumData.results || [])];
+                console.log(`  ✅ ${mediumData.results?.length || 0} articles moyens`);
+            }
+            
+            // Articles anciens pour ce subfield
+            let oldUrl = `https://api.openalex.org/works?filter=topics.subfield.id:${subfieldId},is_oa:true,publication_year:2015-${currentYear-5}&per_page=${oldPerSubfield}&page=${randomPage}&sort=cited_by_count:desc`;
+            
+            console.log(`📜 Anciens [${subfieldId}]:`, oldUrl);
+            
+            const oldResponse = await fetch(oldUrl, {
+                method: "GET",
+                headers: { 
+                    "Accept": "application/json",
+                    "User-Agent": "mailto:curiosity.the.social.network@gmail.com" 
+                }
+            });
+            
+            if (oldResponse.ok) {
+                const oldData = await oldResponse.json();
+                allResults = [...allResults, ...(oldData.results || [])];
+                console.log(`  ✅ ${oldData.results?.length || 0} articles anciens`);
+            }
         }
-
-        const jsonData = await response.json();
-        console.log("Méta données:", jsonData.meta);
         
-        const results = jsonData.results || [];
+        console.log(`📊 Total articles récupérés: ${allResults.length}`);
         
-        // 🎯 FILTRAGE PAR TOPICS (plus précis que concepts)
-        let filteredResults = results.filter(element => {
+        // Filtrage qualité
+        let filteredResults = allResults.filter(element => {
             if (!element || !element.topics) return false;
-            
-            // Vérifier si AU MOINS UN topic pertinent (score >= 0.7)
-            const hasRelevantTopic = element.topics.some(t => t.score >= 0.7);
-            
-            return hasRelevantTopic;
+            const hasRelevantTopic = element.topics.some(t => t.score >= 0.75);
+            return hasRelevantTopic && element.cited_by_count > 3;
         });
         
-        console.log(`📊 Résultats avant filtrage: ${results.length}`);
-        console.log(`📊 Résultats après filtrage: ${filteredResults.length}`);
+        console.log(`📊 Articles après filtrage: ${filteredResults.length}`);
+        
+        // Mélanger et limiter à 20
+        filteredResults = shuffleArray(filteredResults).slice(0, 20);
         
         const articles = filteredResults.map((work: any) => {
-            // Extraire les topics pertinents (score >= 0.7)
             const relevantTopics = work.topics
-                ?.filter(t => t.score >= 0.7)
+                ?.filter(t => t.score >= 0.75)
                 .sort((a, b) => b.score - a.score) || [];
             
-            // Le topic principal (meilleur score)
             const primaryTopic = relevantTopics[0];
             
             return {
@@ -97,9 +133,8 @@ async function handleOpenAlex(req, res) {
                 publicationYear: work.publication_year,
                 venue: work.primary_location?.source?.display_name || null,
                 type: work.type || "article",
-                link: work.doi ? `https://doi.org/${work.doi}` : work.id,
+                link: work.doi ? `https://doi.org/${work.doi.replace('https://doi.org/', '')}` : work.id,
                 
-                // 🎯 TOPICS (meilleure classification)
                 topics: relevantTopics.slice(0, 3).map(t => ({
                     name: t.display_name,
                     score: t.score,
@@ -109,30 +144,21 @@ async function handleOpenAlex(req, res) {
                     domain: t.domain?.display_name || null
                 })),
                 
-                // Topic principal
                 mainTopic: primaryTopic?.display_name || "General",
                 topicScore: primaryTopic?.score || 0,
-                field: primaryTopic?.field?.display_name || null,
-                domain: primaryTopic?.domain?.display_name || null,
                 
-                // Concepts (pour compatibilité)
-                concepts: work.concepts
-                    ?.slice(0, 5)
-                    .map((c: any) => ({
-                        name: c.display_name,
-                        score: c.score,
-                        level: c.level
-                    })) || []
+                concepts: primaryTopic?.field?.display_name || null,
             };
         });
 
-        console.log(`✅ Articles retournés: ${articles.length}`);
+        console.log(`✅ Articles finaux retournés: ${articles.length}`);
+        console.log(`📊 Distribution par subfield équilibrée`);
         
         return res.json({
             status: "Success",
-            totalResults: jsonData.meta?.count || 0,
+            totalResults: allResults.length,
             filteredCount: articles.length,
-            currentPage: randomPage,
+            subfieldCount: subfieldIds.length,
             articles: articles
         });
 
@@ -146,24 +172,54 @@ async function handleOpenAlex(req, res) {
     }
 }
 
-function mapInterestsToConceptIds(interestIds: string[]): string[] {
-    return interestIds
-        .map(interestId => {
-            const interest = interestsData.interests.find(i => i.id === interestId);
-            
-            if (!interest) {
-                console.warn(`⚠️ Intérêt "${interestId}" non trouvé`);
-                return null;
-            }
-            
-            if (!interest.openalex_concept_id) {
-                console.warn(`⚠️ Pas d'openalex_concept_id pour "${interestId}"`);
-                return null;
-            }
-            
-            return interest.openalex_concept_id;
-        })
-        .filter(Boolean) as string[];
+function mapInterestsToSubfields(interestIds: string[]): string[] {
+    const subfieldMapping = {
+        "ai-ml": "1702",              // Computer Science -> Artificial Intelligence
+        "computer-science": "1705",   // Computer Science -> Computer Networks and Communications
+        "data-science": "2613",       // Mathematics -> Statistics and Probability
+        "cybersecurity": "1712",      // Computer Science -> Computer Networks and Communications
+        "robotics": "2207",           // Engineering -> Control and Systems Engineering
+        "mathematics": "2604",        // Mathematics -> Applied Mathematics
+        "physics": "3109",            // Physics and Astronomy -> Statistical and Nonlinear Physics
+        "chemistry": "1605",          // Chemistry -> Organic Chemistry
+        "biology": "1312",            // Biochemistry, Genetics and Molecular Biology -> Molecular Biology
+        "medicine": "2725",           // Medicine -> General Medicine
+        "neuroscience": "2801",       // Neuroscience -> Behavioral Neuroscience
+        "ecology": "2303",            // Environmental Science -> Ecology
+        "climate": "1902",            // Earth and Planetary Sciences -> Atmospheric Science
+        "energy": "2105",             // Energy -> Renewable Energy, Sustainability and the Environment
+        "economics": "2002",          // Economics, Econometrics and Finance -> Economics and Econometrics
+        "finance": "2003",            // Economics, Econometrics and Finance -> Finance
+        "psychology": "3204",         // Psychology -> Developmental and Educational Psychology
+        "sociology": "3312",          // Social Sciences -> Sociology and Political Science
+        "engineering": "2205",        // Engineering -> Civil and Structural Engineering
+        "space": "3103",              // Physics and Astronomy -> Astronomy and Astrophysics
+        "art": "1213",                // Arts and Humanities -> Visual Arts and Performing Arts
+        "sport": "2732",              // Medicine -> Orthopedics and Sports Medicine
+        "business": "1402"            // Business, Management and Accounting -> Strategy and Management
+    };
+    
+    let subfields = new Set<string>();
+    
+    interestIds.forEach(interestId => {
+        const subfieldId = subfieldMapping[interestId];
+        if (subfieldId) {
+            subfields.add(subfieldId);
+        } else {
+            console.warn(`⚠️ Intérêt "${interestId}" non mappé`);
+        }
+    });
+    
+    return Array.from(subfields);
+}
+
+function shuffleArray(array: any[]): any[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
 }
 
 function reconstructAbstract(invertedIndex: any): string {
