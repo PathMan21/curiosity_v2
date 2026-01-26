@@ -145,23 +145,19 @@ function ProfileSettings() {
                     <div className="mb-3">
                       <h6 className="form-label">Sélectionnez vos intérêts</h6>
 
-                      {/* Parcourir chaque catégorie */}
                       {interestsData.categories.map((category) => {
 
-                        // Filtrer les intérêts de cette catégorie
                         const categoryInterests = interestsData.interests.filter(
                           interest => interest.category === category.id
                         );
 
                         return (
                           <div key={category.id} className="mb-4">
-                            {/* Header de catégorie */}
                             <h6 className="text-primary mb-3">
                               <span className="me-2">{category.icon}</span>
                               {category.label}
                             </h6>
 
-                            {/* Intérêts de cette catégorie */}
                             <div className="row">
                               {categoryInterests.map((interest) => (
                                 <div key={interest.id} className="col-md-6 mb-2">

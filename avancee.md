@@ -403,3 +403,53 @@ quelles api sont le mieux
 **Problème de Openalex**
 - problème rencontré : les champs globaux sont trop larges et allez chercher des articles trop différents du sujet de base, donc les sous champs sont plus correspondant
     - la solution est de les mettres en sous champs c'est plus précis
+
+**---------------------------------- 19/01 ----------------------------------**
+
+- Aujourd'hui :
+
+Réglage du bug concernant les champs trop globaux, ainsi que revoir si il y a des niveaux de compexité en terme d'article
+le problème en plus de la variation trop forte entre le sujet principal et ce que l'algo de open alex montre, c'est que...
+
+- les articles sont très complexes, ça n'est pas si intéressant à lire X
+    j'ai trié par articles qui sont dans la catégorie reviews, 
+    qui ont beaucoup de fois les termes cités : cela veux dire que il est souvent bien reliés et facile à lire
+
+- la redirection des articles parfois amène a des articles payants X
+    -> Réglé avec ao3 : true
+
+- la variation des type de contenus n'est pas très intéressante
+
+- rajouter un certains nombres de sources qui sont plus généralistes dans les reviews
+
+**---------------------------------- 20/01 ----------------------------------**
+
+A faire aujourd'hui : 
+-> Rajout d'un filtre qui check les sources des articles / des reviews - avec pour chacun des thèmes des sources précises X
+    -> Fait fonctionne bien mieux qu'avant
+-> Rajout d'une deuxième api - NewsAPI - qui ira récupérer les news 
+        -> Après considération je bouge sur : https://newsmesh.co/ qui est moins cher - plus abordable
+
+-> Egalement prévoir un jour dans la semaine où je travaille sur la documentation
+
+__Nous en sommes toujours à la :__ 
+
+*V1* => tt les domaines 3 - 4  api qui s'affiche sur un fil d'actualité, avec vidéo contenu textuel etc... 
+pas d'affichage sur le site des articles etc.. renvoie sur le site en question 
+
+**---------------------------------- 21/01 ----------------------------------**
+
+*A faire aujourd'hui*
+
+-> Mettre en place newsmech, essayer d'appeler les news selon les domaines, 
+pour les différencier il nous faut de nouvelles couleurs
+
+-> Une des erreurs que je fais actuellement c'est de trop m'imaginer comment les choses vont évoluer - tout les algorithmes à faire etc..
+    -> Avec tout ce qu'il y a à faire je dois me limiter dans le travail - je dois donc d'abord faire la v1 avec 3 api 
+    -> Après faire le système de redis pour que les posts aillent chercher et distribue équitablement
+
+**---------------------------------- 22/01 ----------------------------------**
+
+-> Lire la documentation
+-> Commencer le tri des compétences obligatoires / facultatives 
+-> Trier le plus urgent au moins urgent
