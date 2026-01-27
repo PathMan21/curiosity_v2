@@ -94,12 +94,12 @@ function ArticlePage(props) {
               <Article
                 key={idx}
                 title={a.title}
-                date={a.published || a.date}
-                concepts={ a.concepts }
-                excerpt={a.summary || a.excerpt}
-                author={a.authors?.[0] || a.author}
+                date={a.published || a.date || a.publishedAt }
+                concepts={ a.concepts || a.category}
+                excerpt={a.summary || a.excerpt || a.description }
+                author={a.authors?.[0] || a.author || a.source }
                 type={a.type}
-                url={a.link}
+                url={a.link || a.url }
               />
             ))}
           </div>

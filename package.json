@@ -25,7 +25,7 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "start": "tsx backend/server.ts",
+    "start": "tsx backend/server.tsx",
     "dev:backend": "tsx watch backend/server.ts",
     "dev": "tsx watch backend/server.tsx",
     "frontend:dev": "vite --config frontend/vite.config.ts"
