@@ -453,3 +453,8 @@ pour les différencier il nous faut de nouvelles couleurs
 -> Lire la documentation
 -> Commencer le tri des compétences obligatoires / facultatives 
 -> Trier le plus urgent au moins urgent
+
+
+**---------------------------------- 28/01 ----------------------------------**
+
+-> J'ai mis en place newsmech - maintenant : Unsplash
