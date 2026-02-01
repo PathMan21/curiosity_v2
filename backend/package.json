@@ -1,0 +1,42 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.1",
+    "bootstrap": "^5.3.8",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jest": "^30.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "jwt-decode": "^4.0.0",
+    "mariadb": "^3.4.5",
+    "nodemailer": "^7.0.11",
+    "oauth": "^0.10.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.9.6",
+    "router": "^2.2.0",
+    "sequelize": "^6.37.7",
+    "vite": "^5.0.0",
+    "ws": "^8.18.3",
+    "xml2js": "^0.6.2"
+  },
+  "scripts": {
+    "start": "tsx backend/server.tsx",
+    "dev:backend": "tsx watch backend/server.ts",
+    "dev": "tsx watch server.tsx",
+    "frontend:dev": "vite --host"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

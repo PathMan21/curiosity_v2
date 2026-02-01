@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import interestsData from '../Assets/interests.json';
-import { User } from "backend/Models";
+import { User } from "../Models";
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

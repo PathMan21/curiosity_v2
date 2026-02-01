@@ -9,18 +9,16 @@ interface UserAttributes {
   password: string;
   email: string;
   picture?: string;
-  interests?: string; // tu peux stocker JSON ou CSV
+  interests?: string; 
   verified: boolean;
   isTemporary: boolean;
   refreshToken?: string;
 }
 
-// 2️⃣ Attributs optionnels lors de la création
 interface UserCreationAttributes extends Optional<UserAttributes, "id" | "verified" | "isTemporary" | "refreshToken"> {}
 
-// 3️⃣ Classe Sequelize typée
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id!: number;
+  public id: number;
   public username!: string;
   public password!: string;
   public email!: string;
@@ -31,7 +29,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public refreshToken?: string;
 }
 
-// 4️⃣ Définition du modèle
 User.init(
   {
     id: {

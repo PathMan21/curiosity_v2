@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendVerificationEmail } from "../Services/mail.services";
 import jwt from "jsonwebtoken";
 
-// Fonction utilitaire pour générer les tokens (JWT minimal)
 const generateTokens = (userId: number) => {
   const accessToken = jwt.sign(
     { userId },
@@ -49,10 +48,8 @@ const updatedProfile = async (req, res) => {
     
     console.log("Utilisateur mis à jour:", updatedUser);
     
-    // Générer de nouveaux tokens (JWT minimal)
     const { accessToken, refreshToken } = generateTokens(user.id);
     
-    // Mettre à jour le refresh token en base de données
     await user.update({ refreshToken });
     
     res.json({
@@ -98,8 +95,21 @@ const createUser = async (req, res) => {
       interests,
       verified: false,
     });
-    console.log(newUser);
-    await sendVerificationEmail({ id: newUser.get('id'), email: newUser.get('email') }, res);
+    // Log complet pour diagnostiquer d'éventuels problèmes
+    console.log("createUser: newUser.toJSON():", newUser.toJSON());
+
+    // Récupération robuste de l'ID (selon comment Sequelize expose la propriété)
+    const createdId = newUser.get?.('id') ?? newUser.id ?? newUser.get?.('userId') ?? null;
+
+    if (!createdId) {
+      console.error("createUser: id utilisateur manquant pour l'enregistrement:", newUser.toJSON());
+      return res.status(500).json({
+        status: "Failed",
+        message: "Erreur interne: impossible de récupérer l'ID de l'utilisateur"
+      });
+    }
+
+    await sendVerificationEmail({ id: createdId, email: newUser.get('email') }, res);
 
   } catch (err) {
     console.error("Erreur création utilisateur:", err);
@@ -131,7 +141,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Vérifier le mot de passe (hachés via bcrypt)
     const passwordMatch = await bcrypt.compare(password, user.password);
     
     if (!passwordMatch) {

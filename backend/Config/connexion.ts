@@ -11,8 +11,10 @@ const connectDB = async () => {
     
     await sequelizeDb.sync();
     console.log("✅ Sequelize a synchronisé les tables");
-  } catch (err) {
-    console.error("❌ Erreur connection/sync :", err);
+  } catch (err: any) {
+    // Affiche le nom, le message et la stack pour faciliter le debug
+    console.error("❌ Erreur connection/sync :", err?.name, err?.message);
+    if (err?.stack) console.error(err.stack);
     throw err;
   }
 };

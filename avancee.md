@@ -458,3 +458,50 @@ pour les différencier il nous faut de nouvelles couleurs
 **---------------------------------- 28/01 ----------------------------------**
 
 -> J'ai mis en place newsmech - maintenant : Unsplash
+
+
+**---------------------------------- 29/01 ----------------------------------**
+
+-Unsplash mis, openalex sort des articles en allemand etc... sortir des articles en anglais exclusivement
+- prochaine étape les faire liker 
+- Posts des utilisateurs
+- Deepstash est mon concurrent => https://deepstash.com/ 
+    - faire une analyse concurrentiel - pour contre ce qu'ils en pensent etc...
+
+
+
+**---------------------------------- 31/01 ----------------------------------**
+
+-> Reddis - contrairement a une base de données, le système de cache dynamique se situe sur la ram et permet de façon
+rapide d'accèder donc aux données, les appels sont rapide en raison de l'utilisation de la ram
+
+
+Le stockage Redis se fera :
+
+**OpenAlex :** DB + Redis cache long (environ 7 jours)
+
+DB = Stockage permanent de tout ce qui est consulté
+Redis = Accélération accès aux publications populaires
+
+**Newsmech :** DB + Redis cache court (7 jours)
+
+DB = Stockage temporaire (30 jours max, auto-cleanup)
+Redis = Fraîcheur garantie
+
+**Unsplash :** DB + Redis cache très long (30 jours) + CDN
+
+DB = Métadonnées + tracking usage
+Redis = Éviter requêtes API (quotas stricts)
+CDN = Héberger images vous-même
+
+Etant données que je suis sur reddis et que ça fonctionne sur linux / ubuntu il faut que je mette en place docker d'abord
+
+-> Mission d'aujourd'hui :
+
+    - docker
+    - redis mettre en place le début du système 
+        - au mieux pour les trois services
+
+**---------------------------------- 01/02 ----------------------------------**
+
+-> DOCKER FONCTIONNE

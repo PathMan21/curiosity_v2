@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
-import UserVerification from "backend/Models/UserVerifications";
+import UserVerification from "../Models/UserVerifications";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { transport } from "backend/Config/emailConfig";
+import { transport } from "../Config/emailConfig";
 
 
 

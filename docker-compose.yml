@@ -1,0 +1,49 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PWD=root
+      - MYSQL_DATABASE=db_curiosity
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - appnet
+
+  backend:
+    build: ./backend
+    environment:
+      - DB_HOST=mariadb
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_PWD=root"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    networks:
+      - appnet
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_DEV_SERVER=true
+    depends_on:
+      - backend
+    networks:
+      - appnet
+
+volumes:
+  db_data:
+
+networks:
+  appnet:
+    driver: bridge

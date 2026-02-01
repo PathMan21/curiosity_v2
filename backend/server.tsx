@@ -12,7 +12,8 @@ import apiroutes from "./Routes/api.routes";
 import cors from "cors";
 
 dotenv.config({
-  path: path.resolve(process.cwd(), "backend/Config/.env"),
+  // Charger le .env depuis le dossier Config local (chemin correct pour le Dockerfile qui copie le dossier dans /app)
+  path: path.resolve(process.cwd(), "Config/.env"),
 });
 const app = express();
 const server = createServer(app);

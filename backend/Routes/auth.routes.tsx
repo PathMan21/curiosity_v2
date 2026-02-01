@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { oauthVerify } from "backend/Controllers/oauth.controllers";
-import { oauthToken, verifyToken } from "backend/Controllers/oauth.controllers";
-import { authentificatedUser } from "backend/Middlewares/user.middlewares";
-import { updateProfile } from "backend/Controllers/oauth.controllers";
+import { oauthVerify } from "../Controllers/oauth.controllers";
+import { oauthToken, verifyToken } from "../Controllers/oauth.controllers";
+import { authentificatedUser } from "../Middlewares/user.middlewares";
+import { updateProfile } from "../Controllers/oauth.controllers";
 import bodyParser from "body-parser";
 
 const router = Router();

@@ -5,7 +5,7 @@ import sequelizeDb from "../Config/dbInit";
 const UserVerification = sequelizeDb.define('UserVerificationSchema', {
     userId: {
         field: "userId",
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: true,
     },

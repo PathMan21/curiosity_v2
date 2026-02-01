@@ -1,5 +1,5 @@
-import router from "backend/Routes/user.routes";
-import User from "backend/Models/User";
+import router from "../Routes/user.routes";
+import User from "../Models/User";
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from 'express';
 
@@ -149,8 +149,9 @@ const updateProfile = async (req, res) => {
   let selectedinterests = JSON.stringify(interests);
   console.log("selectedinterests " + selectedinterests);
   const user = await User.findByPk(req.user.userId);
+  console.log("user trouvé ", user, " user envoyé ", req.body);
   if (!user) {
-    return res.status(404).json({ error: "Utilisateur introuvable" });
+    return res.status(401).json({ error: "Utilisateur introuvable" });
   }
   user.username = username || user.username;
   user.password = password || user.password;

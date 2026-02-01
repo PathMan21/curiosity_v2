@@ -97,8 +97,8 @@ function CompleteInscription() {
                 <div className="mb-3">
                   <label className="form-label d-block mb-2">Vos intérêts</label>
                   <div className="row">
-                    {interestsValues.interestsSchema.map((value, index) => {
-                      const valueCleaned = value.split("_").join(" ");
+                    {interestsValues.interests.map((value, index) => {
+                      const valueCleaned = value.id.split("_").join(" ");
                       return (
                         <div key={index} className="col-md-6 mb-2">
                           <div className="form-check">
@@ -106,9 +106,9 @@ function CompleteInscription() {
                               type="checkbox" 
                               className="form-check-input"
                               id={`interest-${index}`}
-                              checked={SelectedInterests.includes(value)}
-                              onChange={() => handleInterests(value)}
-                              value={value}
+                              checked={SelectedInterests.includes(value.id)}
+                              onChange={() => handleInterests(value.id)}
+                              value={value.id}
                             />
                             <label className="form-check-label" htmlFor={`interest-${index}`}>
                               {valueCleaned}

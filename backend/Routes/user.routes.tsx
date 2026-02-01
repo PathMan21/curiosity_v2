@@ -1,9 +1,9 @@
 import { Router } from "express";
 // import { createUser } from './contoller';
 import { validateUser, authentificatedUser } from '../Middlewares/user.middlewares';
-import validateByMail from "backend/Middlewares/mail.middlewares";
+import validateByMail from "../Middlewares/mail.middlewares";
 import bodyParser from "body-parser";
-import { createUser, loginUser, refreshTokenHandler, updatedProfile, getCurrentUser } from "backend/Controllers/user.controllers";
+import { createUser, loginUser, refreshTokenHandler, updatedProfile, getCurrentUser } from "../Controllers/user.controllers";
 import { verifiedPage, verifyUser } from "../Services/mail.services";
 const router = Router();
 
