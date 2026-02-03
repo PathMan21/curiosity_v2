@@ -22,20 +22,19 @@ const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
 const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuthId}&redirect_uri=${googleAuthCallback}&access_type=offline&response_type=code&state=${state}
 &scope=${encodeURIComponent(scopes)}`;
 
-// Fonction utilitaire pour générer les tokens (JWT minimal)
 const generateTokens = (userId: number) => {
+  console.log("generate toke, récupère t il l'id user ? ", userId);
   const accessToken = jwt.sign(
     { userId },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn: 15 * 60 }
   );
 
   const refreshToken = jwt.sign(
     { userId },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: 60 * 60 }
   );
-
   return { accessToken, refreshToken };
 };
 
@@ -61,7 +60,6 @@ const verifyToken = async (req: Request, res: Response) => {
 
 
 const oauthToken = async (req, res) => {
-console.log("vous avez appelé le callback de oAuth");
 
     const { code } = req.query;
       if (!code) {
@@ -76,7 +74,6 @@ console.log("vous avez appelé le callback de oAuth");
         
     }
 
-    console.log(data);
 
     // quand on choppe le code, on renvoie au serveur d'autorisation pour avoir en échange le token
 
@@ -93,50 +90,41 @@ console.log("vous avez appelé le callback de oAuth");
     // on récupère le token avec toutes les informations
 
     const { name, picture, email, email_verified } = await tokenInfoResponse.json();
-
-    console.log("picture " + picture)
-    console.log("email " + email)
-    console.log("name " + name)
-    console.log("email_verified " + email_verified)
-
-    // on check si l'utilisateur existe déjà
+    let newUser;
     let existingUser = await User.findOne({ where: { email } }) as User | null;
-
-      console.log("existing user " + existingUser);
     if (existingUser) {
         console.log("utilisateur existant : " + email);
         return res.status(418).send("Utilisateur déjà existant : " + email);
     } else {
       console.log("création user :");
 
-      existingUser = await User.create({
+      newUser = await User.create({
         username: name,
         email,
         password: "oauth_placeholder",
         picture,
         isTemporary: true
       });
-      await existingUser.reload();
+      
 
-    console.log("Nouvel utilisateur créé :", existingUser.toJSON());
+    console.log("Nouvel utilisateur créé :", newUser.toJSON());
 
 try {
+    console.log("existing user : ", newUser);
+    const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } = generateTokens(newUser.id);
 
-  const { accessToken, refreshToken } = generateTokens(existingUser.id);
+    await newUser.update({ jwtRefreshToken });
 
-  // Stocker le refresh token en base
-  await existingUser.update({ refreshToken });
+    res.cookie("jwt", jwtAccessToken, { 
+      httpOnly: true, 
+      secure: true,       
+      sameSite: "strict",
+    });
+  res.redirect(`${baseUrl}load-token?token=${jwtAccessToken}&refreshToken=${jwtRefreshToken}`);
 
-  res.cookie("jwt", accessToken, { 
-    httpOnly: true, 
-    secure: true,
-    sameSite: 'strict'
-  });
-
-  res.redirect(`${baseUrl}load-token?token=${accessToken}&refreshToken=${refreshToken}`);
-} catch (err) {
-  return res.status(500).json({ error: 'Erreur génération token' });
-}
+    } catch (err) {
+  return res.status(500).json({ error: 'Erreur génération token', details: err.message });
+    }
 
     }
 
@@ -144,25 +132,28 @@ try {
 
 
 const updateProfile = async (req, res) => {
- const { username, password, interests } = req.body;
-  console.log(req.body)
+ const { interests } = req.body;
+  console.log("update : ", req.user);
   let selectedinterests = JSON.stringify(interests);
-  console.log("selectedinterests " + selectedinterests);
-  const user = await User.findByPk(req.user.userId);
-  console.log("user trouvé ", user, " user envoyé ", req.body);
-  if (!user) {
-    return res.status(401).json({ error: "Utilisateur introuvable" });
-  }
-  user.username = username || user.username;
-  user.password = password || user.password;
-  user.interests = selectedinterests;
-  user.isTemporary = false;
+  console.log("interests ", selectedinterests);
 
-  await user.save();
+  const userId = req.user?.userId || req.userId;
+
+  if (!userId) {
+    console.error("updateProfile: userId manquant dans la requête (payload):", req.user);
+    return res.status(401).json({ error: "Utilisateur non authentifié" });
+  }
+
+  const user = await User.findByPk(userId);
+  if (!user) {
+    return res.status(404).json({ error: "Utilisateur introuvable" });
+  }
+  await user.update({interests: selectedinterests, isTemporary: false});
 
   console.log(user);
   try {
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
+    console.log(accessToken);
     await user.update({ refreshToken });
 
     try {
@@ -175,18 +166,9 @@ const updateProfile = async (req, res) => {
       console.warn("Impossible de définir le cookie jwt:", cookieErr);
     }
 
-    return res.status(200).json({ 
-      message: "Profil complété", 
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        interests: user.interests,
-        picture: user.picture,
-        verified: user.verified
-      },
-      accessToken, 
-      refreshToken 
+    return res.status(200).json({
+      message: "Profil mis à jour",
+      user: user.get({ plain: true })
     });
   } catch (err) {
     console.error("Erreur génération token après updateProfile:", err);

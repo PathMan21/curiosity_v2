@@ -7,7 +7,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendVerificationEmail } from "../Services/mail.services";
 import jwt from "jsonwebtoken";
 
+
 const generateTokens = (userId: number) => {
+    console.log("generate toke, récupère t il l'id user ? ", userId);
+
   const accessToken = jwt.sign(
     { userId },
     process.env.ACCESS_TOKEN_SECRET,
@@ -19,60 +22,64 @@ const generateTokens = (userId: number) => {
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" }
   );
+  console.log("refreshToken ", refreshToken);
+  console.log("accessToken ", accessToken);
 
   return { accessToken, refreshToken };
 };
 
 const updatedProfile = async (req, res) => {
- try {
-    console.log(req.body)
+  try {
+    console.log('updatedProfile body:', req.body);
     const { username, email, interests, picture } = req.body;
     const userId = req.user.userId; // Récupérer l'ID du token
-    
-    let stringInterests = JSON.stringify(interests);
+
     const user = await User.findByPk(userId);
-    
     if (!user) {
-      return res.status(404).json({
-        status: "Failed",
-        message: "Utilisateur non trouvé"
-      });
+      return res.status(404).json({ status: "Failed", message: "Utilisateur non trouvé" });
     }
-    
-    const updatedUser = await user.update({
-      username,
-      email,
-      interests: stringInterests,
-      picture, 
-    });
-    
-    console.log("Utilisateur mis à jour:", updatedUser);
-    
-    const { accessToken, refreshToken } = generateTokens(user.id);
-    
+
+    // Construire un objet d'update avec uniquement les champs présents
+    const updateData: any = {};
+    if (typeof username !== 'undefined') updateData.username = username;
+    if (typeof email !== 'undefined') updateData.email = email;
+    if (typeof picture !== 'undefined') updateData.picture = picture;
+    if (typeof interests !== 'undefined') updateData.interests = JSON.stringify(interests);
+
+    // Appliquer l'update
+    await user.update(updateData);
+
+    console.log("Utilisateur mis à jour:", user.toJSON());
+
+    const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
     await user.update({ refreshToken });
-    
+
+    // Retourner les interests sous forme d'array si possible
+    let returnedInterests: any = [];
+    try {
+      returnedInterests = user.dataValues.interests ? JSON.parse(user.dataValues.interests) : [];
+    } catch (e) {
+      returnedInterests = [];
+    }
+
     res.json({
       status: "Success",
       message: "Profil mis à jour avec succès",
       accessToken,
       refreshToken,
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        verified: user.verified,
-        interests: stringInterests,
-        picture
+        id: user.dataValues.id,
+        email: user.dataValues.email,
+        username: user.dataValues.username,
+        verified: user.dataValues.verified,
+        interests: returnedInterests,
+        picture: user.dataValues.picture
       }
     });
 
   } catch (err) {
     console.error("Erreur d'update utilisateur :", err);
-    res.status(500).json({
-      status: "Failed",
-      message: "Erreur lors de la mise à jour du profil"
-    });
+    res.status(500).json({ status: "Failed", message: "Erreur lors de la mise à jour du profil" });
   }
 };
 
@@ -95,11 +102,16 @@ const createUser = async (req, res) => {
       interests,
       verified: false,
     });
-    // Log complet pour diagnostiquer d'éventuels problèmes
     console.log("createUser: newUser.toJSON():", newUser.toJSON());
 
-    // Récupération robuste de l'ID (selon comment Sequelize expose la propriété)
-    const createdId = newUser.get?.('id') ?? newUser.id ?? newUser.get?.('userId') ?? null;
+    let createdId: number | null;
+    createdId = newUser.get?.('id') ?? newUser.id ?? newUser.get?.('userId') ?? null;
+
+    console.log("createUser: Vérification des IDs générés:", {
+      id: newUser.id,
+      getId: newUser.get?.('id'),
+      getUserId: newUser.get?.('userId')
+    });
 
     if (!createdId) {
       console.error("createUser: id utilisateur manquant pour l'enregistrement:", newUser.toJSON());
@@ -110,6 +122,23 @@ const createUser = async (req, res) => {
     }
 
     await sendVerificationEmail({ id: createdId, email: newUser.get('email') }, res);
+
+    const { accessToken, refreshToken } = generateTokens(createdId);
+
+    await newUser.update({ refreshToken });
+
+    res.cookie("jwt", accessToken, { 
+      httpOnly: true, 
+      secure: true,
+      sameSite: 'strict'
+    });
+
+    return res.status(201).json({
+      status: "Success",
+      message: "Utilisateur créé avec succès",
+      accessToken,
+      refreshToken
+    });
 
   } catch (err) {
     console.error("Erreur création utilisateur:", err);
@@ -141,7 +170,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.dataValues.password);
     
     if (!passwordMatch) {
       return res.status(401).json({ 
@@ -151,7 +180,7 @@ const loginUser = async (req, res) => {
     }
 
     // Créer un JWT minimal
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
 
     // Stocker le refresh token en base de données
     await user.update({ refreshToken });
@@ -161,12 +190,12 @@ const loginUser = async (req, res) => {
       accessToken,
       refreshToken,
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        verified: user.verified,
-        interests: user.interests,
-        picture: user.picture
+        id: user.dataValues.id,
+        email: user.dataValues.email,
+        username: user.dataValues.username,
+        verified: user.dataValues.verified,
+        interests: user.dataValues.interests,
+        picture: user.dataValues.picture
       }
     });
 
@@ -196,7 +225,7 @@ const refreshTokenHandler = async (req, res) => {
     // Vérifier que le token existe en base de données
     const user = await User.findByPk(decoded.userId);
 
-    if (!user || user.refreshToken !== refreshToken) {
+    if (!user || user.dataValues.refreshToken !== refreshToken) {
       return res.status(401).json({
         status: "Failed",
         message: "Refresh token invalide"
@@ -204,7 +233,7 @@ const refreshTokenHandler = async (req, res) => {
     }
     
     // Générer un nouveau access token minimal
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.id);
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.dataValues.id);
 
     // Mettre à jour le refresh token en base
     await user.update({ refreshToken: newRefreshToken });
@@ -227,10 +256,10 @@ const refreshTokenHandler = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
     const user = await User.findByPk(userId, {
       attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary']
     });
+    console.log("dans get currentUser : ", user);
 
     if (!user) {
       return res.status(404).json({
@@ -238,18 +267,11 @@ const getCurrentUser = async (req, res) => {
         message: "Utilisateur non trouvé"
       });
     }
+    const plainUser = user.get({ plain: true });
 
     res.json({
       status: "Success",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        verified: user.verified,
-        interests: user.interests,
-        picture: user.picture,
-        isTemporary: user.isTemporary
-      }
+      user: plainUser
     });
 
   } catch (err) {

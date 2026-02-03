@@ -6,10 +6,11 @@ import { link } from "fs";
 async function handleOpenAlex(req, res) {
     try {
         console.log("OpenAlex - récupération des données");
-        const userJWT = req.user.userId;
+        const userJWT = req.userId;
+        console.log("userJWT " , userJWT);
         const user = await User.findOne({ where: { id: userJWT} });
         
-        let userInterests = JSON.parse(user.interests);
+        let userInterests = JSON.parse(user.dataValues.interests);
         console.log("Intérêts utilisateur:", userInterests);
         
             let subfieldIds = mapInterestsToSubfields(userInterests);

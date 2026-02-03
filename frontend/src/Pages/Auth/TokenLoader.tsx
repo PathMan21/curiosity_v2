@@ -10,18 +10,16 @@ function TokenLoader() {
   useEffect(() => {
     const urlToken = searchParams.get("token");
     const urlRefreshToken = searchParams.get("refreshToken");
-    console.log("rentre dans la fonction");
 
     if (urlToken) {
       setToken(urlToken, urlRefreshToken || undefined);
       fetchUserProfile().then(() => {
+        console.log("est ce que je récupère bien mon token ", urlToken);
         navigate("/complete-inscription", { replace: true });
       }).catch((error) => {
-        console.error("Erreur lors du chargement du profil:", error);
         navigate("/complete-inscription", { replace: true });
       });
     } else {
-      console.log("est censé se rediriger sur login");
       navigate("/login", { replace: true });
     }
   }, [searchParams, setToken, navigate, fetchUserProfile]);

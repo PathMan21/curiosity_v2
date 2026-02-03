@@ -3,16 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import interestsValues from "../../Assets/interests.json";
 
-
 function CompleteInscription() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { token, setToken, fetchUserProfile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [SelectedInterests, SetSelectedInterests] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   useEffect(() => {
     const urlToken = searchParams.get("token");
@@ -21,9 +18,8 @@ function CompleteInscription() {
     }
   }, [searchParams, setToken]);
 
-  function handleInterests(value) {
-    console.log("Selected Interests " + SelectedInterests);
-    SetSelectedInterests((prev) => (
+  function handleInterests(value: string) {
+    setSelectedInterests((prev) => (
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     ));
   }
@@ -33,8 +29,9 @@ function CompleteInscription() {
     setError("");
     setLoading(true);
 
-    const activeToken = searchParams.get("token") || token;
-    
+    const activeToken = searchParams.get("token") || token || localStorage.getItem("authToken");
+    console.log("complete-inscription: envoi avec token =", activeToken);
+
     if (!activeToken) {
       setError("Vous devez être authentifié pour continuer");
       setLoading(false);
@@ -43,22 +40,22 @@ function CompleteInscription() {
     }
 
     try {
-      let interests = SelectedInterests;
+      const interests = selectedInterests;
       const response = await fetch("http://localhost:3000/api/auth/complete-inscription", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${activeToken}`,
         },
-        body: JSON.stringify({ username, password, interests }),
+        body: JSON.stringify({ interests }),
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Erreur lors de la mise à jour du profil");
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.message || data?.status || "Erreur lors de la mise à jour du profil");
       }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       if (data.accessToken && data.refreshToken) {
         setToken(data.accessToken, data.refreshToken);
         await fetchUserProfile();
@@ -83,18 +80,6 @@ function CompleteInscription() {
               {error && <div className="alert alert-danger" role="alert">{error}</div>}
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="aligned-name" className="form-label">Username</label>
-                  <input
-                    id="aligned-name"
-                    type="text"
-                    className="form-control"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
                   <label className="form-label d-block mb-2">Vos intérêts</label>
                   <div className="row">
                     {interestsValues.interests.map((value, index) => {
@@ -102,11 +87,11 @@ function CompleteInscription() {
                       return (
                         <div key={index} className="col-md-6 mb-2">
                           <div className="form-check">
-                            <input 
-                              type="checkbox" 
+                            <input
+                              type="checkbox"
                               className="form-check-input"
                               id={`interest-${index}`}
-                              checked={SelectedInterests.includes(value.id)}
+                              checked={selectedInterests.includes(value.id)}
                               onChange={() => handleInterests(value.id)}
                               value={value.id}
                             />
@@ -119,18 +104,7 @@ function CompleteInscription() {
                     })}
                   </div>
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="aligned-password" className="form-label">Password</label>
-                  <input
-                    id="aligned-password"
-                    type="password"
-                    className="form-control"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
+
                 <button
                   type="submit"
                   className="btn btn-primary w-100"
