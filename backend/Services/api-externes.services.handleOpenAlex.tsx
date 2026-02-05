@@ -7,7 +7,7 @@ import redisClient from "../Config/redis.conf";
 
 async function handleOpenAlex(req, res) {
     try {
-        const defaultExpiration = 3600; // 1h
+        const defaultExpiration = 3600 * 24 * 7; 
         const userJWT = req.userId;
         const user = await User.findOne({ where: { id: userJWT } });
         const userInterests = JSON.parse(user.dataValues.interests || "[]");
@@ -27,13 +27,10 @@ async function handleOpenAlex(req, res) {
             "User-Agent": "mailto:curiosity.the.social.network@gmail.com"
         };
 
-        // Pour chaque intérêt : on tente d'abord le cache
         for (const item of subfieldIds) {
             const subfieldId = item.subfield;
-            const journals = item.journals;
-            const cacheKey = `open-alex-${subfieldId}`;
+            const cacheKey = `handle-open-alex-${subfieldId}`;
 
-            // 1️⃣ Vérifier le cache
             let cachedData = null;
             try {
                 const raw = await redisClient.get(cacheKey) as string;

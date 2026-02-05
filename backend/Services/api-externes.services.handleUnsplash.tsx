@@ -1,4 +1,5 @@
-import User from "../Models/User"; // adapte le chemin selon ton projet
+import User from "../Models/User"; 
+import redisClient from "../Config/redis.conf";
 
 const handleInterestsUnsplash = (interests: string[]) => {
     const interestToQuery: { [key: string]: string } = {
@@ -34,6 +35,7 @@ export const handleUnsplash = async (req, res) => {
         const baseUrl = process.env.BASE_URL_UNSPLASH || "https://api.unsplash.com";
         const clientId = process.env.API_KEY_UNSPLASH;
         const userId = req.user?.id || req.user?.userId;
+        const defaultExpiration = 3600 * 24 * 30; 
 
         if (!userId) {
             return res.status(401).json({ status: "Failed", message: "Utilisateur non authentifié" });
@@ -45,7 +47,6 @@ export const handleUnsplash = async (req, res) => {
             return res.status(404).json({ status: "Failed", message: "Utilisateur inconnu" });
         }
 
-        // Parse les intérêts
         let interests: string[] = [];
         try {
             interests = JSON.parse(userConnected.dataValues.interests || "[]");
@@ -61,32 +62,63 @@ export const handleUnsplash = async (req, res) => {
 
         const allPhotos: any[] = [];
 
-        // On fait une requête par intérêt
         for (const interest of unsplashInterests) {
-            const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&client_id=${clientId}&per_page=10`;
-            
-            const response = await fetch(url, {
-                method: "GET",
-                headers: { "Accept": "application/json" }
-            });
+            let page = 30;
+            let i = 0;
+            const photosForInterest: any[] = [];
 
-            if (!response.ok) {
-                console.warn(`Erreur Unsplash pour ${interest} : ${response.status} ${response.statusText}`);
-                continue; // passe à l'intérêt suivant
+            const cacheKey = `handle-unsplash-${interest}`;
+            let cachedData = null;
+            const raw = await redisClient.get(cacheKey) as string;
+
+            if (raw) {
+                cachedData = JSON.parse(raw);
+                allPhotos.push(...cachedData.photos);
+                console.log("allPhotos ", allPhotos);
+            } else {
+
+                const perPage = 20;
+                const totalPages = 2;
+
+                for (let i = 0; i < totalPages; i++) {
+
+                    const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&client_id=${clientId}&per_page=${perPage}&page=${i+1}`;
+                    
+                    const response = await fetch(url, {
+                        method: "GET",
+                        headers: { "Accept": "application/json" }
+                    });
+
+                    if (!response.ok) {
+                        console.warn(`Erreur Unsplash pour ${interest} : ${response.status} ${response.statusText}`);
+                        continue; 
+                    }
+
+                    const data = await response.json();
+                    console.log("data ", data);
+                    const photos = data.results.map(photo => ({
+                        id: photo.id,
+                        url: photo.urls.regular,
+                        thumb: photo.urls.thumb,
+                        description: photo.alt_description,
+                        photographer: photo.user.name,
+                        photographerLink: photo.user.links.html,
+                        downloadLink: photo.links.download
+                    }));
+                    photosForInterest.push(...photos);
+                }
+                await redisClient.setEx(
+                        cacheKey,
+                        defaultExpiration,
+                        JSON.stringify({
+                            interest,
+                            totalResults: photosForInterest.length,
+                            photos: photosForInterest
+                        })
+                    );
+                allPhotos.push(...photosForInterest);
+                
             }
-
-            const data = await response.json();
-            const photos = data.results.map(photo => ({
-                id: photo.id,
-                url: photo.urls.regular,
-                thumb: photo.urls.thumb,
-                description: photo.alt_description,
-                photographer: photo.user.name,
-                photographerLink: photo.user.links.html,
-                downloadLink: photo.links.download
-            }));
-
-            allPhotos.push(...photos);
         }
 
         return res.json({ status: "Success", photos: allPhotos });

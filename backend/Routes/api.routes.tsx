@@ -5,8 +5,8 @@ import handleUnsplash from "../Services/api-externes.services.handleUnsplash";
 import { authentificatedUser } from '../Middlewares/user.middlewares';
 const router = Router();
 
-// arxiv me sert pour des données techniques - a utiliser peu
-router.get('/generalInfos/' ,authentificatedUser, handleOpenAlex);
-// router.get('/generalInfos/news/', authentificatedUser, handleNewsmech);
+router.get('/images/', authentificatedUser, handleUnsplash);
+router.get('/news/', authentificatedUser, handleNewsmech);
+router.get('/articles/', authentificatedUser, handleOpenAlex);
 
 export default router;

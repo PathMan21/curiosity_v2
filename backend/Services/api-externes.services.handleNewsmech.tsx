@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import interestsData from '../Assets/interests.json';
 import { User } from "../Models";
+import redisClient from "../Config/redis.conf";
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -9,6 +11,8 @@ async function handleNewsmech(req, res) {
         const baseurl = process.env.BASE_URL_NEWSMECH;
         const apiKey = process.env.API_KEY_NEWSMECH;
         const userJWT = req.user.userId;
+        const defaultExpiration = 3600 * 24 * 2; 
+
 
         const user = await User.findOne({ where: { id: userJWT } });
         if (!user) {
@@ -17,8 +21,9 @@ async function handleNewsmech(req, res) {
                 message: "Utilisateur non trouvé"
             });
         }
+        console.log(JSON.parse(user.dataValues.interests));
 
-        let userInterests = JSON.parse(user.interests);
+        let userInterests = JSON.parse(user.dataValues.interests);
 
         let newsmechCategories = mapInterestsToNewsMech(userInterests);
 
@@ -34,19 +39,39 @@ async function handleNewsmech(req, res) {
 
         for (const category of shuffledCategories) {
             await sleep(5000);
+            const cacheKey = `handle-newsmech-${category}`;
+            let cachedData = null;
+            try {
+                const raw = await redisClient.get(cacheKey);
+                if (raw && typeof raw === "string" && raw.trim().length > 0) {
+                    cachedData = JSON.parse(raw);
+                } else {
+                    console.log(`ℹ️ Aucune donnée trouvée dans Redis pour ${cacheKey}`);
+                }
+            } catch (err) {
+                console.warn(`⚠️ Erreur lecture/parsing Redis (${cacheKey}):`, err.message);
+            }
 
-            let urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=5&category=${category}`;
+            if (cachedData && cachedData.articles && cachedData.articles.length > 0) {
+                console.log("Données trouvées dans :", cacheKey);
+                filteredData.push(...cachedData.articles);
+            } else {
 
-            const response = await fetch(urlNews, {
-                method: "GET",
-                headers: { "Accept": "application/json" }
-            });
+            const urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=300&category=${category}`;
 
-            if (response.ok) {
-                const data = await response.json();
+            try {
+                    const response = await fetch(urlNews, {
+                        method: "GET",
+                        headers: { "Accept": "application/json" }
+                    });
 
-                filteredData = filteredData.concat(
-                    data.data.map(article => ({
+                    if (!response.ok) {
+                        console.error(`❌ Catégorie ${category} - erreur ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    const categoryArticles = data.data.map(article => ({
                         title: article.title,
                         description: article.description || article.excerpt,
                         language: article.language,
@@ -56,20 +81,32 @@ async function handleNewsmech(req, res) {
                         author: article.author,
                         type: "article",
                         url: article.link,
-                    }))
-                );
+                    }));
 
-            } else {
-                console.error(`Catégorie ${category} error status => '${response.status}'`);
+                    filteredData.push(...categoryArticles);
+
+                    await redisClient.setEx(
+                        cacheKey,
+                        defaultExpiration,
+                        JSON.stringify({
+                            category,
+                            totalResults: categoryArticles.length,
+                            articles: categoryArticles
+                        })
+                    );
+
+                    console.log(`💾 Mise en cache réussie pour ${cacheKey} (${categoryArticles.length} articles)`);
+            } catch (err) {
+                console.error(`⚠️ Erreur pour ${category}:`, err.message);
             }
         }
 
-        const filterLanguage = filteredData.filter(article => article.language === "en");
+        }
 
         return res.json({
             status: "Success",
             categories: shuffledCategories,
-            articles: filterLanguage,
+            articles: filteredData,
         });
 
     } catch (error) {
