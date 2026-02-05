@@ -9,7 +9,6 @@ const handleOAuthRegister = async () => {
 
     const data = await response.json();
 
-    console.log("data " + JSON.stringify(data.url));
     
     window.location.href = data.url;
     
@@ -42,11 +41,9 @@ function Register() {
 
   );        
       if (response.ok) {
-        console.log(response);
         btn.innerHTML = "Valider";
       }
     const data = await response.json();
-    console.log(data);
   };
 
 

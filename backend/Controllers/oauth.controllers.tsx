@@ -23,7 +23,6 @@ const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuth
 &scope=${encodeURIComponent(scopes)}`;
 
 const generateTokens = (userId: number) => {
-  console.log("generate toke, récupère t il l'id user ? ", userId);
   const accessToken = jwt.sign(
     { userId },
     process.env.ACCESS_TOKEN_SECRET,
@@ -93,10 +92,8 @@ const oauthToken = async (req, res) => {
     let newUser;
     let existingUser = await User.findOne({ where: { email } }) as User | null;
     if (existingUser) {
-        console.log("utilisateur existant : " + email);
         return res.status(418).send("Utilisateur déjà existant : " + email);
     } else {
-      console.log("création user :");
 
       newUser = await User.create({
         username: name,
@@ -107,10 +104,7 @@ const oauthToken = async (req, res) => {
       });
       
 
-    console.log("Nouvel utilisateur créé :", newUser.toJSON());
-
 try {
-    console.log("existing user : ", newUser);
     const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } = generateTokens(newUser.id);
 
     await newUser.update({ jwtRefreshToken });
@@ -133,9 +127,7 @@ try {
 
 const updateProfile = async (req, res) => {
  const { interests } = req.body;
-  console.log("update : ", req.user);
   let selectedinterests = JSON.stringify(interests);
-  console.log("interests ", selectedinterests);
 
   const userId = req.user?.userId || req.userId;
 
@@ -150,10 +142,8 @@ const updateProfile = async (req, res) => {
   }
   await user.update({interests: selectedinterests, isTemporary: false});
 
-  console.log(user);
   try {
     const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
-    console.log(accessToken);
     await user.update({ refreshToken });
 
     try {

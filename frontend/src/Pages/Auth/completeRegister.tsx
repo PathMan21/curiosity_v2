@@ -30,7 +30,6 @@ function CompleteInscription() {
     setLoading(true);
 
     const activeToken = searchParams.get("token") || token || localStorage.getItem("authToken");
-    console.log("complete-inscription: envoi avec token =", activeToken);
 
     if (!activeToken) {
       setError("Vous devez être authentifié pour continuer");

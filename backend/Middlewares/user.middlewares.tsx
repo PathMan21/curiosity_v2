@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { stringify } from "querystring";
 
 const validateUser = (req, res, next) => {
-    console.log(req.body);
     const { username, email, interests, password } = req.body;
     
     const emailValidate = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gim;
@@ -31,7 +30,6 @@ const authentificatedUser = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
   const token = authHeader && authHeader.split(" ")[1];
-    console.log(token);
   if (!token || token == undefined) {
     return res.status(401).json({ message: "Token manquant" });
   }

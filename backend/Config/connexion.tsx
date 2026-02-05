@@ -6,11 +6,8 @@ import "../Models/index";
 
 const connectDB = async () => {
   try {
-    await sequelizeDb.authenticate();
-    console.log("✅ Sequelize & mariadb fonctionnel");
-    
+    await sequelizeDb.authenticate();    
     await sequelizeDb.sync({ alter: true });
-    console.log("✅ Sequelize a synchronisé les tables");
   } catch (err) {
     console.error("❌ Erreur connection/sync :", err);
     throw err;

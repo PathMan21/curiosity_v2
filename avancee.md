@@ -505,3 +505,33 @@ Etant données que je suis sur reddis et que ça fonctionne sur linux / ubuntu i
 **---------------------------------- 01/02 ----------------------------------**
 
 -> DOCKER FONCTIONNE
+
+**---------------------------------- 05/02 ----------------------------------**
+
+Depuis quelque jours j'étais occupé a essayé de comprendre comment fonctionne redis - avec docker
+
+-> D'abord j'ai créé un container redis, car il fonctionne sur linux originellement
+donc le mettre sur docker aide a être dans ce type d'environnement
+-> Je suis actuellement sur la connexions des données api à redis
+
+Mes bugs principaux étaient que le dns interne de docker ne se connectaient par à celui du backend
+j'ai appris que docker mappais naturellement les services si on décrivait le nom
+
+J'ai rajouté un réseau privé : "appnet" 
+dans networks qui est parfait pour connecter redis et le backend, ils ont un réseaux privés ou ils peuvent se connecter
+
+et ça fonctionne
+
+-> Maintenant il faut que je fasse un cache pour open alex qui dure 30 jours, avec suppression par "moins utilisés",
+et qui ressortes quand on en a besoin X
+
+**ça fonctionne - le système de redis** : 
+
+-> On va faire un gigantesque appel la première fois, et ensuite on tri et on ne ressort que quelques articles
+chaque semaine lorsque les articles ont dépassés leurs intérets on les remplaces par un nouvel appel
+
+-> Le temps de refresh est magnifique
+
+**Prochaine étapes**
+
+-> Vérifier que le refresh marche bien - regarder la configuration de redis (préinstallé) pour éviter les problèmes

@@ -19,10 +19,8 @@ async function handleNewsmech(req, res) {
         }
 
         let userInterests = JSON.parse(user.interests);
-        console.log("Intérêts utilisateur : ", userInterests);
 
         let newsmechCategories = mapInterestsToNewsMech(userInterests);
-        console.log("Catégories newsmech : ", newsmechCategories);
 
         if (newsmechCategories.length === 0) {
             return res.status(404).json({
@@ -35,11 +33,9 @@ async function handleNewsmech(req, res) {
         let filteredData = [];
 
         for (const category of shuffledCategories) {
-            console.log("category ", category);
             await sleep(5000);
 
             let urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=5&category=${category}`;
-            console.log(`Requête newsmech ${category} : `, urlNews);
 
             const response = await fetch(urlNews, {
                 method: "GET",
@@ -48,9 +44,7 @@ async function handleNewsmech(req, res) {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data.data);
 
-                // Concaténer tous les articles
                 filteredData = filteredData.concat(
                     data.data.map(article => ({
                         title: article.title,
@@ -70,11 +64,8 @@ async function handleNewsmech(req, res) {
             }
         }
 
-        // Filtrer par langue après la boucle
         const filterLanguage = filteredData.filter(article => article.language === "en");
-        console.log("filtered language : ", filterLanguage);
 
-        // Retourner tous les articles concaténés
         return res.json({
             status: "Success",
             categories: shuffledCategories,
@@ -106,7 +97,6 @@ function mapInterestsToNewsMech(interestIds) {
             console.warn(`Pas de newsmech_category pour " ${interestId} "`);
             return;
         }
-        console.log(categories);
         categories.push(interest.newsmech_category);
     });
     

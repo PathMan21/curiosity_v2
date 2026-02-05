@@ -57,7 +57,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const data = await response.json();
       if (data.status === "Success") {
-        console.log(data);
         setUser(data.user);
       }
     } catch (error) {

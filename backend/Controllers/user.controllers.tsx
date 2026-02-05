@@ -9,7 +9,6 @@ import jwt from "jsonwebtoken";
 
 
 const generateTokens = (userId: number) => {
-    console.log("generate toke, récupère t il l'id user ? ", userId);
 
   const accessToken = jwt.sign(
     { userId },
@@ -22,24 +21,20 @@ const generateTokens = (userId: number) => {
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" }
   );
-  console.log("refreshToken ", refreshToken);
-  console.log("accessToken ", accessToken);
 
   return { accessToken, refreshToken };
 };
 
 const updatedProfile = async (req, res) => {
   try {
-    console.log('updatedProfile body:', req.body);
     const { username, email, interests, picture } = req.body;
-    const userId = req.user.userId; // Récupérer l'ID du token
+    const userId = req.user.userId; 
 
     const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ status: "Failed", message: "Utilisateur non trouvé" });
     }
 
-    // Construire un objet d'update avec uniquement les champs présents
     const updateData: any = {};
     if (typeof username !== 'undefined') updateData.username = username;
     if (typeof email !== 'undefined') updateData.email = email;
@@ -49,12 +44,10 @@ const updatedProfile = async (req, res) => {
     // Appliquer l'update
     await user.update(updateData);
 
-    console.log("Utilisateur mis à jour:", user.toJSON());
 
     const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
     await user.update({ refreshToken });
 
-    // Retourner les interests sous forme d'array si possible
     let returnedInterests: any = [];
     try {
       returnedInterests = user.dataValues.interests ? JSON.parse(user.dataValues.interests) : [];
@@ -102,16 +95,9 @@ const createUser = async (req, res) => {
       interests,
       verified: false,
     });
-    console.log("createUser: newUser.toJSON():", newUser.toJSON());
 
     let createdId: number | null;
     createdId = newUser.get?.('id') ?? newUser.id ?? newUser.get?.('userId') ?? null;
-
-    console.log("createUser: Vérification des IDs générés:", {
-      id: newUser.id,
-      getId: newUser.get?.('id'),
-      getUserId: newUser.get?.('userId')
-    });
 
     if (!createdId) {
       console.error("createUser: id utilisateur manquant pour l'enregistrement:", newUser.toJSON());
@@ -259,7 +245,6 @@ const getCurrentUser = async (req, res) => {
     const user = await User.findByPk(userId, {
       attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary']
     });
-    console.log("dans get currentUser : ", user);
 
     if (!user) {
       return res.status(404).json({

@@ -14,7 +14,6 @@ function TokenLoader() {
     if (urlToken) {
       setToken(urlToken, urlRefreshToken || undefined);
       fetchUserProfile().then(() => {
-        console.log("est ce que je récupère bien mon token ", urlToken);
         navigate("/complete-inscription", { replace: true });
       }).catch((error) => {
         navigate("/complete-inscription", { replace: true });

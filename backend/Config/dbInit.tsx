@@ -2,7 +2,6 @@ import { configDotenv } from "dotenv";
 import path from "path";
 import { Sequelize } from "sequelize";
 
-// Charger le .env depuis le dossier Config local (évite de remonter d'un niveau qui casse le chemin en Docker)
 configDotenv({ path: path.resolve(process.cwd(), "Config/.env") });
 
 const sequelizeDb = new Sequelize(
@@ -27,7 +26,6 @@ const sequelizeDb = new Sequelize(
 );
 
 
-console.log("sequelize database : " + process.env.DB_NAME);
 
 if (!process.env.DB_NAME || !process.env.DB_USER) {
   console.warn("⚠️ Variables DB non chargées — vérifie le chemin vers Config/.env et les noms d'environnement");

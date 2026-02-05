@@ -12,7 +12,6 @@ import jwt from "jsonwebtoken";
 
 const verifyUser = async (req, res) => {
   try {
-    console.log("verify access")
     let { userId, uniqueString } = req.params;
 
     const result = await UserVerifications.findOne({ 
@@ -68,7 +67,6 @@ const verifyUser = async (req, res) => {
 
 const verifiedPage = async (req, res) => {
   const __filename = fileURLToPath(import.meta.url);
-  console.log("fonctionne");
   res.sendFile(path.join(dirname(__filename), "../Assets/Page/VerifyPage.html"));
 };
 
@@ -83,7 +81,6 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     const currentUrl = `http://localhost:3000/`;
     const uniqueString = uuidv4() + id;
     
-    console.log("Token généré:", uniqueString, "pour userId:", id);
 
     const options = {
       from: process.env.AUTH_MAIL,
@@ -111,9 +108,7 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     const saltRounds = 10;
     const hasheduniqueString = await bcrypt.hash(uniqueString, saltRounds);
     
-    console.log("Token haché:", hasheduniqueString);
 
-    // S'assurer que userId est un nombre (coercition si nécessaire)
     const userIdForDb = typeof id === "string" ? parseInt(id, 10) : id;
     if (Number.isNaN(userIdForDb)) {
       console.error("userId invalide pour UserVerifications.create:", id);

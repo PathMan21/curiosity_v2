@@ -18,6 +18,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.9.6",
+    "redis-server": "^1.2.2",
+        "redis": "^5.10.0",
+
     "router": "^2.2.0",
     "sequelize": "^6.37.7",
     "vite": "^5.0.0",

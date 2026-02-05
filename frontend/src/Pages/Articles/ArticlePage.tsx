@@ -27,7 +27,6 @@ function ArticlePage(props) {
         }
 
         const data = await response.json();
-        console.log("Articles reçus : ", data);
 
         if (data.articles && Array.isArray(data.articles)) {
           setArticles(data.articles);

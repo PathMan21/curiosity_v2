@@ -63,7 +63,6 @@ function ProfileSettings() {
       }
 
       const data = await response.json();
-      console.log("Réponse mise à jour:", data);
 
       if (data.status === "Success") {
         updateProfile(data.accessToken, data.refreshToken);
