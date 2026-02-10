@@ -57,7 +57,7 @@ async function handleNewsmech(req, res) {
                 filteredData.push(...cachedData.articles);
             } else {
 
-            const urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=300&category=${category}`;
+            const urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=100&category=${category}`;
 
             try {
                     const response = await fetch(urlNews, {

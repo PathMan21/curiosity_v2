@@ -10,6 +10,8 @@ import { NonProtectedRoute, AdminProtectedRoute, SimpleProtectedRoute } from "./
 import { AuthProvider } from "./Context/AuthContext";
 import Profile from "./Pages/Profile/ProfilePage";
 import ProfileSettings from "./Pages/Profile/ProfileSettings";
+import ProfileFavorites from "./Pages/Profile/ProfileFavorites";
+
 import ArticlePage from "./Pages/Articles/ArticlePage";
 import { useAutoRefreshToken } from "./Hooks/useAutoRefreshToken";
 
@@ -38,6 +40,7 @@ function AppContent() {
           <Route path="/Home" element={<ArticlePage />} />
           <Route path="/Profile" element={<Profile />} />
           <Route path="/Profile/settings" element={<ProfileSettings />} />
+          <Route path="/Profile/Favorites" element={<ProfileFavorites />} />
           
         </Route>
       </Routes>

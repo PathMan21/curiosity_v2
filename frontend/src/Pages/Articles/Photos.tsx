@@ -18,9 +18,8 @@ function Photos({ title, date, url, description, photographer, photographerUrl }
   };
 
   return (
-    <article className="mb-4 p-4 border rounded-2 bg-white shadow-sm">
+    <article>
       <div className="row align-items-start">
-        {/* Colonne image */}
         <div className="col-md-4 mb-3 mb-md-0 text-center">
           {url && (
             <img
@@ -32,7 +31,6 @@ function Photos({ title, date, url, description, photographer, photographerUrl }
           )}
         </div>
 
-        {/* Colonne texte */}
         <div className="col-md-8">
           <h5 className="mb-2">
             <strong>{title}</strong>

@@ -535,3 +535,15 @@ chaque semaine lorsque les articles ont dépassés leurs intérets on les rempla
 **Prochaine étapes**
 
 -> Vérifier que le refresh marche bien - regarder la configuration de redis (préinstallé) pour éviter les problèmes
+
+**----------------------------------06-02----------------------------------**
+
+liens utile pour la conceptions instagram
+https://read.learnyard.com/high-level-design/hld-instagram-system-design/#:~:text=In%20reality%2C%20Instagram%20uses%20PostgresSQL,built%20a%20custom%20sharding%20solution.
+
+-> Pour plus tard : un load balancer - elasticsearch - docker swarm
+-> Rajout de rabbit mq, pour la livraison petit a petit
+
+-> Aujourd'hui, je rajoute une fonctionnalité "favorite" qui a sa table, quand un utilisateur ajoutes en favoris ses articles 
+il le pousse dans cette table avec user id - article id, qui est rappelons le dans le cache pendant 30 jours
+Si le cache se supprime alors que l'utilisateur veux y réaccéder, je refetch

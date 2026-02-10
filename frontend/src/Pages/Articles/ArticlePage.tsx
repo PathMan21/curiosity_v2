@@ -38,7 +38,7 @@ function ArticlePage(props) {
         const data = await response.json();
 
         if (data.articles && Array.isArray(data.articles)) {
-                              console.log("openalex trouvées");
+                              console.log("openalex trouvées ", data.articles);
 
           return data.articles;
 
@@ -50,7 +50,6 @@ function ArticlePage(props) {
         setError(err.message);
 
       } finally {
-        setLoading(false);
       }
     };
   const fetchImages = async () => {
@@ -68,6 +67,7 @@ function ArticlePage(props) {
         const data = await response.json();
         console.log("data : ", data);
         if (data.photos && Array.isArray(data.photos)) {
+          console.log("image ressortie ", data.photos);
           return data.photos;
         } else {
           throw new Error("Format de réponse invalide");
@@ -78,7 +78,6 @@ function ArticlePage(props) {
        
       } finally {
 
-        setLoading(false);
       }};
   const fetchNews = async () => {
      try {
@@ -106,18 +105,24 @@ function ArticlePage(props) {
         setError(err.message);
 
       } finally {
-        setLoading(false);
       }}
 
   const fetchAll = async () => {
     let shuffled = [];
-    const articlesData = (await fetchArticles())?.map(a => ({ ...a, type: "article" })) || [];
-    const newsData = (await fetchNews())?.map(n => ({ ...n, type: "news" })) || [];
-    const photosData = (await fetchImages())?.map(p => ({ ...p, type: "photo" })) || [];
+    const [articlesData, newsData, photosData] = await Promise.all([
+      
+      fetchArticles(),
+      fetchNews(),
+            fetchImages(),
+
+    ]);
+
 
     if (articlesData && newsData && photosData) {
+      
+        setLoading(false);
       shuffled = shuffleArray([...articlesData, ...newsData, ...photosData]);
-      console.log(shuffled);
+      console.log("data taken : ", shuffled);
       setAll(shuffled);
 
     }
@@ -160,10 +165,13 @@ function shuffleArray(data) {
           <div className="col-12">
             <div className="row">
 {all.map((item, idx) => {
-  if (item.type === "article" || item.type === "news") {
+switch (item.type) {
+  case "article":
+  case "news":
     return (
       <Article
         key={`article-${idx}`}
+        id={idx}
         title={item.title}
         date={item.published || item.date || item.publishedAt}
         concepts={item.concepts || item.category}
@@ -173,10 +181,12 @@ function shuffleArray(data) {
         url={item.link || item.url}
       />
     );
-  } else if (item.type === "photo") {
+
+  case "photo":
     return (
       <Photos
         key={`photo-${idx}`}
+        id={idx}
         title={item.title}
         date={item.published}
         url={item.url}
@@ -185,9 +195,11 @@ function shuffleArray(data) {
         photographerUrl={item.photographerLink}
       />
     );
-  } else {
+
+  default:
     return null;
-  }
+}
+
 })}
 
                   </div>

@@ -47,7 +47,7 @@ async function handleOpenAlex(req, res) {
                 continue;
             } else {
                     const maxPages = 10; 
-                    const perPage = 50;
+                    const perPage = 10;
                         const allFetched = [];
 
                     console.log(`🔍 Aucun cache trouvé pour ${subfieldId} - Appel OpenAlex énorme`);

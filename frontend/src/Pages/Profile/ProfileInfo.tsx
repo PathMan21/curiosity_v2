@@ -37,7 +37,9 @@ function ProfileInfo(props) {
                 >
                   Paramètres
                 </a>
-                <a href="#" className="btn btn-outline-secondary">
+                <a 
+                href="/Profile/Favorites"
+                className="btn btn-outline-secondary">
                   Favoris
                 </a>
               </div>

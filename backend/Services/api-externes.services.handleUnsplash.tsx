@@ -77,13 +77,13 @@ export const handleUnsplash = async (req, res) => {
                 console.log("allPhotos ", allPhotos);
             } else {
 
-                const perPage = 20;
-                const totalPages = 2;
+                const perPage = 2;
+                const totalPages = 6;
 
                 for (let i = 0; i < totalPages; i++) {
 
                     const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&client_id=${clientId}&per_page=${perPage}&page=${i+1}`;
-                    
+                    console.log(url);
                     const response = await fetch(url, {
                         method: "GET",
                         headers: { "Accept": "application/json" }
