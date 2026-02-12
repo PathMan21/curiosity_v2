@@ -7,3 +7,7 @@
 *RAPPEL : BACKEND*
 
 `npm run dev`
+
+*Maintenant avec docker*
+
+`docker compose up --build`

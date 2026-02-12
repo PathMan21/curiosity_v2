@@ -547,3 +547,16 @@ https://read.learnyard.com/high-level-design/hld-instagram-system-design/#:~:tex
 -> Aujourd'hui, je rajoute une fonctionnalité "favorite" qui a sa table, quand un utilisateur ajoutes en favoris ses articles 
 il le pousse dans cette table avec user id - article id, qui est rappelons le dans le cache pendant 30 jours
 Si le cache se supprime alors que l'utilisateur veux y réaccéder, je refetch
+
+
+**----------------------------------10-02----------------------------------**
+
+-> Bug sur l'authentification - mots de passe a mettre quand on s'inscris avec google
+-> Faire la gestion du cache
+-> Pourquoi les images ne ressortent pas ?
+
+**----------------------------------12-02----------------------------------**
+
+-> Bug sur l'authentification - mots de passe a mettre quand on s'inscris avec google
+-> Faire la gestion du cache
+-> Pourquoi les images ne ressortent pas ?

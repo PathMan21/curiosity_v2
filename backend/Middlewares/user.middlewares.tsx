@@ -3,6 +3,25 @@
 import jwt from "jsonwebtoken";
 import { stringify } from "querystring";
 
+const validateUserOauth = (req, res, next) => {
+    const { username, interests, password } = req.body;
+
+    console.log("password ", password);
+    
+    const pwdValidate = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const usernameValidate = /^[a-zA-Z0-9 ]*$/;
+
+    if (!password || pwdValidate.test(password) == false) {
+        return res.status(400).json({ message: "mot de passe invalide" });
+    }
+    if (!username || usernameValidate.test(username) == false) {
+        return res.status(400).json({ message: "username invalide" });
+    }
+
+    next();
+
+};
+
 const validateUser = (req, res, next) => {
     const { username, email, interests, password } = req.body;
     
@@ -23,7 +42,6 @@ const validateUser = (req, res, next) => {
     next();
 
 };
-
 
 const authentificatedUser = async (req, res, next) => {
 
@@ -47,4 +65,4 @@ const authentificatedUser = async (req, res, next) => {
   });
 
 }
-export { validateUser, authentificatedUser };
+export { validateUser, authentificatedUser, validateUserOauth };

@@ -126,8 +126,10 @@ try {
 
 
 const updateProfile = async (req, res) => {
- const { interests } = req.body;
+ const { username, password, interests } = req.body;
   let selectedinterests = JSON.stringify(interests);
+
+  console.log("update profile pwd : ", password);
 
   const userId = req.user?.userId || req.userId;
 
@@ -140,7 +142,14 @@ const updateProfile = async (req, res) => {
   if (!user) {
     return res.status(404).json({ error: "Utilisateur introuvable" });
   }
-  await user.update({interests: selectedinterests, isTemporary: false});
+    const updateData: any = {};
+    if (typeof username !== 'undefined') updateData.username = username;
+    // if (typeof picture !== 'undefined') updateData.picture = picture;
+    if (typeof interests !== 'undefined') updateData.interests = JSON.stringify(interests);
+
+    // Appliquer l'update
+    await user.update(updateData);
+
 
   try {
     const { accessToken, refreshToken } = generateTokens(user.dataValues.id);

@@ -77,12 +77,8 @@ export const handleUnsplash = async (req, res) => {
                 console.log("allPhotos ", allPhotos);
             } else {
 
-                const perPage = 2;
-                const totalPages = 6;
 
-                for (let i = 0; i < totalPages; i++) {
-
-                    const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&client_id=${clientId}&per_page=${perPage}&page=${i+1}`;
+                    const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&count=100&client_id=${clientId}`;
                     console.log(url);
                     const response = await fetch(url, {
                         method: "GET",
@@ -103,7 +99,8 @@ export const handleUnsplash = async (req, res) => {
                         description: photo.alt_description,
                         photographer: photo.user.name,
                         photographerLink: photo.user.links.html,
-                        downloadLink: photo.links.download
+                        downloadLink: photo.links.download,
+                        type: "photo"
                     }));
                     photosForInterest.push(...photos);
                 }
@@ -118,7 +115,7 @@ export const handleUnsplash = async (req, res) => {
                     );
                 allPhotos.push(...photosForInterest);
                 
-            }
+            
         }
 
         return res.json({ status: "Success", photos: allPhotos });

@@ -4,6 +4,9 @@ import { useAuth } from "../../Context/AuthContext";
 import interestsValues from "../../Assets/interests.json";
 
 function CompleteInscription() {
+    const { user } = useAuth();
+    const [username, setUsername] = useState(user.username);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { token, setToken, fetchUserProfile } = useAuth();
@@ -40,13 +43,13 @@ function CompleteInscription() {
 
     try {
       const interests = selectedInterests;
-      const response = await fetch("http://localhost:3000/api/auth/complete-inscription", {
+      const response = await fetch("http://localhost:3000/api/auth/complete-inscription-oauth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${activeToken}`,
         },
-        body: JSON.stringify({ interests }),
+        body: JSON.stringify({ username, password,  interests }),
       });
 
       if (!response.ok) {
@@ -78,6 +81,18 @@ function CompleteInscription() {
               <h1 className="text-center mb-4">Heureux de vous connaitre !</h1>
               {error && <div className="alert alert-danger" role="alert">{error}</div>}
               <form onSubmit={handleSubmit}>
+               <div className="mb-3">
+                  <label htmlFor="aligned-name" className="form-label">Username</label>
+                  <input
+                    id="aligned-name"
+                    type="text"
+                    className="form-control"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
                 <div className="mb-3">
                   <label className="form-label d-block mb-2">Vos intérêts</label>
                   <div className="row">
@@ -103,7 +118,18 @@ function CompleteInscription() {
                     })}
                   </div>
                 </div>
-
+                <div className="mb-3">
+                  <label htmlFor="aligned-password" className="form-label">Password</label>
+                  <input
+                    id="aligned-password"
+                    type="password"
+                    className="form-control"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
                 <button
                   type="submit"
                   className="btn btn-primary w-100"
