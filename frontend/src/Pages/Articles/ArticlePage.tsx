@@ -64,7 +64,7 @@ function ArticlePage(props) {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json(); 
       console.log("data : ", data);
       if (data.photos && Array.isArray(data.photos)) {
         console.log("image ressortie ", data.photos);

@@ -43,13 +43,14 @@ export const handleUnsplash = async (req, res) => {
 
         const userConnected = await User.findByPk(userId);
 
+
         if (!userConnected) {
             return res.status(404).json({ status: "Failed", message: "Utilisateur inconnu" });
         }
 
         let interests: string[] = [];
         try {
-            interests = JSON.parse(userConnected.interests || "[]");
+            interests = JSON.parse(userConnected.interests);
         } catch (e) {
             console.warn("Impossible de parser les intérêts :", e);
         }
@@ -60,6 +61,7 @@ export const handleUnsplash = async (req, res) => {
 
         const unsplashInterests = handleInterestsUnsplash(interests);
 
+$
         const allPhotos: any[] = [];
 
         for (const interest of unsplashInterests) {
