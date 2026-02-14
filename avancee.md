@@ -555,8 +555,8 @@ Si le cache se supprime alors que l'utilisateur veux y réaccéder, je refetch
 -> Faire la gestion du cache
 -> Pourquoi les images ne ressortent pas ?
 
-**----------------------------------12-02----------------------------------**
+**----------------------------------14-02----------------------------------**
 
--> Bug sur l'authentification - mots de passe a mettre quand on s'inscris avec google
+-> Bug sur l'authentification - mots de passe a mettre quand on s'inscris avec google X
 -> Faire la gestion du cache
--> Pourquoi les images ne ressortent pas ?
+-> Pourquoi les images ne ressortent pas ? X

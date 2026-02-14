@@ -29,6 +29,7 @@ function ProfileSettings() {
   const [picture, setPicture] = useState(user?.picture || null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -102,105 +103,91 @@ function ProfileSettings() {
 
   return (
     <>
-      <NavbarSite></NavbarSite>
-      <div className="bg-light min-vh-100 py-5">
+      <NavbarSite />
+
+      <div className="container py-5">
         <form onSubmit={handlesubmit}>
-          <div className="container mt-4">
-            <div className="row">
-              <div className="col-md-8 mx-auto">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <h3 className="card-title mb-4">Paramètres de profil</h3>
-
-                    {error && (
-                      <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        {error}
-                        <button type="button" className="btn-close" onClick={() => setError("")}></button>
-                      </div>
-                    )}
-
-                    {success && (
-                      <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        {success}
-                        <button type="button" className="btn-close" onClick={() => setSuccess("")}></button>
-                      </div>
-                    )}
-
-
-
-
-                    <div className="mb-3">
-                      <label htmlFor="username" className="form-label">
-                        Username
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="username"
-                        placeholder={user.username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        value={username}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <h6 className="form-label">Sélectionnez vos intérêts</h6>
-
-                      {interestsData.categories.map((category) => {
-
-                        const categoryInterests = interestsData.interests.filter(
-                          interest => interest.category === category.id
-                        );
-
-                        return (
-                          <div key={category.id} className="mb-4">
-                            <h6 className="text-primary mb-3">
-                              <span className="me-2">{category.icon}</span>
-                              {category.label}
-                            </h6>
-
-                            <div className="row">
-                              {categoryInterests.map((interest) => (
-                                <div key={interest.id} className="col-md-6 mb-2">
-                                  <div className="form-check">
-                                    <input
-                                      type="checkbox"
-                                      className="form-check-input"
-                                      id={`interest-${interest.id}`}
-                                      checked={interests.includes(interest.id)}
-                                      onChange={() => handleInterests(interest.id)}
-                                      value={interest.id}
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor={`interest-${interest.id}`}
-                                      title={interest.description}
-                                    >
-                                      {interest.label}
-                                    </label>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <button type="submit" className="btn btn-primary w-100">
-                      Valider les modifications
-                    </button>
-
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Username */}
+          <div className="mb-3">
+            <label htmlFor="username" className="form-label">Username</label>
+            <input
+              type="text"
+              id="username"
+              className="form-control"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+            />
           </div>
+
+          {/* Bouton pour ouvrir la modal des intérêts */}
+          <button
+            type="button"
+            className="btn btn-primary mb-3"
+            onClick={() => setShowModal(true)}
+          >
+            Sélectionner vos intérêts
+          </button>
+
+          {/* Submit général */}
+          <button type="submit" className="btn btn-success">Valider</button>
         </form>
       </div>
 
-      <FooterSite></FooterSite>
+      {/* Modal uniquement pour les intérêts */}
+      {showModal && (
+        <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Sélection des intérêts</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+              </div>
+
+              <div className="modal-body">
+                {interestsData.categories.map(category => {
+                  const categoryInterests = interestsData.interests.filter(
+                    i => i.category === category.id
+                  );
+                  return (
+                    <div key={category.id} className="mb-3">
+                      <h6 className="text-primary">{category.label}</h6>
+                      <div className="row">
+                        {categoryInterests.map(interest => (
+                          <div key={interest.id} className="col-6 mb-2">
+                            <div className="form-check">
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                id={`interest-${interest.id}`}
+                                checked={interests.includes(interest.id)}
+                                onChange={() => handleInterests(interest.id)}
+                              />
+                              <label htmlFor={`interest-${interest.id}`} className="form-check-label">
+                                {interest.label}
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                  Fermer
+                </button>
+                <button type="button" className="btn btn-primary" onClick={() => setShowModal(false)}>
+                  Valider
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    <FooterSite />
     </>
   );
 }
-
 export default ProfileSettings;
