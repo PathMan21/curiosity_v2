@@ -49,7 +49,7 @@ export const handleUnsplash = async (req, res) => {
 
         let interests: string[] = [];
         try {
-            interests = JSON.parse(userConnected.dataValues.interests || "[]");
+            interests = JSON.parse(userConnected.interests || "[]");
         } catch (e) {
             console.warn("Impossible de parser les intérêts :", e);
         }

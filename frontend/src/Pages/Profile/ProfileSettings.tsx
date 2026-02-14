@@ -25,7 +25,6 @@ function ProfileSettings() {
   };
 
   const [username, setUsername] = useState(user?.username || "");
-  const [email, setEmail] = useState(user?.email || "");
   const [interests, SetSelectedInterests] = useState(parseInterests(user?.interests));
   const [picture, setPicture] = useState(user?.picture || null);
   const [error, setError] = useState("");
@@ -34,7 +33,6 @@ function ProfileSettings() {
   useEffect(() => {
     if (user) {
       setUsername(user.username);
-      setEmail(user.email);
       SetSelectedInterests(parseInterests(user.interests));
       setPicture(user.picture || null);
     }
@@ -53,7 +51,7 @@ function ProfileSettings() {
         "/users/updated-profile",
         {
           method: "POST",
-          body: JSON.stringify({ username, email, interests, picture }),
+          body: JSON.stringify({ username, interests, picture }),
         }
       );
 
@@ -128,6 +126,9 @@ function ProfileSettings() {
                       </div>
                     )}
 
+
+
+
                     <div className="mb-3">
                       <label htmlFor="username" className="form-label">
                         Username
@@ -184,19 +185,7 @@ function ProfileSettings() {
                         );
                       })}
                     </div>
-                    <div className="mb-3">
-                      <label htmlFor="email" className="form-label">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        placeholder={user.email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        value={email}
-                      />
-                    </div>
+
                     <button type="submit" className="btn btn-primary w-100">
                       Valider les modifications
                     </button>

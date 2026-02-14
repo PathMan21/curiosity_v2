@@ -45,12 +45,12 @@ const updatedProfile = async (req, res) => {
     await user.update(updateData);
 
 
-    const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
+    const { accessToken, refreshToken } = generateTokens(user.id);
     await user.update({ refreshToken });
 
     let returnedInterests: any = [];
     try {
-      returnedInterests = user.dataValues.interests ? JSON.parse(user.dataValues.interests) : [];
+      returnedInterests = user.interests ? JSON.parse(user.interests) : [];
     } catch (e) {
       returnedInterests = [];
     }
@@ -61,12 +61,12 @@ const updatedProfile = async (req, res) => {
       accessToken,
       refreshToken,
       user: {
-        id: user.dataValues.id,
-        email: user.dataValues.email,
-        username: user.dataValues.username,
-        verified: user.dataValues.verified,
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        verified: user.verified,
         interests: returnedInterests,
-        picture: user.dataValues.picture
+        picture: user.picture
       }
     });
 
@@ -147,26 +147,33 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ where: { email } }) as User | null;
-    
+    const user = await User.findOne({ where: { email } });
+
+    console.log("user => ", user);
+    const plainPassword = user.getDataValue("password"); 
+
     if (!user) {
       return res.status(401).json({ 
         status: "Failed",
-        message: "Email ou mot de passe incorrect" 
+        message: "Email incorrect" 
       });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.dataValues.password);
-    
+    console.log("pwd dans la bdd => ", plainPassword);
+
+    const passwordMatch = await bcrypt.compare(password, plainPassword);
+    bcrypt.compare(password, user.password, function(err, result) {
+    console.log("result => ", result);
+});
     if (!passwordMatch) {
       return res.status(401).json({ 
         status: "Failed",
-        message: "Email ou mot de passe incorrect" 
+        message: "mot de passe incorrect" 
       });
     }
 
     // Créer un JWT minimal
-    const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
+    const { accessToken, refreshToken } = generateTokens(user.id);
 
     // Stocker le refresh token en base de données
     await user.update({ refreshToken });
@@ -176,12 +183,12 @@ const loginUser = async (req, res) => {
       accessToken,
       refreshToken,
       user: {
-        id: user.dataValues.id,
-        email: user.dataValues.email,
-        username: user.dataValues.username,
-        verified: user.dataValues.verified,
-        interests: user.dataValues.interests,
-        picture: user.dataValues.picture
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        verified: user.verified,
+        interests: user.interests,
+        picture: user.picture
       }
     });
 
@@ -211,7 +218,7 @@ const refreshTokenHandler = async (req, res) => {
     // Vérifier que le token existe en base de données
     const user = await User.findByPk(decoded.userId);
 
-    if (!user || user.dataValues.refreshToken !== refreshToken) {
+    if (!user || user.refreshToken !== refreshToken) {
       return res.status(401).json({
         status: "Failed",
         message: "Refresh token invalide"
@@ -219,7 +226,7 @@ const refreshTokenHandler = async (req, res) => {
     }
     
     // Générer un nouveau access token minimal
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.dataValues.id);
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.id);
 
     // Mettre à jour le refresh token en base
     await user.update({ refreshToken: newRefreshToken });

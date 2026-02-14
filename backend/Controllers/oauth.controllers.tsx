@@ -90,16 +90,16 @@ const oauthToken = async (req, res) => {
 
     const { name, picture, email, email_verified } = await tokenInfoResponse.json();
     let newUser;
-    let existingUser = await User.findOne({ where: { email } }) as User | null;
+    let existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
         return res.status(418).send("Utilisateur déjà existant : " + email);
     } else {
 
       newUser = await User.create({
-        username: name,
+        username: name, 
         email,
         password: "oauth_placeholder",
-        picture,
+        picture, 
         isTemporary: true
       });
       
@@ -144,15 +144,14 @@ const updateProfile = async (req, res) => {
   }
     const updateData: any = {};
     if (typeof username !== 'undefined') updateData.username = username;
-    // if (typeof picture !== 'undefined') updateData.picture = picture;
+    if (typeof password !== 'undefined') updateData.password = password;
     if (typeof interests !== 'undefined') updateData.interests = JSON.stringify(interests);
 
-    // Appliquer l'update
     await user.update(updateData);
 
 
   try {
-    const { accessToken, refreshToken } = generateTokens(user.dataValues.id);
+    const { accessToken, refreshToken } = generateTokens(user.id);
     await user.update({ refreshToken });
 
     try {

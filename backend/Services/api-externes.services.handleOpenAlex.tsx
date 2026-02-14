@@ -10,7 +10,7 @@ async function handleOpenAlex(req, res) {
         const defaultExpiration = 3600 * 24 * 7; 
         const userJWT = req.userId;
         const user = await User.findOne({ where: { id: userJWT } });
-        const userInterests = JSON.parse(user.dataValues.interests || "[]");
+        const userInterests = JSON.parse(user.interests || "[]");
         const subfieldIds = mapInterestsToSubfields(userInterests);
 
         if (!subfieldIds || subfieldIds.length === 0) {

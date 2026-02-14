@@ -21,9 +21,9 @@ async function handleNewsmech(req, res) {
                 message: "Utilisateur non trouvé"
             });
         }
-        console.log(JSON.parse(user.dataValues.interests));
+        console.log(JSON.parse(user.interests));
 
-        let userInterests = JSON.parse(user.dataValues.interests);
+        let userInterests = JSON.parse(user.interests);
 
         let newsmechCategories = mapInterestsToNewsMech(userInterests);
 

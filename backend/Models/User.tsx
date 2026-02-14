@@ -1,94 +1,72 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelizeDb from "../Config/dbInit";
+import { Model, DataTypes, Optional } from "sequelize";
 import bcrypt from "bcrypt";
+import sequelizeDb from "../Config/dbInit";
 
-// 1️⃣ Interface des attributs
-interface UserAttributes {
-  id: number;
-  username: string;
-  password: string;
-  email: string;
-  picture?: string;
-  interests?: string; 
-  verified: boolean;
-  isTemporary: boolean;
-  refreshToken?: string;
-}
 
-interface UserCreationAttributes extends Optional<UserAttributes, "id" | "verified" | "isTemporary" | "refreshToken"> {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id: number;
-  public username!: string;
-  public password!: string;
-  public email!: string;
-  public picture?: string;
-  public interests?: string;
-  public verified!: boolean;
-  public isTemporary!: boolean;
-  public refreshToken?: string;
-}
-
-User.init(
-  {
+const User = sequelizeDb.define('User', {
     id: {
       field: "userId",
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: { isEmail: true }
+      validate: { isEmail: true },
     },
     picture: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     interests: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     verified: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
     },
     isTemporary: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
     },
     refreshToken: {
       type: DataTypes.TEXT,
-      allowNull: true
-    }
+      allowNull: true,
+    },
   },
   {
-    sequelize: sequelizeDb,
     tableName: "User",
     timestamps: false,
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password && !user.password.startsWith("$2")) {
-          user.password = await bcrypt.hash(user.password, 10);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.changed("password")) {
-          user.password = await bcrypt.hash(user.password, 10);
-        }
+  hooks: {
+  beforeCreate: async (user: any) => {
+    const pwd = user.getDataValue("password");
+    if (pwd && !pwd.startsWith("$2")) {
+      user.setDataValue("password", await bcrypt.hash(pwd, 10));
+    }
+  },
+  beforeUpdate: async (user: any) => {
+    if (user.changed("password")) {
+      const pwd = user.getDataValue("password");
+      if (pwd && !pwd.startsWith("$2")) {
+        user.setDataValue("password", await bcrypt.hash(pwd, 10));
       }
     }
+  }
+}
+
   }
 );
 
