@@ -1,14 +1,12 @@
-
-*RAPPEL : FRONT END*
+_RAPPEL : FRONT END_
 
 `npm run frontend:dev`
 
-
-*RAPPEL : BACKEND*
+_RAPPEL : BACKEND_
 
 `npm run dev`
 
-*Maintenant avec docker*
+_Maintenant avec docker_
 
 `docker compose up --build`
 

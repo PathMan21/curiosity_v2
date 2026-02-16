@@ -10,8 +10,8 @@
     "baseUrl": ".",
     "outDir": "dist",
     "rootDir": "./",
-    "jsx": "react-jsx",          
-    "jsxImportSource": "react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
   "include": ["backend/**/*", "frontend/**/*"]
 }

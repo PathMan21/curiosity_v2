@@ -1,51 +1,41 @@
-import { useState } from "react";
-
+import { useState } from 'react'
 
 const handleOAuthRegister = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/auth/google/url", {
+    const response = await fetch('http://localhost:3000/api/auth/google/url', {
       method: 'GET',
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
-    
-    window.location.href = data.url;
-    
+    window.location.href = data.url
   } catch (err) {
-    console.error('Erreur:', err);
+    console.error('Erreur:', err)
   }
-};
-
-
+}
 
 function Register() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
-  const [email, setEmail] = useState("");
-  const [interests, setInterests] = useState("");
+  const [email, setEmail] = useState('')
+  const [interests, setInterests] = useState('')
 
   const handleForm = async (e: React.FormEvent) => {
+    let btn = document.querySelector('button[type="submit"]')
+    btn.innerHTML = 'Chargement ...'
 
-    let btn = document.querySelector('button[type="submit"]');
-    btn.innerHTML = "Chargement ..."
-
-    e.preventDefault();
-    const response = await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    e.preventDefault()
+    const response = await fetch('http://localhost:3000/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password, interests }),
-
-    },
-
-  );        
-      if (response.ok) {
-        btn.innerHTML = "Valider";
-      }
-    const data = await response.json();
-  };
-
+    })
+    if (response.ok) {
+      btn.innerHTML = 'Valider'
+    }
+    const data = await response.json()
+  }
 
   return (
     <div className="container mt-5">
@@ -54,12 +44,19 @@ function Register() {
           <div className="card shadow">
             <div className="card-body p-5">
               <h1 className="text-center mb-4">Inscrivez vous</h1>
-              <p className="text-center mb-4"><a className="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="/login">
-                Ou vous connecter ?
-              </a></p>
+              <p className="text-center mb-4">
+                <a
+                  className="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                  href="/login"
+                >
+                  Ou vous connecter ?
+                </a>
+              </p>
               <form onSubmit={handleForm}>
                 <div className="mb-3">
-                  <label htmlFor="username" className="form-label">Username</label>
+                  <label htmlFor="username" className="form-label">
+                    Username
+                  </label>
                   <input
                     id="username"
                     type="text"
@@ -75,7 +72,9 @@ function Register() {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
                   <input
                     id="password"
                     type="password"
@@ -88,7 +87,9 @@ function Register() {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email Address</label>
+                  <label htmlFor="email" className="form-label">
+                    Email Address
+                  </label>
                   <input
                     id="email"
                     type="email"
@@ -100,7 +101,9 @@ function Register() {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100 mb-3">Valider</button>
+                <button type="submit" className="btn btn-primary w-100 mb-3">
+                  Valider
+                </button>
               </form>
               <button
                 className="btn btn-outline-primary w-100"
@@ -113,7 +116,7 @@ function Register() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Register;
+export default Register

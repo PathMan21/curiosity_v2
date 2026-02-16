@@ -29,7 +29,16 @@
     "start": "tsx backend/server.tsx",
     "dev:backend": "tsx watch backend/server.ts",
     "dev": "tsx watch backend/server.tsx",
+    "prepare": "husky install",
     "frontend:dev": "vite --config frontend/vite.config.ts"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "precise-commits"
+    }
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -37,6 +46,11 @@
     "@types/node": "^24.10.1",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "precise-commits": "^1.0.2",
+    "prettier": "^3.8.1",
+    "prettier-config-standard": "^7.0.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

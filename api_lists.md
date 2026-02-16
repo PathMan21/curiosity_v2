@@ -1,5 +1,5 @@
 🎮 APIs LUDIQUES / FUN
-*Contenu visuel & médias*
+_Contenu visuel & médias_
 
 Giphy - GIFs animés (quota généreux gratuit)
 Unsplash - Photos haute qualité (5000 requêtes/heure)
@@ -10,14 +10,14 @@ The Dog API / The Cat API - Photos aléatoires de chiens/chats
 PokeAPI - Toutes les données Pokémon
 Comic Vine - Base de données comics/manga
 
-*Jeux & Gaming*
+_Jeux & Gaming_
 
 RAWG - Base de données de jeux vidéo (20k requêtes/mois)
 IGDB (Twitch) - Infos jeux vidéo
 Board Game Atlas - Jeux de société
 Steam API - Données des jeux Steam (limité)
 
-*Culture & divertissement*
+_Culture & divertissement_
 
 Spotify Web API - Musique, artistes, playlists (authentification requise)
 Last.fm - Statistiques musicales
@@ -30,13 +30,13 @@ Quotable - Citations inspirantes
 JokeAPI - Blagues (safe/dark mode)
 Chuck Norris Jokes - Blagues Chuck Norris
 
-*Réseaux sociaux (usage ludique)*
+_Réseaux sociaux (usage ludique)_
 
 Reddit API - Posts, commentaires (100 req/min)
 Mastodon API - Réseau social décentralisé
 Twitch API - Streams, clips, données joueurs
 
-*Bases de données médicales:*
+_Bases de données médicales:_
 
 PubMed / NCBI E-utilities - 33M+ articles médicaux (10 req/sec gratuit)
 Europe PMC - Publications biomédicales européennes
@@ -44,7 +44,7 @@ ClinicalTrials.gov API - Essais cliniques
 FDA Drug API - Médicaments approuvés FDA
 OpenFDA - Données FDA (médicaments, dispositifs, aliments)
 
-*Biologie moléculaire:*
+_Biologie moléculaire:_
 
 UniProt - Protéines (gratuit)
 PDB (Protein Data Bank) - Structures 3D protéines
@@ -52,27 +52,27 @@ GenBank (NCBI) - Séquences génétiques
 EBI (European Bioinformatics) - Multiples bases bio
 KEGG - Voies métaboliques et génomiques
 
-*Santé publique:*
+_Santé publique:_
 
 WHO API - Données OMS
 COVID-19 APIs - Johns Hopkins, disease.sh (données pandémie)
 CDC API - Données santé publique USA
 
-*CHIMIE*
+_CHIMIE_
 
 PubChem - 110M+ composés chimiques (gratuit)
 ChemSpider - Structures chimiques
 ChEMBL - Données bioactivité médicaments
 ClassyFire - Classification chimique
 
-*Météo & climat:*
+_Météo & climat:_
 
 OpenWeatherMap - Météo mondiale (60 req/min gratuit)
 WeatherAPI - Météo et prévisions (1M req/mois gratuit)
 NOAA - Données climatiques USA
 Open-Meteo - Météo open source (gratuit illimité)
 
-*Données environnementales:*
+_Données environnementales:_
 
 NASA Earth API - Images satellite Terre
 USGS Earthquake API - Séismes en temps réel
@@ -80,41 +80,41 @@ AirVisual / IQAir - Qualité de l'air mondiale
 World Air Quality Index - Pollution de l'air
 GBIF - Biodiversité (1.8 milliard d'occurrences)
 
-*Géologie & espace:*
+_Géologie & espace:_
 
 NASA API (multiple endpoints) - Astronomie, Mars, Earth
 SpaceX API - Lancements, fusées, capsules
 Asterank - Données astéroïdes
 Solar System OpenData - Données planètes
 
-*PHYSIQUE & ASTRONOMIE*
+_PHYSIQUE & ASTRONOMIE_
 
 arXiv API - Prépublications physique/maths (gratuit illimité)
 ADS (NASA) - Articles astronomie/physique
 Open Astronomy Catalog - Supernovae, exoplanètes
 Minor Planet Center - Astéroïdes et comètes
 
-*Publications académiques:*
+_Publications académiques:_
 
 arXiv CS - Computer Science (gratuit)
 DBLP - Publications informatique
 Semantic Scholar - Articles académiques + IA (gratuit)
 OpenAlex - 250M+ publications (gratuit)
 
-*Données tech:*
+_Données tech:_
 
 GitHub API - Repos, commits, utilisateurs (5000 req/h authentifié)
 Stack Exchange API - Questions/réponses (10k req/jour)
 HackerNews API - Posts tech
 Dev.to API - Articles développeurs
 
-*MATHÉMATIQUES*
+_MATHÉMATIQUES_
 
 Wolfram Alpha API - Calculs mathématiques (2000 req/mois gratuit)
 Numbers API - Faits mathématiques amusants
 OEIS - Suites de nombres entiers
 
-*Données économiques:*
+_Données économiques:_
 
 FRED (Federal Reserve) - Données économiques USA (gratuit)
 World Bank API - Indicateurs économiques mondiaux (gratuit)
@@ -122,7 +122,7 @@ IMF API - Fonds monétaire international
 OECD API - Données OCDE
 Eurostat - Statistiques européennes
 
-*Marchés financiers:*
+_Marchés financiers:_
 
 Alpha Vantage - Actions, crypto, forex (500 req/jour gratuit)
 Yahoo Finance API (non officielle) - Données boursières
@@ -130,46 +130,46 @@ CoinGecko - Cryptomonnaies (50 req/min gratuit)
 CoinCap - Prix crypto temps réel
 Exchange Rates API - Taux de change (gratuit)
 
-*Données publiques:*
+_Données publiques:_
 
 US Census Bureau - Recensement et statistiques USA
 OpenCorporates - Données entreprises mondiales
 EDGAR (SEC) - Documents financiers entreprises USA
 
-*PSYCHOLOGIE & SCIENCES SOCIALES*
+_PSYCHOLOGIE & SCIENCES SOCIALES_
 
 SSRN API - Social Science Research Network
 OSF (Open Science Framework) - Recherche ouverte
 CrossRef - 130M+ publications académiques (gratuit)
 
-*International:*
+_International:_
 
 United Nations API - Données ONU
 data.gov - Données gouvernement USA (gratuit)
 data.gouv.fr - Données gouvernement FR (gratuit)
 European Data Portal - Données UE
 
-*Démographie:*
+_Démographie:_
 
 Population.io - Statistiques population mondiale
 REST Countries - Infos pays (gratuit)
 GeoNames - Données géographiques (gratuit)
 
-*GÉOGRAPHIE & CARTES*
+_GÉOGRAPHIE & CARTES_
 
 OpenStreetMap API - Cartographie collaborative (gratuit)
 Mapbox - Cartes et géolocalisation (50k req/mois gratuit)
 Google Maps API - Limité gratuit ($200 crédit/mois)
 IP Geolocation - Localisation par IP
 
-*Langues & linguistique*
+_Langues & linguistique_
 
 Oxford Dictionaries API - Dictionnaires (limité gratuit)
 Datamuse - Recherche de mots, rimes
 Words API - Définitions, synonymes (2500 req/jour gratuit)
 Free Dictionary API - Définitions multilingues
 
-*Histoire & culture*
+_Histoire & culture_
 
 Wikipedia API - Contenu Wikipedia (gratuit illimité)
 Wikimedia Commons API - Images historiques
@@ -178,9 +178,8 @@ Metropolitan Museum of Art API - Art
 Rijksmuseum API - Art néerlandais
 Library of Congress API - Archives historiques USA
 
-*Éducation*
+_Éducation_
 
 Khan Academy API - Vidéos éducatives (limité)
 Quizlet API - Flashcards éducatives
 edX API - Cours en ligne
-

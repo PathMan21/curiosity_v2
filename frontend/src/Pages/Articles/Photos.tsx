@@ -1,21 +1,28 @@
-function Photos({ title, date, url, description, photographer, photographerUrl }: any) {
+function Photos({
+  title,
+  date,
+  url,
+  description,
+  photographer,
+  photographerUrl,
+}: any) {
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return "";
+    if (!dateStr) return ''
     try {
       return new Date(dateStr).toLocaleDateString('fr-FR', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      });
+      })
     } catch {
-      return dateStr;
+      return dateStr
     }
-  };
+  }
 
   const truncateText = (text: string, maxLength: number = 200) => {
-    if (!text) return "";
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-  };
+    if (!text) return ''
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+  }
 
   return (
     <article>
@@ -24,9 +31,9 @@ function Photos({ title, date, url, description, photographer, photographerUrl }
           {url && (
             <img
               src={url}
-              alt={title || "Photo"}
+              alt={title || 'Photo'}
               className="img-fluid rounded-2 shadow-sm"
-              style={{ maxHeight: "250px", objectFit: "cover" }}
+              style={{ maxHeight: '250px', objectFit: 'cover' }}
             />
           )}
         </div>
@@ -40,7 +47,7 @@ function Photos({ title, date, url, description, photographer, photographerUrl }
             <span>{formatDate(date)}</span>
             {photographer && (
               <>
-                {" • "}
+                {' • '}
                 {photographerUrl ? (
                   <a
                     href={photographerUrl}
@@ -72,7 +79,7 @@ function Photos({ title, date, url, description, photographer, photographerUrl }
         </div>
       </div>
     </article>
-  );
+  )
 }
 
-export default Photos;
+export default Photos

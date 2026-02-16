@@ -1,12 +1,12 @@
-import { Model, DataTypes, Optional } from "sequelize";
-import bcrypt from "bcrypt";
-import sequelizeDb from "../Config/dbInit";
+import { Model, DataTypes, Optional } from 'sequelize'
+import bcrypt from 'bcrypt'
+import sequelizeDb from '../Config/dbInit'
 
-
-
-const User = sequelizeDb.define('User', {
+const User = sequelizeDb.define(
+  'User',
+  {
     id: {
-      field: "userId",
+      field: 'userId',
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -48,26 +48,25 @@ const User = sequelizeDb.define('User', {
     },
   },
   {
-    tableName: "User",
+    tableName: 'User',
     timestamps: false,
-  hooks: {
-  beforeCreate: async (user: any) => {
-    const pwd = user.getDataValue("password");
-    if (pwd && !pwd.startsWith("$2")) {
-      user.setDataValue("password", await bcrypt.hash(pwd, 10));
-    }
-  },
-  beforeUpdate: async (user: any) => {
-    if (user.changed("password")) {
-      const pwd = user.getDataValue("password");
-      if (pwd && !pwd.startsWith("$2")) {
-        user.setDataValue("password", await bcrypt.hash(pwd, 10));
-      }
-    }
+    hooks: {
+      beforeCreate: async (user: any) => {
+        const pwd = user.getDataValue('password')
+        if (pwd && !pwd.startsWith('$2')) {
+          user.setDataValue('password', await bcrypt.hash(pwd, 10))
+        }
+      },
+      beforeUpdate: async (user: any) => {
+        if (user.changed('password')) {
+          const pwd = user.getDataValue('password')
+          if (pwd && !pwd.startsWith('$2')) {
+            user.setDataValue('password', await bcrypt.hash(pwd, 10))
+          }
+        }
+      },
+    },
   }
-}
+)
 
-  }
-);
-
-export default User;
+export default User

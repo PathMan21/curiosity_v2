@@ -1,75 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vérification de compte</title>
-  <style>
-    body {
-      background: linear-gradient(135deg, #3a7bd5, #00d2ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: white;
-      margin: 0;
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 40px 60px;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(8px);
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 16px;
-      margin-bottom: 30px;
-    }
-
-    a {
-      display: inline-block;
-      text-decoration: none;
-      background-color: white;
-      color: #3a7bd5;
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 8px;
-      transition: background-color 0.3s;
-    }
-
-    a:hover {
-      background-color: #f0f0f0;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>✅ Vérification réussie !</h1>
-    <p>Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant continuer votre inscription.</p>
-    <a href="#" id="continueLink" onclick="handleSubmit()">Continuer votre inscription</a>
-  </div>
-
-  <script>
-    function handleSubmit() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
-      
-      const continueLink = document.getElementById('continueLink');
-      if (token) {
-        continueLink.href = `http://localhost:5173/load-token?token=${token}`;
-      } else {
-        continueLink.href = 'http://localhost:5173/login';
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vérification de compte</title>
+    <style>
+      body {
+        background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+        margin: 0;
       }
-    }
-  </script>
-</body>
+
+      .container {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 40px 60px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(8px);
+      }
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 16px;
+        margin-bottom: 30px;
+      }
+
+      a {
+        display: inline-block;
+        text-decoration: none;
+        background-color: white;
+        color: #3a7bd5;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+      }
+
+      a:hover {
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>✅ Vérification réussie !</h1>
+      <p>
+        Votre adresse email a été vérifiée avec succès. Vous pouvez maintenant
+        continuer votre inscription.
+      </p>
+      <a href="#" id="continueLink" onclick="handleSubmit()"
+        >Continuer votre inscription</a
+      >
+    </div>
+
+    <script>
+      function handleSubmit() {
+        const urlParams = new URLSearchParams(window.location.search)
+        const token = urlParams.get('token')
+
+        const continueLink = document.getElementById('continueLink')
+        if (token) {
+          continueLink.href = `http://localhost:5173/load-token?token=${token}`
+        } else {
+          continueLink.href = 'http://localhost:5173/login'
+        }
+      }
+    </script>
+  </body>
 </html>

@@ -1,54 +1,66 @@
-import React from "react";
-import { useAuth } from "../../Context/AuthContext";
-import { useSearchParams } from "react-router-dom";
+import React from 'react'
+import { useAuth } from '../../Context/AuthContext'
+import { useSearchParams } from 'react-router-dom'
 
-function Article({ id, title, date, excerpt, author, type, url, concepts }: any) {
-  const { token, fetchUserProfile } = useAuth();
-  const [searchParams] = useSearchParams();
+function Article({
+  id,
+  title,
+  date,
+  excerpt,
+  author,
+  type,
+  url,
+  concepts,
+}: any) {
+  const { token, fetchUserProfile } = useAuth()
+  const [searchParams] = useSearchParams()
 
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return "";
+    if (!dateStr) return ''
     try {
-      return new Date(dateStr).toLocaleDateString("fr-FR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
+      return new Date(dateStr).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
     } catch {
-      return dateStr;
+      return dateStr
     }
-  };
+  }
 
   const truncateExcerpt = (text: string, maxLength: number = 300) => {
-    if (!text) return "";
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
-  };
+    if (!text) return ''
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+  }
 
   const likes = async (articles_id: string | number) => {
     const activeToken =
-      searchParams.get("token") || token || localStorage.getItem("authToken");
+      searchParams.get('token') || token || localStorage.getItem('authToken')
 
     try {
-      const response = await fetch("http://localhost:3000/api/favorites/articles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${activeToken}`,
-        },
-        body: JSON.stringify({
-          articles_id,
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:3000/api/favorites/articles',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${activeToken}`,
+          },
+          body: JSON.stringify({
+            articles_id,
+          }),
+        }
+      )
 
       if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
+        throw new Error(`Erreur HTTP: ${response.status}`)
       }
 
-      console.log("Favori ajouté :", await response.json());
+      console.log('Favori ajouté :', await response.json())
     } catch (err) {
-      console.error("Erreur:", err);
+      console.error('Erreur:', err)
     }
-  };
+  }
 
   return (
     <article className="mb-4 p-4 border rounded-2 bg-white shadow-sm">
@@ -78,14 +90,11 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
         </div>
       </div>
 
-      <button
-        className="btn btn-primary"
-        onClick={() => likes(id)} 
-      >
+      <button className="btn btn-primary" onClick={() => likes(id)}>
         Ajouter aux favoris
       </button>
     </article>
-  );
+  )
 }
 
-export default Article;
+export default Article

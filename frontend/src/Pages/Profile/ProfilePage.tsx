@@ -1,12 +1,11 @@
-import React from "react";
-import ProfileInfo from "./ProfileInfo";
-import NavbarSite from "../../Components/NavbarSite";
-import FooterSite from "../../Components/FooterSite";
-import { useAuth } from "../../Context/AuthContext";
+import React from 'react'
+import ProfileInfo from './ProfileInfo'
+import NavbarSite from '../../Components/NavbarSite'
+import FooterSite from '../../Components/FooterSite'
+import { useAuth } from '../../Context/AuthContext'
 
 function Profile() {
-
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   if (!user) {
     return (
@@ -19,18 +18,23 @@ function Profile() {
         </div>
         <FooterSite />
       </>
-    );
+    )
   }
 
   return (
-    
-    <><NavbarSite />
-    <div className="bg-light min-vh-100 py-5">
-        <ProfileInfo img={user.picture} email={user.email} interests={user.interests} username={user.username}></ProfileInfo>
-    </div>
-    <FooterSite />
+    <>
+      <NavbarSite />
+      <div className="bg-light min-vh-100 py-5">
+        <ProfileInfo
+          img={user.picture}
+          email={user.email}
+          interests={user.interests}
+          username={user.username}
+        ></ProfileInfo>
+      </div>
+      <FooterSite />
     </>
-  );
+  )
 }
 
-export default Profile;
+export default Profile

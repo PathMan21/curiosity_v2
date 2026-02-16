@@ -1,91 +1,93 @@
-
-import User from "../Models/User";
-import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from 'uuid';
-import { transport } from "../Config/emailConfig";
-import UserVerifications from "../Models/UserVerifications";
-import path from "path";
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import jwt from "jsonwebtoken";
-
+import User from '../Models/User'
+import bcrypt from 'bcrypt'
+import { v4 as uuidv4 } from 'uuid'
+import { transport } from '../Config/emailConfig'
+import UserVerifications from '../Models/UserVerifications'
+import path from 'path'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import jwt from 'jsonwebtoken'
 
 const verifyUser = async (req, res) => {
   try {
-    let { userId, uniqueString } = req.params;
+    let { userId, uniqueString } = req.params
 
-    const result = await UserVerifications.findOne({ 
-      where: { userId: userId }
-    });
+    const result = await UserVerifications.findOne({
+      where: { userId: userId },
+    })
 
     if (!result) {
-      return res.status(404).json({ 
-        message: "L'account n'existe pas ou le lien de vérification est invalide" 
-      });
+      return res.status(404).json({
+        message:
+          "L'account n'existe pas ou le lien de vérification est invalide",
+      })
     }
 
     if (result.get('expiresAt') < new Date()) {
-      await UserVerifications.destroy({ where: { userId: userId } });
-      return res.status(400).json({ 
-        message: "Le lien de vérification a expiré" 
-      });
+      await UserVerifications.destroy({ where: { userId: userId } })
+      return res.status(400).json({
+        message: 'Le lien de vérification a expiré',
+      })
     }
 
-    const isValid = await bcrypt.compare(uniqueString, result.get('uniqueString'));
-    
+    const isValid = await bcrypt.compare(
+      uniqueString,
+      result.get('uniqueString')
+    )
+
     if (!isValid) {
-      return res.status(400).json({ 
-        message: "Lien de vérification invalide" 
-      });
+      return res.status(400).json({
+        message: 'Lien de vérification invalide',
+      })
     }
 
-    const user = await User.findByPk(userId);
-    
-    await User.update(
-      { verified: true }, 
-      { where: { id: userId } }
-    );
+    const user = await User.findByPk(userId)
 
-    await UserVerifications.destroy({ where: { userId: userId } });
+    await User.update({ verified: true }, { where: { id: userId } })
+
+    await UserVerifications.destroy({ where: { userId: userId } })
 
     // Générer un JWT token pour la redirection
     const jwtToken = jwt.sign(
       { userId: user.id, email: user.email, username: user.username },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1h" }
-    );
+      { expiresIn: '1h' }
+    )
 
-    return res.redirect(`/api/users/verified?token=${jwtToken}`);
-
+    return res.redirect(`/api/users/verified?token=${jwtToken}`)
   } catch (error) {
-    console.error("Erreur vérification:", error);
-    return res.status(500).json({ 
-      message: "Erreur lors de la vérification de l'email" 
-    });
+    console.error('Erreur vérification:', error)
+    return res.status(500).json({
+      message: "Erreur lors de la vérification de l'email",
+    })
   }
-};
+}
 
 const verifiedPage = async (req, res) => {
-  const __filename = fileURLToPath(import.meta.url);
-  res.sendFile(path.join(dirname(__filename), "../Assets/Page/VerifyPage.html"));
-};
+  const __filename = fileURLToPath(import.meta.url)
+  res.sendFile(path.join(dirname(__filename), '../Assets/Page/VerifyPage.html'))
+}
 
 const sendVerificationEmail = async ({ id, email }, res) => {
   try {
     // Vérifier la présence de l'id utilisateur
     if (!id) {
-      console.error("sendVerificationEmail: id utilisateur manquant", { id, email });
-      return res.status(400).json({ status: "Failed", message: "ID utilisateur manquant" });
+      console.error('sendVerificationEmail: id utilisateur manquant', {
+        id,
+        email,
+      })
+      return res
+        .status(400)
+        .json({ status: 'Failed', message: 'ID utilisateur manquant' })
     }
 
-    const currentUrl = `http://localhost:3000/`;
-    const uniqueString = uuidv4() + id;
-    
+    const currentUrl = `http://localhost:3000/`
+    const uniqueString = uuidv4() + id
 
     const options = {
       from: process.env.AUTH_MAIL,
       to: email,
-      subject: "Vérifiez votre email",
+      subject: 'Vérifiez votre email',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
           <h2>Bienvenue ! 🎉</h2>
@@ -103,16 +105,17 @@ const sendVerificationEmail = async ({ id, email }, res) => {
           </p>
         </div>
       `,
-    };
+    }
 
-    const saltRounds = 10;
-    const hasheduniqueString = await bcrypt.hash(uniqueString, saltRounds);
-    
+    const saltRounds = 10
+    const hasheduniqueString = await bcrypt.hash(uniqueString, saltRounds)
 
-    const userIdForDb = typeof id === "string" ? parseInt(id, 10) : id;
+    const userIdForDb = typeof id === 'string' ? parseInt(id, 10) : id
     if (Number.isNaN(userIdForDb)) {
-      console.error("userId invalide pour UserVerifications.create:", id);
-      return res.status(400).json({ status: "Failed", message: "ID utilisateur invalide" });
+      console.error('userId invalide pour UserVerifications.create:', id)
+      return res
+        .status(400)
+        .json({ status: 'Failed', message: 'ID utilisateur invalide' })
     }
 
     await UserVerifications.create({
@@ -120,23 +123,21 @@ const sendVerificationEmail = async ({ id, email }, res) => {
       uniqueString: hasheduniqueString,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 600000),
-    });
+    })
 
-    await transport.sendMail(options);
+    await transport.sendMail(options)
 
     res.status(200).json({
-      status: "PENDING",
-      message: "Email de vérification envoyé avec succès"
-    });
-
+      status: 'PENDING',
+      message: 'Email de vérification envoyé avec succès',
+    })
   } catch (error) {
-    console.error("Erreur envoi email:", error);
+    console.error('Erreur envoi email:', error)
     res.status(500).json({
-      status: "Failed",
-      message: "Erreur lors de l'envoi de l'email de vérification"
-    });
+      status: 'Failed',
+      message: "Erreur lors de l'envoi de l'email de vérification",
+    })
   }
-};
+}
 
-export { sendVerificationEmail, verifyUser, verifiedPage };
-
+export { sendVerificationEmail, verifyUser, verifiedPage }
