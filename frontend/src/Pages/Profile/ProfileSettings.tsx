@@ -176,7 +176,7 @@ function ProfileSettings() {
                                 htmlFor={`interest-${interest.id}`}
                                 className="form-check-label"
                               >
-                {interest.label}
+    {interest.label}
                               </label>
                             </div>
                           </div>
