@@ -528,6 +528,8 @@ Si le cache se supprime alors que l'utilisateur veux y réaccéder, je refetch
 **----------------------------------16-02----------------------------------**
 
 -> JEST = commencer à implémenter
--> Linter avec prettier & husky pour l'automatisation avant le commit
+-> Linter avec prettier & husky pour l'automatisation avant le commit X => ça marche
 
--> 
+-> J'ai mis dans la configuration de husky les tests JEST - npm run test:coverage qui couvre tout les tests et fait un rapport
+-> Ajout de React Testing Library - permet d'aider aux tests des composants en parallèle de jest
+-> Egalement jest dom pour des tests sur le dom en questions
