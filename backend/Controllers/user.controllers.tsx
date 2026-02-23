@@ -6,6 +6,7 @@ import { transport } from '../Config/emailConfig'
 import { v4 as uuidv4 } from 'uuid'
 import { sendVerificationEmail } from '../Services/mail.services'
 import jwt from 'jsonwebtoken'
+import { error } from 'console'
 
 const generateTokens = (userId: number) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
@@ -38,7 +39,6 @@ const updatedProfile = async (req, res) => {
     if (typeof interests !== 'undefined')
       updateData.interests = JSON.stringify(interests)
 
-    // Appliquer l'update
     await user.update(updateData)
 
     const { accessToken, refreshToken } = generateTokens(user.id)
@@ -178,10 +178,8 @@ const loginUser = async (req, res) => {
       })
     }
 
-    // Créer un JWT minimal
     const { accessToken, refreshToken } = generateTokens(user.id)
 
-    // Stocker le refresh token en base de données
     await user.update({ refreshToken })
 
     res.json({
@@ -217,13 +215,11 @@ const refreshTokenHandler = async (req, res) => {
       })
     }
 
-    // Vérifier le refresh token
     const decoded = jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET
     ) as any
 
-    // Vérifier que le token existe en base de données
     const user = await User.findByPk(decoded.userId)
 
     if (!user || user.refreshToken !== refreshToken) {
@@ -233,12 +229,10 @@ const refreshTokenHandler = async (req, res) => {
       })
     }
 
-    // Générer un nouveau access token minimal
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(
       user.id
     )
 
-    // Mettre à jour le refresh token en base
     await user.update({ refreshToken: newRefreshToken })
 
     res.json({

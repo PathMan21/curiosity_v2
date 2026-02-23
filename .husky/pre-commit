@@ -1,4 +1,4 @@
-npm test
+npm run test
 #!/bin/sh
-npm run lint
-# npm run test
+# npm run lint
+npm run test

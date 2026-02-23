@@ -1,0 +1,28 @@
+
+
+:root {
+
+    /* Couleur globale */
+
+    --main: ; 
+    --second: ; 
+    --subtitles: ; /* Couleur des sous-titre doit etre discret */
+    --alert: ; /* couleur des petits éléments doit attirer le regard*/
+
+    --danger: ;
+    --danger-bg: ;
+
+    --info: ;
+    --info-bg: ;
+
+    /* Taille globale */
+
+    --font-size-normal: 1rem;
+    --font-size-medium: 2rem;
+    --font-size-large: 3.5rem;
+}
+
+
+body {
+    font-size: var(--font-size-large);
+}

@@ -30,7 +30,7 @@
     "dev": "tsx watch backend/server.tsx",
     "prepare": "husky",
     "frontend:dev": "vite --config frontend/vite.config.ts",
-    "test": "jest --watchAll"
+    "test": "jest"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"

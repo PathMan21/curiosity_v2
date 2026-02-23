@@ -11,6 +11,7 @@ import {
   SimpleProtectedRoute,
 } from './Services/ProtectedRoute'
 
+
 import { AuthProvider } from './Context/AuthContext'
 import Profile from './Pages/Profile/ProfilePage'
 import ProfileSettings from './Pages/Profile/ProfileSettings'

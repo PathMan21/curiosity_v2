@@ -4,7 +4,7 @@ import { useAuth } from '../../Context/AuthContext'
 import interestsData from '../../Assets/interests.json'
 import { useState, useEffect } from 'react'
 import { fetchWithAuth } from '../../Services/apiClient'
-
+import ProfileAccessibility from './ProfileAccessibility'
 function ProfileSettings() {
   function handleInterests(value) {
     SetSelectedInterests((prev) =>
@@ -105,7 +105,6 @@ function ProfileSettings() {
 
       <div className="container py-5">
         <form onSubmit={handlesubmit}>
-          {/* Username */}
           <div className="mb-3">
             <label htmlFor="username" className="form-label">
               Username
@@ -118,8 +117,7 @@ function ProfileSettings() {
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
-
-          {/* Bouton pour ouvrir la modal des intérêts */}
+          <ProfileAccessibility></ProfileAccessibility>
           <button
             type="button"
             className="btn btn-primary mb-3"
@@ -128,14 +126,12 @@ function ProfileSettings() {
             Sélectionner vos intérêts
           </button>
 
-          {/* Submit général */}
           <button type="submit" className="btn btn-success">
             Valider
           </button>
         </form>
       </div>
 
-      {/* Modal uniquement pour les intérêts */}
       {showModal && (
         <div
           className="modal show d-block"
@@ -176,7 +172,7 @@ function ProfileSettings() {
                                 htmlFor={`interest-${interest.id}`}
                                 className="form-check-label"
                               >
-    {interest.label}
+                              {interest.label}
                               </label>
                             </div>
                           </div>

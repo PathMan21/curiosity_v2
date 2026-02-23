@@ -527,9 +527,21 @@ Si le cache se supprime alors que l'utilisateur veux y réaccéder, je refetch
 
 **----------------------------------16-02----------------------------------**
 
--> JEST = commencer à implémenter
+-> JEST = commencer à implémenter X
 -> Linter avec prettier & husky pour l'automatisation avant le commit X => ça marche
 
 -> J'ai mis dans la configuration de husky les tests JEST - npm run test:coverage qui couvre tout les tests et fait un rapport
--> Ajout de React Testing Library - permet d'aider aux tests des composants en parallèle de jest
--> Egalement jest dom pour des tests sur le dom en questions
+-> Ajout de React Testing Library - permet d'aider aux tests des composants en parallèle de jest X
+-> Egalement jest dom pour des tests sur le dom en questions X
+
+**----------------------------------23-02----------------------------------**
+
+-> Jest étant passé - nous rajoutants de l'accessibilité pour les handicap
+    -> Visuel
+    -> Sonores
+    -> 
+
+J'ai fais un système de select qui récupère les infos que l'utilisateur a inscris dans la bdd quand il change ses
+préférences visuelles - je commence par la taille du texte, que j'ai définit dans des variables globales.
+J'ai choisis rem parce que si je ne définit pas les pixels de mes éléments, c'est ceux du navigateur par défaut qu'il prend
+Je ne l'agrandis alors que si l'utilisateur souhaite une aide en plus
