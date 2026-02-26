@@ -1,68 +1,56 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface FontSizeContextType {
-  fontSize: string
-  setFontSize: (size: string) => void
-}
+const ThemeContext = createContext(undefined);
 
-const FontSizeContext = createContext<FontSizeContextType | undefined>(undefined)
+export const ThemeProvider = ({ children }) => {
+  // === États ===
+  const [fontSize, setFontSize] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
+    return saved.fontSize || "normal-class";
+  });
 
-const FontSizeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [fontSize, setFontSizeState] = useState<string>('normal')
+  const [cursor, setCursor] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
+    return saved.cursorSize || false;
+  });
 
+  const [dark, setDark] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
+    return saved.dark || false;
+  });
+
+  const [highContrast, setHighContrast] = useState(() => {
+    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
+    return saved.highContrast || false;
+  });
+
+  // === Application des styles ===
   useEffect(() => {
-    const savedFontSize = getCookie('fontSize') || 'normal'
-    setFontSizeState(savedFontSize)
-    applyFontSize(savedFontSize)
-  }, [])
+    const body = document.body;
+    body.classList.remove("normal-class", "medium-class", "large-class");
+    body.classList.add(fontSize);
 
-  function getCookie(name: string): string | null {
-    const value = `; ${document.cookie}`
-    const parts = value.split(`; ${name}=`)
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null
-    return null
-  }
+    cursor ? body.classList.add("big-cursor") : body.classList.remove("big-cursor");
+    dark ? body.classList.add("dark-mode") : body.classList.remove("dark-mode");
+    highContrast ? body.classList.add("high-contrast") : body.classList.remove("high-contrast");
 
-  function setCookie(name: string, value: string, days: number = 365) {
-    const date = new Date()
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
-    const expires = `expires=${date.toUTCString()}`
-    document.cookie = `${name}=${value};${expires};path=/`
-  }
-
-  function applyFontSize(size: string) {
-    const fontSizeMap: { [key: string]: string } = {
-      normal: '14px',
-      medium: '16px',
-      large: '18px',
-    }
-
-    const rootElement = document.documentElement
-    const fontSizeValue = fontSizeMap[size] || '14px'
-
-    rootElement.style.fontSize = fontSizeValue
-    console.log(`Taille de police appliquée: ${fontSizeValue}`)
-  }
-
-  const setFontSize = (size: string) => {
-    setFontSizeState(size)
-    setCookie('fontSize', size, 365)
-    applyFontSize(size)
-  }
+    localStorage.setItem(
+      "accessibility",
+      JSON.stringify({ fontSize, cursorSize: cursor, dark, highContrast })
+    );
+  }, [fontSize, cursor, dark, highContrast]);
 
   return (
-    <FontSizeContext.Provider value={{ fontSize, setFontSize }}>
+    <ThemeContext.Provider
+      value={{ fontSize, cursor, dark, highContrast, setFontSize, setCursor, setDark, setHighContrast }}
+    >
       {children}
-    </FontSizeContext.Provider>
-  )
-}
+    </ThemeContext.Provider>
+  );
+};
 
-const useFontSize = (): FontSizeContextType => {
-  const context = useContext(FontSizeContext)
-  if (context === undefined) {
-    throw new Error('useFontSize must be used within a FontSizeProvider')
-  }
-  return context
-}
-
-export { FontSizeProvider, useFontSize }
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) console.warn("ThemeContext non initialisé");
+  return context;
+};

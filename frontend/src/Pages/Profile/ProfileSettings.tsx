@@ -5,6 +5,7 @@ import interestsData from '../../Assets/interests.json'
 import { useState, useEffect } from 'react'
 import { fetchWithAuth } from '../../Services/apiClient'
 import ProfileAccessibility from './ProfileAccessibility'
+
 function ProfileSettings() {
   function handleInterests(value) {
     SetSelectedInterests((prev) =>

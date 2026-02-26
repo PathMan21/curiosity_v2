@@ -19,6 +19,7 @@ import ProfileFavorites from './Pages/Profile/ProfileFavorites'
 
 import ArticlePage from './Pages/Articles/ArticlePage'
 import { useAutoRefreshToken } from './Hooks/useAutoRefreshToken'
+import { ThemeProvider } from './helpers/ChangeStyle'
 
 function AppContent() {
   // Utiliser le hook de refresh automatique
@@ -51,9 +52,11 @@ function AppContent() {
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <AppContent />
     </AuthProvider>
+    </ThemeProvider>
   )
 }
 

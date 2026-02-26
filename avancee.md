@@ -545,3 +545,11 @@ J'ai fais un système de select qui récupère les infos que l'utilisateur a ins
 préférences visuelles - je commence par la taille du texte, que j'ai définit dans des variables globales.
 J'ai choisis rem parce que si je ne définit pas les pixels de mes éléments, c'est ceux du navigateur par défaut qu'il prend
 Je ne l'agrandis alors que si l'utilisateur souhaite une aide en plus
+
+-> Prochaines étape : 
+    bug => Pourquoi les images ne sont pas renvoyées X
+    bug => Pourquoi plusieurs articles peuvent etre ressortis => Pas retombé sur le soucis donc a voir
+
+**----------------------------------24-02----------------------------------**
+
+-> Continuer à travailler sur les handicaps visuel

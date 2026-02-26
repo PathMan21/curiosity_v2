@@ -1,55 +1,33 @@
-
-import React, { useState, useEffect } from 'react'
+import React, { useState } from "react";
+import { useTheme } from "../../helpers/ChangeStyle";
 
 function ProfileAccessibility() {
-  const [fontSize, setFontSize] = useState<string>('normal')
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<boolean>(false)
+  const { fontSize, cursor, dark, setFontSize, setCursor, setDark } = useTheme();
 
-  useEffect(() => {
-    const savedFontSize = getCookie('fontSize') || 'normal'
-    setFontSize(savedFontSize)
-  }, [])
+  const [localFontSize, setLocalFontSize] = useState(fontSize);
+  const [localCursor, setLocalCursor] = useState(cursor);
+  const [localDark, setLocalDark] = useState(dark);
+  const [confirmationMsg, setConfirmationMsg] = useState("");
 
-  function getCookie(name: string): string | null {
-    const value = `; ${document.cookie}`
-    const parts = value.split(`; ${name}=`)
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null
-    return null
-  }
-
-  function setCookie(name: string, value: string, days: number = 365) {
-    const date = new Date()
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
-    const expires = `expires=${date.toUTCString()}`
-    document.cookie = `${name}=${value};${expires};path=/`
-  }
-
-  function setUserPreference(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setSuccess(false)
-    setError(null)
-
-    try {
-      console.log('Sauvegarde de la taille de police:', fontSize)
-      setCookie('fontSize', fontSize, 365)
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 3000)
-    } catch (err) {
-      console.error('Erreur lors de la sauvegarde du cookie:', err)
-      setError('Erreur lors de la sauvegarde de vos préférences')
-    }
+  function handleChangeStyle() {
+    setFontSize(localFontSize);
+    setCursor(localCursor);
+    setDark(localDark);
+    setConfirmationMsg("Vos paramètres d'accessibilité ont été appliqués.");
+    setTimeout(() => setConfirmationMsg(""), 3000);
   }
 
   return (
-    <form onSubmit={setUserPreference} className="accessibility-form">
-      <h3>Paramètres d'accessibilité</h3>
+    <section
+      className="accessibility-form"
+      aria-labelledby="accessibility-title"
+    >
+      <h3 id="accessibility-title">Paramètres d'accessibilité</h3>
+      <p className="text-muted">
+        Personnalisez l’affichage du site pour améliorer votre confort visuel.
+      </p>
 
-      {error && <div className="alert alert-danger" role="alert">{error}</div>}
-
-      {success && <div className="alert alert-success" role="alert">Préférences sauvegardées avec succès !</div>}
-
+      {/* Taille de police */}
       <div className="mb-3">
         <label htmlFor="font-size-select" className="form-label">
           Taille de police
@@ -57,27 +35,67 @@ function ProfileAccessibility() {
         <select
           id="font-size-select"
           className="form-select"
-          aria-label="Changer la taille de police"
-          value={fontSize}
-          onChange={(e) => setFontSize(e.target.value)}
-          disabled={loading}
+          aria-label="Changer la taille de la police"
+          value={localFontSize}
+          onChange={(e) => setLocalFontSize(e.target.value)}
         >
-          <option value="normal">Normal (14px)</option>
-          <option value="medium">Moyen (16px)</option>
-          <option value="large">Grand (18px)</option>
+          <option value="normal-class">Normal</option>
+          <option value="medium-class">Moyen</option>
+          <option value="large-class">Grand</option>
         </select>
       </div>
 
+      {/* Curseur */}
+      <div className="form-check form-switch mb-2">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          id="cursor-switch"
+          role="switch"
+          aria-checked={localCursor}
+          checked={localCursor}
+          onChange={(e) => setLocalCursor(e.target.checked)}
+        />
+        <label className="form-check-label" htmlFor="cursor-switch">
+          Activer le curseur large
+        </label>
+      </div>
+
+      {/* Mode sombre */}
+      <div className="form-check form-switch mb-3">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          id="darkmode-switch"
+          role="switch"
+          aria-checked={localDark}
+          checked={localDark}
+          onChange={(e) => setLocalDark(e.target.checked)}
+        />
+        <label className="form-check-label" htmlFor="darkmode-switch">
+          Activer le mode sombre
+        </label>
+      </div>
+
+      {/* Bouton d’application */}
       <button
-        id="preferences"
-        type="submit"
         className="btn btn-primary"
-        disabled={loading}
+        onClick={handleChangeStyle}
+        aria-label="Appliquer les paramètres d'accessibilité"
       >
-        {loading ? 'Chargement...' : 'Sauvegarder vos préférences'}
+        Valider
       </button>
-    </form>
-  )
+
+      {/* Zone de confirmation (aria-live pour lecteur d’écran) */}
+      <div
+        className="visually-hidden"
+        role="status"
+        aria-live="polite"
+      >
+        {confirmationMsg}
+      </div>
+    </section>
+  );
 }
 
 export default ProfileAccessibility;
