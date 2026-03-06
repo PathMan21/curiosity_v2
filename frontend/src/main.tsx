@@ -4,7 +4,10 @@ import App from './App'
 import { ThemeProvider } from './helpers/ChangeStyle'
 
 const container = document.getElementById('root')!
+
+container.classList.add('background');
 const root = createRoot(container)
+
 root.render(
   <ThemeProvider>
     <React.StrictMode>

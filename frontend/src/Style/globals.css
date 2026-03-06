@@ -2,31 +2,57 @@
 
 :root {
 
-    /* Couleur globale */
+  /* 🎨 Couleurs principales - Thème nature / doux / organique */
 
-    --main: ; 
-    --second: ; 
-    --subtitles: ; /* Couleur des sous-titre doit etre discret */
-    --alert: ; /* couleur des petits éléments doit attirer le regard*/
+  --main: #305529;       
+  --second: #cdd7b5;     
+  --bg: #fafbed;         
+  --subtitles: #7c8762;  
+  --alert: #ebdecb;      
+  --bg-body: #cdd7b5;
 
-    --danger: ;
-    --danger-bg: ;
+  
+  --main-dark: #305529;       
+  --second-dark: #cdd7b5;     
+  --bg-dark: #fafbed;         
+  --subtitles-dark: #7c8762;  
+  --alert-dark: #ebdecb;      
+  --bg-body-dark: #cdd7b5;
 
-    --info: ;
-    --info-bg: ;
+  /* 🚨 États et alertes */
 
-    /* Taille globale */
+  --danger: #b33a3a;    
+  --danger-bg: #f8e4e4;   
+  
+  --info: #3a6b52;     
+  --info-bg: #e1e6bd;    
 
-    --font-size-normal: 1rem;
-    --font-size-medium: 2rem;
-    --font-size-large: 3.5rem;
+  /* 🅰️ Tailles globales */
+
+  --font-size-normal: 1rem;
+  --font-size-medium: 2rem;
+  --font-size-large: 3.5rem;
+
+}
+
+.articleComp {
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+    border-radius: 10px;
+
 }
 
 
-/* body {
-    font-size: var(--font-size-large);
-} */
+.background {
+    background-size: cover;
+    background-position: fixed;
+    overflow-x: hidden;
+}
 
+body {
+    font-family: Tahoma, Tahoma, Geneva, Verdana, sans-serif;
+    color: #282927;
+      background:radial-gradient(ellipse at center, rgba(255,254,234,1) 0%, rgba(255,254,234,1) 35%, #B7E8EB 100%);
+}
 .normal-class {
     font-size: var(--font-size-normal) !important;
 
@@ -47,4 +73,159 @@
 
 .big-cursor * {
   cursor: pointer !important;
+}
+
+
+
+.ocean { 
+  height: 5%;
+  width:100%;
+  position:absolute;
+  bottom:0;
+  left:0;
+  background: #015871;
+}
+
+.wave {
+  background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg) repeat-x; 
+  position: absolute;
+  top: -198px;
+  width: 6400px;
+  height: 198px;
+  animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
+  transform: translate3d(0, 0, 0);
+  opacity: 0.3;
+  z-index: -1;
+}
+
+.wave:nth-of-type(2) {
+  top: -175px;
+  animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 22s ease -1.25s infinite;
+  opacity: 0.2;
+}
+
+@keyframes wave {
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: -1600px;
+  }
+}
+
+@keyframes swell {
+  0%, 100% {
+    transform: translate3d(0,-25px,0);
+  }
+  50% {
+    transform: translate3d(0,5px,0);
+  }
+}
+
+.switch {
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #73C0FC;
+  transition: .4s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 30px;
+  width: 30px;
+  border-radius: 20px;
+  left: 2px;
+  bottom: 2px;
+  z-index: 2;
+  background-color: #e8e8e8;
+  transition: .4s;
+}
+
+.sun svg {
+  position: absolute;
+  top: 6px;
+  left: 36px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+}
+
+.moon svg {
+  fill: #73C0FC;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+}
+
+/* .switch:hover */.sun svg {
+  animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+ 
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* .switch:hover */.moon svg {
+  animation: tilt 5s linear infinite;
+}
+
+@keyframes tilt {
+ 
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-10deg);
+  }
+
+  75% {
+    transform: rotate(10deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.input:checked + .slider {
+  background-color: #183153;
+}
+
+.input:focus + .slider {
+  box-shadow: 0 0 1px #183153;
+}
+
+.input:checked + .slider:before {
+  transform: translateX(30px);
 }

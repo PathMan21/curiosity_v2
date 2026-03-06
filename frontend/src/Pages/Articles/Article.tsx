@@ -63,7 +63,7 @@ function Article({
   }
 
   return (
-    <article className="mb-4 p-4 border rounded-2 bg-white shadow-sm">
+    <article className="mb-4 p-4 border rounded-2 articleComp bg-light-subtle">
       <div className="row align-items-start">
         <div className="col-md-10">
           <h5 className="mb-2">

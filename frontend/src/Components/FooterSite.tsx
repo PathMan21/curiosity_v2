@@ -1,7 +1,7 @@
 function FooterSite() {
   return (
     <>
-      <div className="container">
+      <div className="container fixed-bottom">
         {' '}
         <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
           {' '}

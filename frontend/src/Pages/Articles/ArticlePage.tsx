@@ -132,7 +132,7 @@ function ArticlePage(props) {
     <>
       <NavbarSite />
 
-      <main className="container my-5">
+      <main className="container my-5 min-vh-100 overflow-auto">
         <h1 className="mb-4">Articles</h1>
 
         {error && (
@@ -147,7 +147,7 @@ function ArticlePage(props) {
           </div>
         )}
 
-        <div className="row">
+        <div className="container my-5 max-vh-100">
           <div className="col-12">
             <div className="row">
               {all.map((item, idx) => {

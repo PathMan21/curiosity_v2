@@ -553,3 +553,9 @@ Je ne l'agrandis alors que si l'utilisateur souhaite une aide en plus
 **----------------------------------24-02----------------------------------**
 
 -> Continuer à travailler sur les handicaps visuel
+
+**----------------------------------27-02----------------------------------**
+
+-> Faire la maquettes front - et adapter le système d'handicap visuel
+
+**---------------------------------01-03----------------------------------**

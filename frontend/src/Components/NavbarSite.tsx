@@ -1,6 +1,6 @@
 import { useAuth } from '../Context/AuthContext'
 import { useNavigate } from 'react-router-dom'
-
+import Switch from "../helpers/darkmode"
 function NavbarSite() {
   const { logout } = useAuth()
   const navigate = useNavigate()
@@ -39,6 +39,7 @@ function NavbarSite() {
                   Profile 🐭
                 </a>
               </li>
+              <li><Switch></Switch></li>
               <li className="nav-item">
                 <button
                   className="nav-link active"
