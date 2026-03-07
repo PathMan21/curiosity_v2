@@ -3,27 +3,21 @@
 
 :root {
 
-  /* 🎨 Palette dorée / beige — inspirée de la maquette */
-  --main:        #8B6914;      /* or foncé — titres, accents */
-  --main-hover:  #6b5010;      /* or plus sombre au survol */
-  --second:      #d4a847;      /* or clair — icônes, bordures */
-  --bg:          #FFFFFF;      /* fond des cartes */
-  --bg-body:     #f9f5ed;;      /* fond de page — beige sable */
-  --bg-section:  #F5F0E8;      /* sections légèrement plus claires */
-  --subtitles:   #6b5010;      /* sous-titres en or foncé */
-  --text:        #2c2416;      /* texte principal brun foncé */
-  --text-muted:  #8a7a65;      /* texte secondaire */
-  --alert:       #f8f1e4;      /* alerte / info douce */
-  --border:      #d4a84740;    /* bordures subtiles */
+  --main:        #8B6914;     
+  --main-hover:  #6b5010;     
+  --second:      #d4a847;     
+  --bg:          #FFFFFF;    
+  --bg-body:     #f9f5ed;;     
+  --bg-section:  #F5F0E8;      
+  --subtitles:   #6b5010;      
+  --text:        #2c2416;      
+  --text-muted:  #8a7a65;      
+  --alert:       #f8f1e4;     
+  --border:      #d4a84740;   
+  --bg-body-card:  #fffdf8; 
 
-  /* 🌙 Dark mode — même palette, déclinée sombre */
-  --main-dark:       #d4a847;
-  --second-dark:     #8B6914;
-  --bg-dark:         #1a1508;
-  --bg-body-dark:    #0f0c05;
-  --subtitles-dark:  #d4a847;
-  --alert-dark:      #2a2010;
-  --text-dark:       #f0e6cc;
+  --text-title: #d4a847; 
+
 
   /* 🚨 États */
   --danger:     #b33a3a;
@@ -53,8 +47,33 @@
   box-sizing: border-box;
 }
 
-.card-carousel {
-  filter: hue-rotate(23deg) blur(1px) url(#svgTint)
+.card-caroussel {
+  opacity: 0.8;
+}
+
+
+.darkmode {
+  --main:        #e1d7be;     
+  --main-hover:  #cab687;     
+  --second:      #fedc93;     
+  --bg:          #1C1C1C;    
+  --bg-body:     #403c31;;     
+  --bg-section:  #393329;      
+  --subtitles:   #6b5010;      
+  --text:        #ffffff;      
+  --text-muted:  #8a7a65;      
+  --alert:       #3c1e13;     
+  --border:      #ffd16e40;   
+  --bg-body-card:     #32312f;    
+  --text-title: #d4a847; 
+
+}
+
+h5 {
+  color: var(--text-title);
+}
+article {
+  background-color: var(--bg-body-card);
 }
 
 body {
@@ -126,7 +145,18 @@ a:hover {
   box-shadow: var(--shadow-card);
   transition: box-shadow 0.25s ease, transform 0.25s ease;
   overflow: hidden;
+  
 }
+
+
+.footer {
+  background-color: var(--bg-body);
+  color: var(--text) !important;
+  width: 100vh;
+}
+
+
+
 .articleComp:hover {
   box-shadow: var(--shadow-hover);
   transform: translateY(-2px);
@@ -285,45 +315,7 @@ a:hover {
 }
 .big-cursor * { cursor: pointer !important; }
 
-/* ════════════════════════════════════════
-   FOOTER WAVE (conservé, recolorisé)
-════════════════════════════════════════ */
 
-.ocean {
-  height: 5%;
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background: var(--main);
-}
-
-.wave {
-  background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg) repeat-x;
-  position: absolute;
-  top: -198px;
-  width: 6400px;
-  height: 198px;
-  animation: wave 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
-  transform: translate3d(0, 0, 0);
-  opacity: 0.2;
-  z-index: -1;
-}
-.wave:nth-of-type(2) {
-  top: -175px;
-  animation: wave 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) -0.125s infinite,
-             swell 22s ease -1.25s infinite;
-  opacity: 0.12;
-}
-
-@keyframes wave {
-  0%   { margin-left: 0; }
-  100% { margin-left: -1600px; }
-}
-@keyframes swell {
-  0%, 100% { transform: translate3d(0,-25px,0); }
-  50%       { transform: translate3d(0,5px,0); }
-}
 
 /* ════════════════════════════════════════
    DAY/NIGHT TOGGLE — recolorisé doré
@@ -405,43 +397,6 @@ a:hover {
   cursor: pointer !important;
 }
 
-
-
-.ocean { 
-  height: 5%;
-  width:100%;
-  position:absolute;
-  bottom:0;
-  left:0;
-  background: #015871;
-}
-
-.wave {
-  background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg) repeat-x; 
-  position: absolute;
-  top: -198px;
-  width: 6400px;
-  height: 198px;
-  animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
-  transform: translate3d(0, 0, 0);
-  opacity: 0.3;
-  z-index: -1;
-}
-
-.wave:nth-of-type(2) {
-  top: -175px;
-  animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 22s ease -1.25s infinite;
-  opacity: 0.2;
-}
-
-@keyframes wave {
-  0% {
-    margin-left: 0;
-  }
-  100% {
-    margin-left: -1600px;
-  }
-}
 
 @keyframes swell {
   0%, 100% {

@@ -38,11 +38,9 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
 
   return (
     <article className="mb-4 articleComp" style={{
-      background: '#fff',
       borderRadius: '14px',
       overflow: 'hidden',
       padding: '1.4rem 1.6rem',
-      border: '1px solid rgba(212,168,71,0.18)',
     }}>
       <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
@@ -73,8 +71,8 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
 
           <h5 style={{
             fontFamily: "'Playfair Display', Georgia, serif",
-            fontWeight: 700, fontSize: '1.15rem',
-            color: '#8B6914', marginBottom: '0.5rem', lineHeight: 1.3,
+            fontWeight: 700, fontSize: '1.15rem'
+            , marginBottom: '0.5rem', lineHeight: 1.3,
           }}>
             {title}
           </h5>
@@ -87,7 +85,7 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
           </div>
 
           <p style={{
-            fontSize: '0.9rem', color: '#4a3d2a', lineHeight: 1.65,
+            fontSize: '0.9rem', lineHeight: 1.65,
             marginBottom: '1rem', fontFamily: "'Lato', sans-serif",
           }}>
             {truncateExcerpt(excerpt)}

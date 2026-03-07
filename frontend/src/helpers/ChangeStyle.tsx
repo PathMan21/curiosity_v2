@@ -31,7 +31,7 @@ export const ThemeProvider = ({ children }) => {
     body.classList.add(fontSize);
 
     cursor ? body.classList.add("big-cursor") : body.classList.remove("big-cursor");
-    dark ? body.classList.add("dark-mode") : body.classList.remove("dark-mode");
+    dark ? body.classList.add("darkmode") : body.classList.remove("darkmode");
     highContrast ? body.classList.add("high-contrast") : body.classList.remove("high-contrast");
 
     localStorage.setItem(
