@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Article from './Article'
+import CarouselImg from '../../Components/Carroussels'
 import Photos from './Photos'
 // import HeaderSite from "../../Components/HeaderSite";
 import FooterSite from '../../Components/FooterSite'
@@ -131,9 +132,9 @@ function ArticlePage(props) {
   return (
     <>
       <NavbarSite />
-
+      <CarouselImg></CarouselImg>
       <main className="container my-5 min-vh-100 overflow-auto">
-        <h1 className="mb-4">Articles</h1>
+        <h1 className="section-title mb-4">Vos articles</h1>
 
         {error && (
           <div className="alert alert-warning" role="alert">

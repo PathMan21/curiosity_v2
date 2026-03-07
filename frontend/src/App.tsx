@@ -11,7 +11,6 @@ import {
   SimpleProtectedRoute,
 } from './Services/ProtectedRoute'
 
-import OceanWaves from "../src/Style/composants"
 
 import { AuthProvider } from './Context/AuthContext'
 import Profile from './Pages/Profile/ProfilePage'
@@ -56,7 +55,6 @@ function App() {
     <ThemeProvider>
     <AuthProvider>
       <AppContent />
-      <OceanWaves />
     </AuthProvider>
     </ThemeProvider>
   )

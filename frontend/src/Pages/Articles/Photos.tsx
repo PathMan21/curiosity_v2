@@ -1,22 +1,11 @@
-function Photos({
-  title,
-  date,
-  url,
-  description,
-  photographer,
-  photographerUrl,
-}: any) {
+function Photos({ title, date, url, description, photographer, photographerUrl }: any) {
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
     try {
       return new Date(dateStr).toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        year: 'numeric', month: 'long', day: 'numeric',
       })
-    } catch {
-      return dateStr
-    }
+    } catch { return dateStr }
   }
 
   const truncateText = (text: string, maxLength: number = 200) => {
@@ -25,58 +14,60 @@ function Photos({
   }
 
   return (
-    <article>
-      <div className="row align-items-start">
-        <div className="col-md-4 mb-3 mb-md-0 text-center">
-          {url && (
-            <img
-              src={url}
-              alt={title || 'Photo'}
-              className="img-fluid rounded-2 shadow-sm"
-              style={{ maxHeight: '250px', objectFit: 'cover' }}
-            />
+    <article className="mb-4 articleComp" style={{
+      background: '#fff',
+      borderRadius: '14px',
+      overflow: 'hidden',
+      border: '1px solid rgba(212,168,71,0.18)',
+    }}>
+      {url && (
+        <div style={{ width: '100%', height: '200px', overflow: 'hidden' }}>
+          <img
+            src={url}
+            alt={title || 'Photo NASA'}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+      )}
+      <div style={{ padding: '1.2rem 1.4rem' }}>
+        <div style={{
+          fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
+          letterSpacing: '0.08em', color: '#8B6914',
+          marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem',
+        }}>
+          ✦ Photo
+        </div>
+        <h5 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontWeight: 700, fontSize: '1.05rem',
+          color: '#8B6914', marginBottom: '0.4rem',
+        }}>
+          {title}
+        </h5>
+        <div style={{ fontSize: '0.78rem', color: '#8a7a65', marginBottom: '0.6rem' }}>
+          {formatDate(date)}
+          {photographer && (
+            <>
+              {' · '}
+              {photographerUrl
+                ? <a href={photographerUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#8a7a65' }}>{photographer}</a>
+                : <span>{photographer}</span>
+              }
+            </>
           )}
         </div>
-
-        <div className="col-md-8">
-          <h5 className="mb-2">
-            <strong>{title}</strong>
-          </h5>
-
-          <div className="mb-2 text-muted small">
-            <span>{formatDate(date)}</span>
-            {photographer && (
-              <>
-                {' • '}
-                {photographerUrl ? (
-                  <a
-                    href={photographerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-decoration-none text-secondary"
-                  >
-                    {photographer}
-                  </a>
-                ) : (
-                  <span>{photographer}</span>
-                )}
-              </>
-            )}
-          </div>
-
-          <p className="mb-3">{truncateText(description)}</p>
-
-          {url && (
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-sm btn-outline-primary"
-            >
-              Voir la photo
-            </a>
-          )}
-        </div>
+        <p style={{ fontSize: '0.87rem', color: '#4a3d2a', lineHeight: 1.6, marginBottom: '0.8rem' }}>
+          {truncateText(description)}
+        </p>
+        {url && (
+          <a href={url} target="_blank" rel="noopener noreferrer" style={{
+            fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.06em', color: '#8B6914', textDecoration: 'none',
+            borderBottom: '1.5px solid rgba(139,105,20,0.35)', paddingBottom: '1px',
+          }}>
+            Voir la photo →
+          </a>
+        )}
       </div>
     </article>
   )
