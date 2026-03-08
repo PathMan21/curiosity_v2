@@ -27,7 +27,7 @@ export const ThemeProvider = ({ children }) => {
   // === Application des styles ===
   useEffect(() => {
     const body = document.body;
-    body.classList.remove("normal-class", "medium-class", "large-class");
+    body.classList.remove("font-small", "font-normal", "font-large", "font-xlarge");
     body.classList.add(fontSize);
 
     cursor ? body.classList.add("big-cursor") : body.classList.remove("big-cursor");

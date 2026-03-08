@@ -86,7 +86,7 @@ function Register() {
                   />
                 </div>
 
-                <div className="mb-3">
+                <div >
                   <label htmlFor="email" className="form-label">
                     Email Address
                   </label>

@@ -28,9 +28,6 @@
   /* 🅰️ Typographie */
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'Lato', 'Segoe UI', sans-serif;
-  --font-size-normal: 1rem;
-  --font-size-medium: 2rem;
-  --font-size-large:  3.5rem;
 
   /* ✨ Effets */
   --shadow-card:  0 2px 12px rgba(139, 105, 20, 0.10), 0 1px 4px rgba(139, 105, 20, 0.07);
@@ -78,6 +75,7 @@ article {
 
 body {
   font-family: var(--font-body);
+  font-size: var(--font-size-base);
   color: var(--text);
   background-color: var(--bg-body);
   background-image:
@@ -302,9 +300,7 @@ a:hover {
   color: var(--text-muted) !important;
 }
 
-.normal-class  { font-size: var(--font-size-normal) !important; }
-.medium-class  { font-size: var(--font-size-medium) !important; }
-.large-class   { font-size: var(--font-size-large) !important; }
+
 
 /* ════════════════════════════════════════
    CURSOR ACCESSIBILITY
@@ -375,18 +371,22 @@ a:hover {
 .input:checked + .slider  { background-color: #2a2010; }
 .input:focus  + .slider   { box-shadow: 0 0 1px #2a2010; }
 .input:checked + .slider:before { transform: translateX(30px); }
-.normal-class {
-    font-size: var(--font-size-normal) !important;
 
-}
-.medium-class {
-    font-size: var(--font-size-medium) !important;
 
+.font-small {
+  --font-size-base: 0.9rem;
 }
 
-.large-class {
-    font-size: var(--font-size-large) !important;
+.font-normal {
+  --font-size-base: 1rem;
+}
 
+.font-large {
+  --font-size-base: 1.2rem;
+}
+
+.font-xlarge {
+  --font-size-base: 1.35rem;
 }
 
 .big-cursor {

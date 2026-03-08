@@ -27,7 +27,6 @@ function ProfileAccessibility() {
         Personnalisez l’affichage du site pour améliorer votre confort visuel.
       </p>
 
-      {/* Taille de police */}
       <div className="mb-3">
         <label htmlFor="font-size-select" className="form-label">
           Taille de police
@@ -39,9 +38,10 @@ function ProfileAccessibility() {
           value={localFontSize}
           onChange={(e) => setLocalFontSize(e.target.value)}
         >
-          <option value="normal-class">Normal</option>
-          <option value="medium-class">Moyen</option>
-          <option value="large-class">Grand</option>
+          <option value="font-small">Petit</option>
+          <option value="font-normal">Normal</option>
+          <option value="font-large">Moyen</option>
+          <option value="font-xlarge">Grand</option>
         </select>
       </div>
 
