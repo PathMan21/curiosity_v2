@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Article from './Article'
 import CarouselImg from '../../Components/Carroussels'
 import Photos from './Photos'
-// import HeaderSite from "../../Components/HeaderSite";
 import FooterSite from '../../Components/FooterSite'
 import NavbarSite from '../../Components/NavbarSite'
 import { useAuth } from '../../Context/AuthContext'
@@ -23,87 +22,44 @@ function ArticlePage(props) {
 
   const fetchArticles = async () => {
     try {
-      setLoading(true)
-
-      const response = await fetchWithAuth('/data/articles', {
-        method: 'GET',
-      })
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`)
-      }
-
+      const response = await fetchWithAuth('/data/articles', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
-
-      if (data.articles && Array.isArray(data.articles)) {
-        console.log('openalex trouvées ', data.articles)
-
-        return data.articles
-      } else {
-        throw new Error('Format de réponse invalide')
-      }
+      if (data.articles && Array.isArray(data.articles)) return data.articles
+      throw new Error('Format de réponse invalide')
     } catch (err) {
       console.error('Erreur:', err)
       setError(err.message)
-    } finally {
     }
   }
+
   const fetchImages = async () => {
     try {
-      setLoading(true)
-
-      const response = await fetchWithAuth('/data/images', {
-        method: 'GET',
-      })
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`)
-      }
-
+      const response = await fetchWithAuth('/data/images', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
-      console.log('data : ', data)
-      if (data.photos && Array.isArray(data.photos)) {
-        console.log('image ressortie ', data.photos)
-        return data.photos
-      } else {
-        throw new Error('Format de réponse invalide')
-      }
+      if (data.photos && Array.isArray(data.photos)) return data.photos
+      throw new Error('Format de réponse invalide')
     } catch (err) {
       console.error('Erreur:', err)
       setError(err.message)
-    } finally {
     }
   }
+
   const fetchNews = async () => {
     try {
-      setLoading(true)
-
-      const response = await fetchWithAuth('/data/news', {
-        method: 'GET',
-      })
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`)
-      }
-
+      const response = await fetchWithAuth('/data/news', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
-
-      if (data.articles && Array.isArray(data.articles)) {
-        console.log('news trouvées')
-
-        return data.articles
-      } else {
-        throw new Error('Format de réponse invalide')
-      }
+      if (data.articles && Array.isArray(data.articles)) return data.articles
+      throw new Error('Format de réponse invalide')
     } catch (err) {
       console.error('Erreur:', err)
       setError(err.message)
-    } finally {
     }
   }
 
   const fetchAll = async () => {
-    let shuffled = []
     const [articlesData, newsData, photosData] = await Promise.all([
       fetchArticles(),
       fetchNews(),
@@ -112,8 +68,7 @@ function ArticlePage(props) {
 
     if (articlesData && newsData && photosData) {
       setLoading(false)
-      shuffled = shuffleArray([...articlesData, ...newsData, ...photosData])
-      console.log('data taken : ', shuffled)
+      const shuffled = shuffleArray([...articlesData, ...newsData, ...photosData])
       setAll(shuffled)
     }
   }
@@ -122,79 +77,91 @@ function ArticlePage(props) {
     let shuffled = [...data]
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-
       ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
-
     return shuffled.slice(0, 20)
   }
 
   return (
     <>
-      <NavbarSite />
-      <CarouselImg></CarouselImg>
-      <main className="container my-5 min-vh-100 overflow-auto">
+      {/* ✅ RGAA 12.7 — lien d'évitement vers le contenu principal */}
+      <a href="#contenu-principal" className="visually-hidden-focusable">
+        Aller au contenu principal
+      </a>
+
+      <CarouselImg />
+
+      {/* ✅ RGAA 9.2 — landmark <main> avec id */}
+      <main id="contenu-principal" className="container my-5 min-vh-100 overflow-auto">
+
+        {/* ✅ RGAA 9.1 — h1 unique et pertinent */}
         <h1 className="section-title mb-4">Vos articles</h1>
 
+        {/* ✅ RGAA 11.3 — alerte d'erreur accessible */}
         {error && (
-          <div className="alert alert-warning" role="alert">
-            Attention: {error}. Affichage des articles par défaut.
+          <div className="alert alert-warning" role="alert" aria-live="polite">
+            Attention : {error}. Affichage des articles par défaut.
           </div>
         )}
 
+        {/* ✅ RGAA 7.3 — indicateur de chargement avec texte accessible */}
         {loading && (
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Chargement...</span>
+          <div
+            className="spinner-border"
+            role="status"
+            aria-label="Chargement des articles en cours"
+          >
+            <span className="visually-hidden">Chargement…</span>
           </div>
         )}
 
         <div className="container my-5 max-vh-100">
           <div className="col-12">
-            <div className="row">
+            {/* ✅ RGAA 9.3 — liste sémantique pour un ensemble d'articles */}
+            <ul className="list-unstyled row" aria-label="Liste des articles et photos">
               {all.map((item, idx) => {
                 switch (item.type) {
                   case 'article':
                   case 'news':
                     return (
-                      <Article
-                        key={`article-${idx}`}
-                        id={idx}
-                        title={item.title}
-                        date={item.published || item.date || item.publishedAt}
-                        concepts={item.concepts || item.category}
-                        excerpt={
-                          item.summary || item.excerpt || item.description
-                        }
-                        author={item.authors?.[0] || item.author || item.source}
-                        type={item.type}
-                        url={item.link || item.url}
-                      />
+                      // ✅ chaque élément de liste enveloppe le composant Article
+                      <li key={`article-${idx}`} className="col-12 col-md-6">
+                        <Article
+                          id={idx}
+                          title={item.title}
+                          date={item.published || item.date || item.publishedAt}
+                          concepts={item.concepts || item.category}
+                          excerpt={item.summary || item.excerpt || item.description}
+                          author={item.authors?.[0] || item.author || item.source}
+                          type={item.type}
+                          url={item.link || item.url}
+                        />
+                      </li>
                     )
 
                   case 'photo':
                     return (
-                      <Photos
-                        key={`photo-${idx}`}
-                        id={idx}
-                        title={item.title}
-                        date={item.published}
-                        url={item.url}
-                        description={item.description}
-                        photographer={item.photographer}
-                        photographerUrl={item.photographerLink}
-                      />
+                      <li key={`photo-${idx}`} className="col-12 col-md-6">
+                        <Photos
+                          id={idx}
+                          title={item.title}
+                          date={item.published}
+                          url={item.url}
+                          description={item.description}
+                          photographer={item.photographer}
+                          photographerUrl={item.photographerLink}
+                        />
+                      </li>
                     )
 
                   default:
                     return null
                 }
               })}
-            </div>
+            </ul>
           </div>
         </div>
       </main>
-
-      <FooterSite />
     </>
   )
 }

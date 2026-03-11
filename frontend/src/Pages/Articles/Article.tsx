@@ -17,7 +17,7 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
 
   const truncateExcerpt = (text: string, maxLength: number = 220) => {
     if (!text) return ''
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+    return text.length > maxLength ? text.substring(0, maxLength) + '…' : text
   }
 
   const likes = async (articles_id: string | number) => {
@@ -32,27 +32,30 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
         body: JSON.stringify({ articles_id }),
       })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      console.log('Favori ajouté :', await response.json())
     } catch (err) { console.error('Erreur:', err) }
   }
 
+  const formattedDate = formatDate(date)
+
   return (
-    <article className="mb-4 articleComp" style={{
-      borderRadius: '14px',
-      overflow: 'hidden',
-      padding: '1.4rem 1.6rem',
-    }}>
+    <article
+      className="mb-4 articleComp"
+      style={{ borderRadius: '14px', overflow: 'hidden', padding: '1.4rem 1.6rem' }}
+    >
       <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
+
           {(type || concepts) && (
             <div style={{ marginBottom: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {type && (
-                <span style={{
-                  fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
-                  letterSpacing: '0.08em', color: '#8B6914',
-                  background: 'rgba(212,168,71,0.12)', padding: '0.2rem 0.6rem',
-                  borderRadius: '20px',
-                }}>
+                <span
+                  style={{
+                    fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase',
+                    letterSpacing: '0.08em', color: '#8B6914',
+                    background: 'rgba(212,168,71,0.12)', padding: '0.2rem 0.6rem',
+                    borderRadius: '20px',
+                  }}
+                >
                   {type}
                 </span>
               )}
@@ -69,42 +72,51 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
             </div>
           )}
 
-          <h5 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontWeight: 700, fontSize: '1.15rem'
-            , marginBottom: '0.5rem', lineHeight: 1.3,
+          <h2 style={{
+            fontFamily: "'Tahoma', Georgia, serif",
+            fontWeight: 550, fontSize: '1.15rem',
+            marginBottom: '0.5rem', lineHeight: 1.3,
           }}>
             {title}
-          </h5>
+          </h2>
 
           <div style={{
-            fontSize: '0.78rem', color: '#8a7a65', marginBottom: '0.75rem',
-            fontFamily: "'Lato', sans-serif",
+            fontSize: '0.78rem', marginBottom: '0.75rem',
+            fontFamily: "'Tahoma', sans-serif",
           }}>
-            {formatDate(date)}{author && <span> · {author}</span>}
+            {date && <time dateTime={date}>{formattedDate}</time>}
+            {author && <span> · <span>{author}</span></span>}
           </div>
 
-          <p style={{
-            fontSize: '0.9rem', lineHeight: 1.65,
-            marginBottom: '1rem', fontFamily: "'Lato', sans-serif",
+          <p className="paragraph" style={{
+            fontSize: '1rem', lineHeight: 1.65,
+            marginBottom: '1rem', fontFamily: "'Tahoma', sans-serif",
           }}>
             {truncateExcerpt(excerpt)}
           </p>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {url && (
-              <a href={url} target="_blank" rel="noopener noreferrer" style={{
-                fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase',
-                letterSpacing: '0.06em', color: '#8B6914',
-                textDecoration: 'none', borderBottom: '1.5px solid rgba(139,105,20,0.35)',
-                paddingBottom: '1px', transition: 'border-color 0.2s',
-              }}>
-                Lire l'article →
+              // ✅ RGAA 6.1 — intitulé explicite avec titre de l'article
+              // ✅ RGAA 6.3 — nouvelle fenêtre indiquée
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Lire l'article : ${title} (nouvelle fenêtre)`}
+                className='lire_larticle'
+              >
+                Lire l'article
+                {/* ✅ RGAA 6.3 — indication "nouvelle fenêtre" accessible */}
+                <span className="visually-hidden"> (nouvelle fenêtre)</span>
               </a>
             )}
+
+            {/* ✅ RGAA 7.1 / 11.9 — bouton avec aria-label explicite */}
+            {/* ✅ RGAA 1.1 — le caractère ♡ n'est pas porteur d'info suffisante seul */}
             <button
               onClick={() => likes(id)}
-              title="Ajouter aux favoris"
+              aria-label={`Ajouter "${title}" aux favoris`}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: '#d4a847', fontSize: '1.1rem', padding: '0',
@@ -113,9 +125,11 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
               onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.2)')}
               onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
             >
-              ♡
+              {/* ✅ aria-hidden sur l'icône décorative */}
+              <span aria-hidden="true">♡</span>
             </button>
           </div>
+
         </div>
       </div>
     </article>

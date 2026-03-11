@@ -20,13 +20,16 @@ import ProfileFavorites from './Pages/Profile/ProfileFavorites'
 import ArticlePage from './Pages/Articles/ArticlePage'
 import { useAutoRefreshToken } from './Hooks/useAutoRefreshToken'
 import { ThemeProvider } from './helpers/ChangeStyle'
-
+import FooterSite from './Components/FooterSite'
+import NavbarSite from './Components/NavbarSite'
 function AppContent() {
   // Utiliser le hook de refresh automatique
   useAutoRefreshToken()
 
   return (
     <BrowserRouter>
+    <NavbarSite></NavbarSite>
+    <div className='mt-5'></div>
       <Routes>
         <Route element={<NonProtectedRoute />}>
           <Route path="/register" element={<RegisterPage />} />
@@ -46,6 +49,7 @@ function AppContent() {
           <Route path="/Profile/Favorites" element={<ProfileFavorites />} />
         </Route>
       </Routes>
+      <FooterSite></FooterSite>
     </BrowserRouter>
   )
 }
@@ -54,6 +58,7 @@ function App() {
   return (
     <ThemeProvider>
     <AuthProvider>
+      
       <AppContent />
     </AuthProvider>
     </ThemeProvider>

@@ -1,7 +1,7 @@
 function FooterSite() {
   return (
     <>
-      <div className="footer container fixed-bottom">
+      <div className="footer w-100 bottom fw-bold">
         {' '}
         <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
           {' '}
@@ -13,14 +13,15 @@ function FooterSite() {
               aria-label="Bootstrap"
             >
               {' '}
-              <svg
+              <svg 
+                aria-labelledby="titre-svg"
                 className="bi"
                 width="30"
                 height="24"
                 aria-hidden="true"
               ></svg>{' '}
             </a>{' '}
-            <span className="mb-3 mb-md-0 text-body-secondary">
+            <span className="mb-3 mb-md-0 text-body-primary">
               © 2025 Company, Inc
             </span>{' '}
           </div>{' '}

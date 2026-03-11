@@ -2,13 +2,13 @@ import FooterSite from '../../Components/FooterSite'
 import NavbarSite from '../../Components/NavbarSite'
 import { useAuth } from '../../Context/AuthContext'
 import interestsData from '../../Assets/interests.json'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { fetchWithAuth } from '../../Services/apiClient'
 import ProfileAccessibility from './ProfileAccessibility'
 
 function ProfileSettings() {
-  function handleInterests(value) {
-    SetSelectedInterests((prev) =>
+  function handleInterests(value: string) {
+    setSelectedInterests((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     )
   }
@@ -25,18 +25,19 @@ function ProfileSettings() {
   }
 
   const [username, setUsername] = useState(user?.username || '')
-  const [interests, SetSelectedInterests] = useState(
-    parseInterests(user?.interests)
-  )
+  const [interests, setSelectedInterests] = useState(parseInterests(user?.interests))
   const [picture, setPicture] = useState(user?.picture || null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [showModal, setShowModal] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  // ✅ RGAA 11.3 — ref pour gérer le focus sur la zone de statut
+  const statusRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (user) {
       setUsername(user.username)
-      SetSelectedInterests(parseInterests(user.interests))
+      setSelectedInterests(parseInterests(user.interests))
       setPicture(user.picture || null)
     }
   }, [user])
@@ -45,9 +46,7 @@ function ProfileSettings() {
     e.preventDefault()
     setError('')
     setSuccess('')
-
-    let btn = document.querySelector('button[type="submit"]')
-    if (btn) btn.innerHTML = 'Chargement ...'
+    setLoading(true)
 
     try {
       const response = await fetchWithAuth('/users/updated-profile', {
@@ -65,147 +64,103 @@ function ProfileSettings() {
       if (data.status === 'Success') {
         updateProfile(data.accessToken, data.refreshToken)
         await fetchUserProfile()
-        setSuccess('Profil mis à jour avec succès!')
-        setTimeout(() => {
-          setSuccess('')
-        }, 3000)
+        // ✅ RGAA 11.3 — message de succès annoncé via aria-live
+        setSuccess('Profil mis à jour avec succès !')
+        setTimeout(() => setSuccess(''), 3000)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erreur mise à jour profil:', err)
       setError(err.message || 'Erreur lors de la mise à jour du profil')
     } finally {
-      if (btn) btn.innerHTML = 'Valider les modifications'
+      setLoading(false)
     }
   }
 
   if (!user) {
     return (
-      <>
-        <NavbarSite />
-        <div className="bg-light min-vh-100 py-5">
-          <div className="container mt-4">
-            <div className="row">
-              <div className="col-md-8 mx-auto">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <p>Chargement du profil...</p>
-                  </div>
+      <div className="bg-light min-vh-100 py-5">
+        <div className="container mt-4">
+          <div className="row">
+            <div className="col-md-8 mx-auto">
+              <div className="card shadow">
+                <div className="card-body">
+                  {/* ✅ RGAA 7.3 — indicateur de chargement accessible */}
+                  <p role="status" aria-live="polite">Chargement du profil…</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <FooterSite />
-      </>
+      </div>
     )
   }
 
   return (
-    <>
-      <NavbarSite />
+    <main id="contenu-principal" className="container py-5">
 
-      <div className="container py-5">
-        <form onSubmit={handlesubmit}>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <ProfileAccessibility></ProfileAccessibility>
-          <button
-            type="button"
-            className="btn btn-primary mb-3"
-            onClick={() => setShowModal(true)}
-          >
-            Sélectionner vos intérêts
-          </button>
+      <h1 className="mb-4">Paramètres du profil</h1>
 
-          <button type="submit" className="btn btn-success">
-            Valider
-          </button>
-        </form>
+      <div
+        ref={statusRef}
+        aria-live="polite"
+        aria-atomic="true"
+        className={`alert ${error ? 'alert-danger' : 'alert-success'} ${!error && !success ? 'd-none' : ''}`}
+        role={error ? 'alert' : 'status'}
+      >
+        {error || success}
       </div>
 
-      {showModal && (
-        <div
-          className="modal show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Sélection des intérêts</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
+      <ProfileAccessibility />
 
-              <div className="modal-body">
-                {interestsData.categories.map((category) => {
-                  const categoryInterests = interestsData.interests.filter(
-                    (i) => i.category === category.id
-                  )
-                  return (
-                    <div key={category.id} className="mb-3">
-                      <h6 className="text-primary">{category.label}</h6>
-                      <div className="row">
-                        {categoryInterests.map((interest) => (
-                          <div key={interest.id} className="col-6 mb-2">
-                            <div className="form-check">
-                              <input
-                                type="checkbox"
-                                className="form-check-input"
-                                id={`interest-${interest.id}`}
-                                checked={interests.includes(interest.id)}
-                                onChange={() => handleInterests(interest.id)}
-                              />
-                              <label
-                                htmlFor={`interest-${interest.id}`}
-                                className="form-check-label"
-                              >
-                              {interest.label}
-                              </label>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+      <form onSubmit={handlesubmit} noValidate>
 
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Fermer
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Valider
-                </button>
-              </div>
-            </div>
-          </div>
+        <div className="mb-3">
+          {/* ✅ RGAA 11.1 — label associé via htmlFor / id */}
+          <label htmlFor="settings-username" className="form-label">
+            Nom d'utilisateur
+          </label>
+          <input
+            type="text"
+            id="settings-username"
+            className="form-control"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+          />
         </div>
-      )}
-      <FooterSite />
-    </>
+
+        {/* ✅ RGAA 11.5 — fieldset + legend pour les cases à cocher groupées */}
+        <fieldset className="mb-3">
+          <legend className="form-label">Sélectionnez vos centres d'intérêt</legend>
+          {interestsData?.interests.map((item) => (
+            <div key={item.id} className="form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id={`interest-${item.id}`}
+                checked={interests.includes(item.id)}
+                onChange={() => handleInterests(item.id)}
+              />
+              {/* ✅ RGAA 11.1 — chaque checkbox a son label associé */}
+              <label htmlFor={`interest-${item.id}`} className="form-check-label">
+                {item.label}
+              </label>
+            </div>
+          ))}
+        </fieldset>
+
+        <button
+          type="submit"
+          disabled={loading}
+          aria-disabled={loading}
+          className="btn btn-success"
+        >
+          {loading ? 'Sauvegarde en cours…' : 'Valider'}
+        </button>
+
+      </form>
+    </main>
   )
 }
+
 export default ProfileSettings

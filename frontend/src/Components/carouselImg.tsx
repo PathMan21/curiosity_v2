@@ -18,6 +18,8 @@ function ImgRandom() {
         <Image 
             src={mapImg[nbRand]} 
             className='card-caroussel'
+                        alt="photo de présentations"
+
             style={{ height: '300px', objectFit: 'cover', width: '100%' }}
             fluid 
         />

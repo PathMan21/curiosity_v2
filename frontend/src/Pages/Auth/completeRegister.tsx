@@ -59,9 +59,7 @@ function CompleteInscription() {
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
         throw new Error(
-          data?.message ||
-            data?.status ||
-            'Erreur lors de la mise à jour du profil'
+          data?.message || data?.status || 'Erreur lors de la mise à jour du profil'
         )
       }
 
@@ -82,36 +80,53 @@ function CompleteInscription() {
   }
 
   return (
-    <div className="container mt-5">
+    // ✅ RGAA 9.2 — landmark <main>
+    <main id="contenu-principal" className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className="card shadow">
             <div className="card-body p-5">
-              <h1 className="text-center mb-4">Heureux de vous connaitre !</h1>
+
+              {/* ✅ RGAA 9.1 — h1 présent */}
+              <h1 className="text-center mb-4">Finalisez votre inscription</h1>
+
+              {/* ✅ RGAA 11.3 — erreur avec role="alert" */}
               {error && (
-                <div className="alert alert-danger" role="alert">
+                <div
+                  className="alert alert-danger"
+                  role="alert"
+                  aria-live="assertive"
+                  aria-atomic="true"
+                >
                   {error}
                 </div>
               )}
-              <form onSubmit={handleSubmit}>
+
+              <form onSubmit={handleSubmit} noValidate>
+
                 <div className="mb-3">
-                  <label htmlFor="aligned-name" className="form-label">
-                    Username
+                  {/* ✅ RGAA 11.1 — label lié */}
+                  <label htmlFor="complete-username" className="form-label">
+                    Nom d'utilisateur{' '}
+                    <span aria-hidden="true">*</span>
+                    <span className="visually-hidden">(obligatoire)</span>
                   </label>
                   <input
-                    id="aligned-name"
+                    id="complete-username"
                     type="text"
                     className="form-control"
-                    placeholder="Username"
+                    placeholder="Votre nom d'utilisateur"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    aria-required="true"
+                    autoComplete="username"
                   />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label d-block mb-2">
-                    Vos intérêts
-                  </label>
+
+                {/* ✅ RGAA 11.5 — fieldset + legend pour les cases à cocher groupées */}
+                <fieldset className="mb-3">
+                  <legend className="form-label">Vos centres d'intérêt</legend>
                   <div className="row">
                     {interestsValues.interests.map((value, index) => {
                       const valueCleaned = value.id.split('_').join(' ')
@@ -126,6 +141,7 @@ function CompleteInscription() {
                               onChange={() => handleInterests(value.id)}
                               value={value.id}
                             />
+                            {/* ✅ RGAA 11.1 — label associé à chaque checkbox */}
                             <label
                               className="form-check-label"
                               htmlFor={`interest-${index}`}
@@ -137,34 +153,42 @@ function CompleteInscription() {
                       )
                     })}
                   </div>
-                </div>
+                </fieldset>
+
                 <div className="mb-3">
-                  <label htmlFor="aligned-password" className="form-label">
-                    Password
+                  <label htmlFor="complete-password" className="form-label">
+                    Mot de passe{' '}
+                    <span aria-hidden="true">*</span>
+                    <span className="visually-hidden">(obligatoire)</span>
                   </label>
                   <input
-                    id="aligned-password"
+                    id="complete-password"
                     type="password"
                     className="form-control"
-                    placeholder="Password"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    aria-required="true"
+                    autoComplete="new-password"
                   />
                 </div>
+
                 <button
                   type="submit"
                   className="btn btn-primary w-100"
                   disabled={loading}
+                  aria-disabled={loading}
                 >
-                  {loading ? 'Mise à jour...' : "Compléter l'inscription"}
+                  {loading ? 'Mise à jour…' : "Compléter l'inscription"}
                 </button>
+
               </form>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

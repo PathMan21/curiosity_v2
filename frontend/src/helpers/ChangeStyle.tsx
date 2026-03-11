@@ -24,13 +24,12 @@ export const ThemeProvider = ({ children }) => {
     return saved.highContrast || false;
   });
 
-  // === Application des styles ===
   useEffect(() => {
     const body = document.body;
     body.classList.remove("font-small", "font-normal", "font-large", "font-xlarge");
     body.classList.add(fontSize);
 
-    cursor ? body.classList.add("big-cursor") : body.classList.remove("big-cursor");
+    cursor ? body.classList.add("accessible-cursor") : body.classList.remove("accessible-cursor");
     dark ? body.classList.add("darkmode") : body.classList.remove("darkmode");
     highContrast ? body.classList.add("high-contrast") : body.classList.remove("high-contrast");
 

@@ -13,7 +13,7 @@ function NavbarSite() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg" style={{
+      <nav className="navbar fixed-top navbar-expand-lg" style={{
         backgroundColor: '#FFFFFF',
         borderBottom: '1px solid rgba(212,168,71,0.25)',
         boxShadow: '0 2px 16px rgba(139,105,20,0.08)',

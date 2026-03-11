@@ -10,20 +10,17 @@ function Profile() {
   if (!user) {
     return (
       <>
-        <NavbarSite />
         <div className="bg-light min-vh-100 py-5">
           <div className="container mt-4">
             <p>Chargement du profil...</p>
           </div>
         </div>
-        <FooterSite />
       </>
     )
   }
 
   return (
     <>
-      <NavbarSite />
       <div className="bg-light min-vh-100 py-5">
         <ProfileInfo
           img={user.picture}
@@ -32,7 +29,6 @@ function Profile() {
           username={user.username}
         ></ProfileInfo>
       </div>
-      <FooterSite />
     </>
   )
 }

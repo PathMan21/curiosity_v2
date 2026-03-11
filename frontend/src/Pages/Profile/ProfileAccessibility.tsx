@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useTheme } from "../../helpers/ChangeStyle";
-
 function ProfileAccessibility() {
   const { fontSize, cursor, dark, setFontSize, setCursor, setDark } = useTheme();
 
@@ -14,7 +13,7 @@ function ProfileAccessibility() {
     setCursor(localCursor);
     setDark(localDark);
     setConfirmationMsg("Vos paramètres d'accessibilité ont été appliqués.");
-    setTimeout(() => setConfirmationMsg(""), 3000);
+    
   }
 
   return (
@@ -86,7 +85,6 @@ function ProfileAccessibility() {
         Valider
       </button>
 
-      {/* Zone de confirmation (aria-live pour lecteur d’écran) */}
       <div
         className="visually-hidden"
         role="status"

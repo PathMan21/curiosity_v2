@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../Context/AuthContext'
 import { fetchWithAuth } from '../../Services/apiClient'
 
-import NavbarSite from '../../Components/NavbarSite'
-import FooterSite from '../../Components/FooterSite'
-
 function ProfileFavorites() {
   const { token } = useAuth()
   const [favorites, setFavorites] = useState<any[]>([])
@@ -28,8 +25,6 @@ function ProfileFavorites() {
         }
 
         const data = await response.json()
-        console.log('favorites : ', data)
-
         setFavorites(data.favorites || [])
       } catch (err: any) {
         console.error(err)
@@ -44,44 +39,65 @@ function ProfileFavorites() {
     }
   }, [token])
 
-  if (loading) return <p>Chargement des favoris...</p>
-  if (error) return <p className="text-danger">{error}</p>
+  // ✅ RGAA 9.2 — les états de chargement/erreur restent dans le <main>
+  if (loading) return (
+    <main id="contenu-principal" className="container mt-4">
+      {/* ✅ RGAA 7.3 — état de chargement accessible */}
+      <p role="status" aria-live="polite">Chargement des favoris…</p>
+    </main>
+  )
 
-  if (favorites.length === 0)
-    return <p>Vous n’avez aucun favori pour le moment.</p>
+  if (error) return (
+    <main id="contenu-principal" className="container mt-4">
+      {/* ✅ RGAA 11.3 — erreur accessible */}
+      <p role="alert" aria-live="assertive" className="text-danger">{error}</p>
+    </main>
+  )
+
+  if (favorites.length === 0) return (
+    <main id="contenu-principal" className="container mt-4">
+      <p>Vous n'avez aucun article favori pour le moment.</p>
+    </main>
+  )
 
   return (
-    <>
-      <NavbarSite />
+    // ✅ RGAA 9.2 — landmark <main>
+    <main id="contenu-principal" className="container mt-4">
 
-      <div className="container mt-4">
-        <h2 className="mb-3">Mes Favoris</h2>
-        <div className="row">
-          {favorites.map((fav, idx) => (
-            <div key={fav.id || idx} className="col-md-6 mb-3">
-              <div className="card shadow-sm">
-                <div className="card-body">
-                  <h5 className="card-title">{fav.title}</h5>
-                  <p className="card-text">{fav.excerpt || fav.description}</p>
-                  {fav.url && (
-                    <a
-                      href={fav.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-sm btn-outline-primary"
-                    >
-                      Lire l'article
-                    </a>
-                  )}
-                </div>
+      {/* ✅ RGAA 9.1 — h1 de page */}
+      <h1 className="mb-3">Mes articles favoris</h1>
+
+      {/* ✅ RGAA 9.3 — liste sémantique pour un ensemble d'articles */}
+      <ul className="list-unstyled row" aria-label="Liste de vos articles favoris">
+        {favorites.map((fav, idx) => (
+          <li key={fav.id || idx} className="col-md-6 mb-3">
+            <article className="card shadow-sm h-100">
+              <div className="card-body">
+
+                <h2 className="card-title h5">{fav.title}</h2>
+
+                <p className="card-text">{fav.excerpt || fav.description}</p>
+
+                {fav.url && (
+                  <a
+                    href={fav.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Lire l'article : ${fav.title} (nouvelle fenêtre)`}
+                    className="btn btn-sm btn-outline-primary"
+                  >
+                    Lire l'article
+                    <span className="visually-hidden"> (nouvelle fenêtre)</span>
+                  </a>
+                )}
+
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            </article>
+          </li>
+        ))}
+      </ul>
 
-      <FooterSite />
-    </>
+    </main>
   )
 }
 
