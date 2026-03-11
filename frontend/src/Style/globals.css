@@ -1,41 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
 
 :root {
-
-  --main: #694d06;
-  --main-hover: #241a02;
-  --second: #d4a847;
+  --main: #1a4a7a;
+  --main-hover: #0d2645;
+  --second: #4a90d9;
   --bg: #FFFFFF;
-  --bg-body: #f9f5ed;
-  ;
-  --bg-section: #F5F0E8;
-  --subtitles: #6b5010;
-  --text: #2c2416;
-  --text-muted: #71532b;
-  --alert: #f8f1e4;
-  --border: #d4a84740;
-  --bg-body-card: #fffdf8;
-
-  --text-title: #d4a847;
-
+  --bg-body: #f0f5fb;
+  --bg-section: #e8f0f8;
+  --subtitles: #2a5f8f;
+  --text: #0d1f2d;
+  --text-muted: #4a6f8a;
+  --alert: #e8f2fc;
+  --border: #4a90d940;
+  --bg-body-card: #f7fafd;
+  --text-title: #2a7abf;
 
   /* 🚨 États */
   --danger: #b33a3a;
   --danger-bg: #f8e4e4;
-  --info: #8B6914;
-  --info-bg: #f8f1e4;
+  --info: #1a5f8a;
+  --info-bg: #e8f2fc;
 
   /* 🅰️ Typographie */
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'Lato', 'Segoe UI', sans-serif;
 
   /* ✨ Effets */
-  --shadow-card: 0 2px 12px rgba(139, 105, 20, 0.10), 0 1px 4px rgba(139, 105, 20, 0.07);
-  --shadow-hover: 0 8px 28px rgba(139, 105, 20, 0.18);
+  --shadow-card: 0 2px 12px rgba(26, 74, 122, 0.10), 0 1px 4px rgba(26, 74, 122, 0.07);
+  --shadow-hover: 0 8px 28px rgba(26, 74, 122, 0.18);
   --radius: 14px;
   --radius-sm: 8px;
 }
-
 /* ════════════════════════════════════════
    BASE
 ════════════════════════════════════════ */
@@ -52,24 +47,21 @@
   cursor: url("data:image/svg+xml;utf8, <svg xmlns='http://www.w3.org/2000/svg'width='40'height='40'> <circle cx='20'cy='20'r='10'fill='black'/> </svg>"), auto;
 
   }
-
-  .darkmode {
-    --main: #e1d7be;
-    --main-hover: #cab687;
-    --second: #fedc93;
-    --bg: #1C1C1C;
-    --bg-body: #403c31; ;
-    --bg-section: #393329;
-    --subtitles: #6b5010;
-    --text: #ffffff;
-    --text-muted: #8a7a65;
-    --alert: #3c1e13;
-    --border: #ffd16e40;
-    --bg-body-card: #32312f;
-    --text-title: #d4a847;
-
-  }
-
+.darkmode {
+  --main: #b8d4f0;
+  --main-hover: #7aaee0;
+  --second: #93c5fd;
+  --bg: #111827;
+  --bg-body: #1a2a3d;
+  --bg-section: #162236;
+  --subtitles: #3a6fa8;
+  --text: #ffffff;
+  --text-muted: #6a90b0;
+  --alert: #0f2a45;
+  --border: #93c5fd40;
+  --bg-body-card: #1e2f42;
+  --text-title: #60a5fa;
+}
   h5 {
     color: var(--text-title);
   }

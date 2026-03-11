@@ -574,10 +574,12 @@ Prochaines étapes :
 -> Faire des migrations
 -> Ajouter un changelog
 
-Annexes / bugs
+Annexes / bugs :
 -> Voir pourquoi il y a un tel ralentissement sur le chargement des articles
 -> Récupérer que des articles de la même langue
--> Récupérer des articles en majorité accompagné d'image 
+
+-> Récupérer des articles en majorité accompagné d'image - pas possible
+
 -> Mettre dans le caroussel du contenu intéressant
 -> Retravailler les couleurs pour faire quelque chose de plus scientifiques
 -> Docker watch par pitié

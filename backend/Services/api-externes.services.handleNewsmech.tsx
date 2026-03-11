@@ -58,7 +58,7 @@ async function handleNewsmech(req, res) {
         console.log('Données trouvées dans :', cacheKey)
         filteredData.push(...cachedData.articles)
       } else {
-        const urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=100&category=${category}`
+        const urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=100&category=${category}&sourceCountry=us,gb,ca,au`
 
         try {
           const response = await fetch(urlNews, {
@@ -82,7 +82,7 @@ async function handleNewsmech(req, res) {
             source: article.source,
             category: article.category,
             author: article.author,
-            type: 'article',
+            type: 'news',
             url: article.link,
           }))
 

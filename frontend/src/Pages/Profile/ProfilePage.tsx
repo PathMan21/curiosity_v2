@@ -20,7 +20,8 @@ function Profile() {
   }
 
   return (
-    <>
+    <div>
+    <NavbarSite></NavbarSite>
       <div className="bg-light min-vh-100 py-5">
         <ProfileInfo
           img={user.picture}
@@ -28,8 +29,10 @@ function Profile() {
           interests={user.interests}
           username={user.username}
         ></ProfileInfo>
-      </div>
-    </>
+        
+    </div>
+    <FooterSite></FooterSite>
+    </div>
   )
 }
 

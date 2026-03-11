@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useTheme } from "../../helpers/ChangeStyle";
+import NavbarSite from "../../Components/NavbarSite";
+import FooterSite from "../../Components/FooterSite";
+
 function ProfileAccessibility() {
   const { fontSize, cursor, dark, setFontSize, setCursor, setDark } = useTheme();
 
@@ -17,6 +20,8 @@ function ProfileAccessibility() {
   }
 
   return (
+    <div>
+    <NavbarSite></NavbarSite>
     <section
       className="accessibility-form"
       aria-labelledby="accessibility-title"
@@ -93,6 +98,8 @@ function ProfileAccessibility() {
         {confirmationMsg}
       </div>
     </section>
+    <FooterSite></FooterSite>
+    </div>
   );
 }
 

@@ -28,7 +28,6 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-    <NavbarSite></NavbarSite>
     <div className='mt-5'></div>
       <Routes>
         <Route element={<NonProtectedRoute />}>
@@ -43,13 +42,14 @@ function AppContent() {
         {/* </Route> */}
 
         <Route element={<AdminProtectedRoute />}>
-          <Route path="/Home" element={<ArticlePage />} />
-          <Route path="/Profile" element={<Profile />} />
-          <Route path="/Profile/settings" element={<ProfileSettings />} />
-          <Route path="/Profile/Favorites" element={<ProfileFavorites />} />
+
+              <Route path="/Home" element={<ArticlePage />} />
+              <Route path="/Profile" element={<Profile />} />
+              <Route path="/Profile/settings" element={<ProfileSettings />} />
+              <Route path="/Profile/Favorites" element={<ProfileFavorites />} />
+
         </Route>
       </Routes>
-      <FooterSite></FooterSite>
     </BrowserRouter>
   )
 }

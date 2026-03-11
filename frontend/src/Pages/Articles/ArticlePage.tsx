@@ -38,8 +38,7 @@ function ArticlePage(props) {
       const response = await fetchWithAuth('/data/images', { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
-      if (data.photos && Array.isArray(data.photos)) return data.photos
-      throw new Error('Format de réponse invalide')
+      return data.photos
     } catch (err) {
       console.error('Erreur:', err)
       setError(err.message)
@@ -51,8 +50,7 @@ function ArticlePage(props) {
       const response = await fetchWithAuth('/data/news', { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
-      if (data.articles && Array.isArray(data.articles)) return data.articles
-      throw new Error('Format de réponse invalide')
+      return data.articles
     } catch (err) {
       console.error('Erreur:', err)
       setError(err.message)
@@ -84,27 +82,24 @@ function ArticlePage(props) {
 
   return (
     <>
-      {/* ✅ RGAA 12.7 — lien d'évitement vers le contenu principal */}
+      <NavbarSite></NavbarSite>
+
       <a href="#contenu-principal" className="visually-hidden-focusable">
         Aller au contenu principal
       </a>
 
       <CarouselImg />
 
-      {/* ✅ RGAA 9.2 — landmark <main> avec id */}
       <main id="contenu-principal" className="container my-5 min-vh-100 overflow-auto">
 
-        {/* ✅ RGAA 9.1 — h1 unique et pertinent */}
         <h1 className="section-title mb-4">Vos articles</h1>
 
-        {/* ✅ RGAA 11.3 — alerte d'erreur accessible */}
         {error && (
           <div className="alert alert-warning" role="alert" aria-live="polite">
             Attention : {error}. Affichage des articles par défaut.
           </div>
         )}
 
-        {/* ✅ RGAA 7.3 — indicateur de chargement avec texte accessible */}
         {loading && (
           <div
             className="spinner-border"
@@ -117,14 +112,12 @@ function ArticlePage(props) {
 
         <div className="container my-5 max-vh-100">
           <div className="col-12">
-            {/* ✅ RGAA 9.3 — liste sémantique pour un ensemble d'articles */}
             <ul className="list-unstyled row" aria-label="Liste des articles et photos">
               {all.map((item, idx) => {
                 switch (item.type) {
                   case 'article':
                   case 'news':
                     return (
-                      // ✅ chaque élément de liste enveloppe le composant Article
                       <li key={`article-${idx}`} className="col-12 col-md-6">
                         <Article
                           id={idx}
@@ -162,6 +155,8 @@ function ArticlePage(props) {
           </div>
         </div>
       </main>
+                <FooterSite></FooterSite>
+
     </>
   )
 }

@@ -54,7 +54,7 @@ async function handleOpenAlex(req, res) {
           `🔍 Aucun cache trouvé pour ${subfieldId} - Appel OpenAlex énorme`
         )
         for (let page = 1; page <= maxPages; page++) {
-          const recentUrl = `https://api.openalex.org/works?filter=topics.subfield.id:${subfieldId},is_oa:true,publication_year:${currentYear - 1}-${currentYear}&per_page=${perPage}&page=${page}&sort=cited_by_count:desc`
+        const recentUrl = `https://api.openalex.org/works?filter=topics.subfield.id:${subfieldId},is_oa:true,institutions.country_code:gb,language:en|publication_year:${currentYear - 1}-${currentYear}&per_page=${perPage}&page=${page}&sort=cited_by_count:desc`
 
           const response = await fetch(recentUrl, { method: 'GET', headers })
           if (!response.ok) {
