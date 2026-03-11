@@ -558,4 +558,26 @@ Je ne l'agrandis alors que si l'utilisateur souhaite une aide en plus
 
 -> Faire la maquettes front - et adapter le système d'handicap visuel
 
-**---------------------------------01-03----------------------------------**
+**---------------------------------11-03----------------------------------**
+
+
+-> Système de rgaa adapter avec des plugins, rajout des alts etc... X
+-> Travail sur le front finis X
+
+
+-> Bugs sur footer / navbar à voir
+
+Prochaines étapes :
+
+-> Faire la liste des dix problèmes owasp - et vérifier qu'on ne soit pas en faille
+-> Pipeline CI-CD
+-> Faire des migrations
+-> Ajouter un changelog
+
+Annexes / bugs
+-> Voir pourquoi il y a un tel ralentissement sur le chargement des articles
+-> Récupérer que des articles de la même langue
+-> Récupérer des articles en majorité accompagné d'image 
+-> Mettre dans le caroussel du contenu intéressant
+-> Retravailler les couleurs pour faire quelque chose de plus scientifiques
+-> Docker watch par pitié
