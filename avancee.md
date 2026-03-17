@@ -576,10 +576,27 @@ Prochaines étapes :
 
 Annexes / bugs :
 -> Voir pourquoi il y a un tel ralentissement sur le chargement des articles
--> Récupérer que des articles de la même langue
+-> Récupérer que des articles de la même langue X
 
 -> Récupérer des articles en majorité accompagné d'image - pas possible
 
 -> Mettre dans le caroussel du contenu intéressant
--> Retravailler les couleurs pour faire quelque chose de plus scientifiques
+-> Retravailler les couleurs pour faire quelque chose de plus scientifiques X
 -> Docker watch par pitié
+
+**---------------------------------17-03----------------------------------**
+
+
+Aujourd'hui : 
+
+-> Partager les articles quand on clique sur partage
+-> Pipeline CI-CD
+
+
+PIPELINE GITHUB ACTION :
+
+*Attention !*
+-  la configuration devra avoir un SHA plutot qu'un tag, un tag arrive quand on envoi du code et que le worflow s'active
+mais visiblement on peux les déplacer sur une autre action
+
+- Limiter les permissions à read seulement

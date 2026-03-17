@@ -58,8 +58,13 @@ async function handleNewsmech(req, res) {
         console.log('Données trouvées dans :', cacheKey)
         filteredData.push(...cachedData.articles)
       } else {
-        const urlNews = `${baseurl}latest?apiKey=${apiKey}&limit=100&category=${category}&sourceCountry=us,gb,ca,au`
+      const url = new URL(`${baseurl}latest`);
+      url.searchParams.set("apiKey", apiKey);
+      url.searchParams.set("limit", "25");
+      url.searchParams.set("category", category);
+      url.searchParams.set("sourceCountry", "us,gb,ca,au");
 
+const urlNews = url.toString();
         try {
           const response = await fetch(urlNews, {
             method: 'GET',
