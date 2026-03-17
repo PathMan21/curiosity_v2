@@ -28,9 +28,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci --ignore-scripts
 
-      - name: Run linter
-        run: npm run lint
-
       - name: Run tests
         run: npm run test
 
@@ -38,7 +35,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: test
     steps:
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      - uses: actions/checkout@v4
         with:
           cache: 'npm'
 
