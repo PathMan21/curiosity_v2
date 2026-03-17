@@ -596,7 +596,16 @@ Aujourd'hui :
 PIPELINE GITHUB ACTION :
 
 *Attention !*
--  la configuration devra avoir un SHA plutot qu'un tag, un tag arrive quand on envoi du code et que le worflow s'active
-mais visiblement on peux les déplacer sur une autre action
 
-- Limiter les permissions à read seulement
+-  la configuration devra avoir un SHA plutot qu'un tag, un tag arrive quand on envoi du code et que le worflow s'active
+mais visiblement on peux les déplacer sur une autre action X
+
+- Limiter les permissions à read seulement X
+
+- 
+
+
+
+Ajout de pipeline...
+nous avons retiré les sha & tag car en réalité ça permet de récupérer mon code à un instant T. Cependant, si je travaille et maitrise complètement
+mon code il n'y aucun intéret d'avoir une récupération de code
