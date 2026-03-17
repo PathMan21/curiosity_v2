@@ -31,14 +31,14 @@ jobs:
       # - name: Run tests
       #   run: npm run test
 
-  docker:
-    runs-on: ubuntu-24.04
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          cache: 'npm'
+  # docker:
+  #   runs-on: ubuntu-24.04
+  #   needs: test
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         cache: 'npm'
 
-      - name: Run Docker frontend
-        run: cd frontend && docker compose up --build
+  #     - name: Run Docker frontend
+  #       run: cd frontend && docker compose up --build
       

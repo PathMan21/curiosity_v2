@@ -609,3 +609,8 @@ mais visiblement on peux les déplacer sur une autre action X
 Ajout de pipeline...
 nous avons retiré les sha & tag car en réalité ça permet de récupérer mon code à un instant T. Cependant, si je travaille et maitrise complètement
 mon code il n'y aucun intéret d'avoir une récupération de code
+
+
+*Ajout*
+
+-> J'ai ajouté pour les tests et le lint MAIS - une fois hébergé il faudra rajouter le coté serveur
