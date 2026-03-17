@@ -64,7 +64,7 @@ async function handleNewsmech(req, res) {
       url.searchParams.set("category", category);
       url.searchParams.set("sourceCountry", "us,gb,ca,au");
 
-const urlNews = url.toString();
+        const urlNews = url.toString();
         try {
           const response = await fetch(urlNews, {
             method: 'GET',

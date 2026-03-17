@@ -36,10 +36,7 @@ app.use(
   app.use('/api/data', apiroutes)
   app.use('/api/favorites', favoritesRoutes)
 
-  app.get('/api/ping', (req, res: Response) => {
-    res.send('Pong')
-  })
-
+ 
   server.listen(PORT, () => {
     console.log(`✅ Serveur lancé sur le port ${PORT}`)
   })
