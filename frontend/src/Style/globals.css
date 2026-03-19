@@ -70,6 +70,49 @@
     background-color: var(--bg-body-card);
   }
 
+.carousel-wrapper {
+  max-width: 500px;  
+  margin: 0 auto;   
+}
+
+.carousel-books img {
+  height: 250px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.carousel-card {
+  padding: 15px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon,
+  .carousel-indicators {
+    filter: invert(1)
+  }
+  
+  .darkmode .carousel-control-prev-icon,
+  .darkmode .carousel-control-next-icon,
+  .darkmode .carousel-indicators {
+    filter: invert(0)
+  }
+
+.carousel-content {
+  margin-top: 10px;
+  color: var(--text-muted);
+}
+
+.carousel-content h5 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.carousel-content p {
+  font-size: 13px;
+  opacity: 0.8;
+}
   body {
     font-family: var(--font-body);
     font-size: var(--font-size-base);

@@ -1,18 +1,15 @@
 const API_URL = 'http://localhost:3000/api'
 
-// Interface pour la réponse de refresh token
 interface RefreshResponse {
   status: string
   accessToken: string
   refreshToken: string
 }
 
-// Interface pour les erreurs API
 interface ApiError extends Error {
   status: number
 }
 
-// Flag pour éviter les boucles de refresh infinies
 let isRefreshing = false
 let failedQueue: Array<{
   resolve: (value: string) => void
@@ -32,9 +29,7 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = []
 }
 
-/**
- * Effectue un fetch avec gestion automatique des refresh tokens
- */
+
 export const fetchWithAuth = async (
   endpoint: string,
   options: RequestInit = {}
@@ -42,17 +37,14 @@ export const fetchWithAuth = async (
   const token = localStorage.getItem('authToken')
   const refreshToken = localStorage.getItem('refreshToken')
 
-  // Créer les headers sans modifier l'original
   const headers: HeadersInit = {
     ...(options.headers || {}),
   }
 
-  // Ajouter Content-Type seulement si elle n'existe pas et si on a un body
   if (!headers['Content-Type'] && options.body) {
     headers['Content-Type'] = 'application/json'
   }
 
-  // Ajouter le token au header si disponible
   if (token) {
     headers.Authorization = `Bearer ${token}`
   }
@@ -64,14 +56,11 @@ export const fetchWithAuth = async (
 
   let response = await fetch(`${API_URL}${endpoint}`, mergedOptions)
 
-  // Gérer les erreurs 401 avec refresh token
   if (response.status === 401 && refreshToken) {
     if (isRefreshing) {
-      // Si un refresh est déjà en cours, attendre la file d'attente
       return new Promise((resolve, reject) => {
         failedQueue.push({
           resolve: (token) => {
-            // Refaire la requête avec le nouveau token
             mergedOptions.headers = {
               ...mergedOptions.headers,
               Authorization: `Bearer ${token}`,
@@ -95,7 +84,6 @@ export const fetchWithAuth = async (
 
       processQueue(null, refreshed.accessToken)
 
-      // Refaire la requête avec le nouveau token
       headers.Authorization = `Bearer ${refreshed.accessToken}`
       response = await fetch(`${API_URL}${endpoint}`, {
         ...mergedOptions,
@@ -104,11 +92,9 @@ export const fetchWithAuth = async (
     } catch (error) {
       processQueue(error, null)
 
-      // Nettoyer les tokens et rediriger vers login
       localStorage.removeItem('authToken')
       localStorage.removeItem('refreshToken')
 
-      // Utiliser replace pour éviter de pouvoir revenir en arrière
       window.location.replace('/login')
 
       throw error

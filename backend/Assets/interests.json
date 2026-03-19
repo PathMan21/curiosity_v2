@@ -6,7 +6,8 @@
       "category": "informatique",
       "description": "IA, apprentissage automatique, deep learning, réseaux de neurones",
       "openalex_field_id": "17",
-      "newsmech_category": "technology"
+      "newsmech_category": "technology",
+      "open_library": "artificial_intelligence"
     },
     {
       "id": "computer-science",
@@ -14,7 +15,8 @@
       "category": "informatique",
       "description": "Algorithmes, structures de données, développement logiciel",
       "openalex_field_id": "17",
-      "newsmech_category": "technology"
+      "newsmech_category": "technology",
+      "open_library": "computer_science"
     },
     {
       "id": "cybersecurity",
@@ -22,7 +24,8 @@
       "category": "informatique",
       "description": "Sécurité informatique, cryptographie, protection des données",
       "openalex_field_id": "17",
-      "newsmech_category": "technology"
+      "newsmech_category": "technology",
+      "open_library": "computer_security"
     },
     {
       "id": "robotics",
@@ -30,7 +33,8 @@
       "category": "ingenierie",
       "description": "Robots, automatisation, systèmes autonomes",
       "openalex_field_id": "22",
-      "newsmech_category": "technology"
+      "newsmech_category": "technology",
+      "open_library": "robotics"
     },
     {
       "id": "mathematics",
@@ -38,7 +42,8 @@
       "category": "sciences-exactes",
       "description": "Algèbre, analyse, géométrie, théorie des nombres",
       "openalex_field_id": "26",
-      "newsmech_category": "science"
+      "newsmech_category": "science",
+      "open_library": "mathematics"
     },
     {
       "id": "physics",
@@ -46,7 +51,8 @@
       "category": "sciences-exactes",
       "description": "Physique fondamentale, mécanique quantique, physique des particules",
       "openalex_field_id": "31",
-      "newsmech_category": "science"
+      "newsmech_category": "science",
+      "open_library": "physics"
     },
     {
       "id": "chemistry",
@@ -54,7 +60,8 @@
       "category": "sciences-exactes",
       "description": "Chimie organique, inorganique, biochimie",
       "openalex_field_id": "16",
-      "newsmech_category": "science"
+      "newsmech_category": "science",
+      "open_library": "chemistry"
     },
     {
       "id": "biology",
@@ -62,7 +69,8 @@
       "category": "sciences-vie",
       "description": "Biologie moléculaire, génétique, écologie",
       "openalex_field_id": "13",
-      "newsmech_category": "science"
+      "newsmech_category": "science",
+      "open_library": "biology"
     },
     {
       "id": "medicine",
@@ -70,7 +78,8 @@
       "category": "sciences-vie",
       "description": "Médecine, santé publique, recherche médicale",
       "openalex_field_id": "27",
-      "newsmech_category": "health"
+      "newsmech_category": "health",
+      "open_library": "medicine"
     },
     {
       "id": "neuroscience",
@@ -78,7 +87,8 @@
       "category": "sciences-vie",
       "description": "Cerveau, cognition, psychologie cognitive",
       "openalex_field_id": "28",
-      "newsmech_category": "science"
+      "newsmech_category": "science",
+      "open_library": "neurosciences"
     },
     {
       "id": "ecology",
@@ -86,7 +96,8 @@
       "category": "environnement",
       "description": "Biodiversité, conservation, écosystèmes",
       "openalex_field_id": "23",
-      "newsmech_category": "environment"
+      "newsmech_category": "environment",
+      "open_library": "ecology"
     },
     {
       "id": "climate",
@@ -94,7 +105,8 @@
       "category": "environnement",
       "description": "Changement climatique, météo, géologie, océanographie",
       "openalex_field_id": "19",
-      "newsmech_category": "environment"
+      "newsmech_category": "environment",
+      "open_library": "climatology"
     },
     {
       "id": "energy",
@@ -102,7 +114,8 @@
       "category": "environnement",
       "description": "Énergies renouvelables, efficacité énergétique, développement durable",
       "openalex_field_id": "21",
-      "newsmech_category": "environment"
+      "newsmech_category": "environment",
+      "open_library": "energy"
     },
     {
       "id": "economics",
@@ -110,7 +123,8 @@
       "category": "sciences-sociales",
       "description": "Économie, marchés, politiques économiques",
       "openalex_field_id": "20",
-      "newsmech_category": "business"
+      "newsmech_category": "business",
+      "open_library": "economics"
     },
     {
       "id": "finance",
@@ -118,7 +132,8 @@
       "category": "sciences-sociales",
       "description": "Marchés financiers, investissement, fintech",
       "openalex_field_id": "20",
-      "newsmech_category": "business"
+      "newsmech_category": "business",
+      "open_library": "finance"
     },
     {
       "id": "psychology",
@@ -126,7 +141,8 @@
       "category": "sciences-sociales",
       "description": "Comportement humain, psychologie sociale, développement",
       "openalex_field_id": "33",
-      "newsmech_category": "lifestyle"
+      "newsmech_category": "lifestyle",
+      "open_library": "psychology"
     },
     {
       "id": "sociology",
@@ -134,7 +150,8 @@
       "category": "sciences-sociales",
       "description": "Société, culture, interactions sociales",
       "openalex_field_id": "33",
-      "newsmech_category": "world"
+      "newsmech_category": "world",
+      "open_library": "sociology"
     },
     {
       "id": "engineering",
@@ -142,7 +159,8 @@
       "category": "ingenierie",
       "description": "Génie civil, mécanique, électrique, matériaux",
       "openalex_field_id": "22",
-      "newsmech_category": "technology"
+      "newsmech_category": "technology",
+      "open_library": "engineering"
     },
     {
       "id": "space",
@@ -150,7 +168,8 @@
       "category": "espace",
       "description": "Astronomie, astrophysique, exploration spatiale",
       "openalex_field_id": "31",
-      "newsmech_category": "science"
+      "newsmech_category": "science",
+      "open_library": "astronomy"
     },
     {
       "id": "art",
@@ -158,7 +177,8 @@
       "category": "arts-culture",
       "description": "Histoire de l'art, littérature, philosophie, études culturelles",
       "openalex_field_id": "12",
-      "newsmech_category": "entertainment"
+      "newsmech_category": "entertainment",
+      "open_library": "art"
     },
     {
       "id": "sport",
@@ -166,7 +186,8 @@
       "category": "sante-sport",
       "description": "Sciences du sport, physiologie de l'exercice, performance athlétique",
       "openalex_field_id": "29",
-      "newsmech_category": "sports"
+      "newsmech_category": "sports",
+      "open_library": "sports"
     },
     {
       "id": "business",
@@ -174,7 +195,8 @@
       "category": "sciences-sociales",
       "description": "Gestion, entrepreneuriat, stratégie d'entreprise",
       "openalex_field_id": "14",
-      "newsmech_category": "business"
+      "newsmech_category": "business",
+      "open_library": "business"
     }
   ],
 
@@ -182,82 +204,98 @@
     {
       "id": "12",
       "name": "Arts and Humanities",
-      "domain": "Social Sciences"
+      "domain": "Social Sciences",
+      "open_library": "humanities"
     },
     {
       "id": "13",
       "name": "Biochemistry, Genetics and Molecular Biology",
-      "domain": "Life Sciences"
+      "domain": "Life Sciences",
+      "open_library": "biology"
     },
     {
       "id": "14",
       "name": "Business, Management and Accounting",
-      "domain": "Social Sciences"
+      "domain": "Social Sciences",
+      "open_library": "business"
     },
     {
       "id": "16",
       "name": "Chemistry",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "chemistry"
     },
     {
       "id": "17",
       "name": "Computer Science",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "computer_science"
     },
     {
       "id": "19",
       "name": "Earth and Planetary Sciences",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "earth_sciences"
     },
     {
       "id": "20",
       "name": "Economics, Econometrics and Finance",
-      "domain": "Social Sciences"
+      "domain": "Social Sciences",
+      "open_library": "economics"
     },
     {
       "id": "21",
       "name": "Energy",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "energy"
     },
     {
       "id": "22",
       "name": "Engineering",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "engineering"
     },
     {
       "id": "23",
       "name": "Environmental Science",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "environmental_science"
     },
     {
       "id": "26",
       "name": "Mathematics",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "mathematics"
     },
     {
       "id": "27",
       "name": "Medicine",
-      "domain": "Health Sciences"
+      "domain": "Health Sciences",
+      "open_library": "medicine"
     },
     {
       "id": "28",
       "name": "Neuroscience",
-      "domain": "Life Sciences"
+      "domain": "Life Sciences",
+      "open_library": "neurosciences"
     },
     {
       "id": "29",
       "name": "Health Professions (includes Sports Science)",
-      "domain": "Health Sciences"
+      "domain": "Health Sciences",
+      "open_library": "health"
     },
     {
       "id": "31",
       "name": "Physics and Astronomy",
-      "domain": "Physical Sciences"
+      "domain": "Physical Sciences",
+      "open_library": "physics"
     },
     {
       "id": "33",
       "name": "Social Sciences",
-      "domain": "Social Sciences"
+      "domain": "Social Sciences",
+      "open_library": "social_sciences"
     }
   ],
 
@@ -267,63 +305,72 @@
       "label": "Informatique & Technologies",
       "icon": "💻",
       "color": "#3B82F6",
-      "fields": ["17"]
+      "fields": ["17"],
+      "open_library": "computer_science"
     },
     {
       "id": "sciences-exactes",
       "label": "Sciences Exactes",
       "icon": "🔬",
       "color": "#8B5CF6",
-      "fields": ["16", "26", "31"]
+      "fields": ["16", "26", "31"],
+      "open_library": "science"
     },
     {
       "id": "sciences-vie",
       "label": "Sciences de la Vie & Santé",
       "icon": "🧬",
       "color": "#10B981",
-      "fields": ["13", "27", "28"]
+      "fields": ["13", "27", "28"],
+      "open_library": "biology"
     },
     {
       "id": "environnement",
       "label": "Environnement & Climat",
       "icon": "🌍",
       "color": "#059669",
-      "fields": ["19", "21", "23"]
+      "fields": ["19", "21", "23"],
+      "open_library": "environment"
     },
     {
       "id": "sciences-sociales",
       "label": "Sciences Sociales & Économie",
       "icon": "📊",
       "color": "#F59E0B",
-      "fields": ["20", "33", "14"]
+      "fields": ["20", "33", "14"],
+      "open_library": "social_sciences"
     },
     {
       "id": "ingenierie",
       "label": "Ingénierie",
       "icon": "⚙️",
       "color": "#EF4444",
-      "fields": ["22"]
+      "fields": ["22"],
+      "open_library": "engineering"
     },
     {
       "id": "espace",
       "label": "Espace & Astronomie",
       "icon": "🚀",
       "color": "#6366F1",
-      "fields": ["31"]
+      "fields": ["31"],
+      "open_library": "astronomy"
     },
     {
       "id": "arts-culture",
       "label": "Arts & Culture",
       "icon": "🎨",
       "color": "#EC4899",
-      "fields": ["12"]
+      "fields": ["12"],
+      "open_library": "art"
     },
     {
       "id": "sante-sport",
       "label": "Santé & Sport",
       "icon": "⚽",
       "color": "#14B8A6",
-      "fields": ["29"]
+      "fields": ["29"],
+      "open_library": "health"
     }
   ]
 }

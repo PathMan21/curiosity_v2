@@ -6,6 +6,7 @@ import FooterSite from '../../Components/FooterSite'
 import NavbarSite from '../../Components/NavbarSite'
 import { useAuth } from '../../Context/AuthContext'
 import { fetchWithAuth } from '../../Services/apiClient'
+import CarouselBooks from '../../Components/CarousselsBooks'
 
 function ArticlePage(props) {
   const [articles, setArticles] = useState([])
@@ -49,6 +50,7 @@ function ArticlePage(props) {
     try {
       const response = await fetchWithAuth('/data/news', { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+
       const data = await response.json()
       return data.articles
     } catch (err) {
@@ -56,6 +58,9 @@ function ArticlePage(props) {
       setError(err.message)
     }
   }
+
+
+
 
   const fetchAll = async () => {
     const [articlesData, newsData, photosData] = await Promise.all([
@@ -83,12 +88,12 @@ function ArticlePage(props) {
   return (
     <>
       <NavbarSite></NavbarSite>
+                    <CarouselImg />
 
       <a href="#contenu-principal" className="visually-hidden-focusable">
         Aller au contenu principal
       </a>
 
-      <CarouselImg />
 
       <main id="contenu-principal" className="container my-5 min-vh-100 overflow-auto">
 
@@ -113,12 +118,14 @@ function ArticlePage(props) {
         <div className="container my-5 max-vh-100">
           <div className="col-12">
             <ul className="list-unstyled row" aria-label="Liste des articles et photos">
+              <CarouselBooks/>
               {all.map((item, idx) => {
                 switch (item.type) {
                   case 'article':
                   case 'news':
                     return (
                       <li key={`article-${idx}`} className="col-12 col-md-6">
+                        
                         <Article
                           id={idx}
                           title={item.title}
