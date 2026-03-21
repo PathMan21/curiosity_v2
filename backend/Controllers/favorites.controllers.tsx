@@ -5,7 +5,6 @@ const addToFavorites = async (req, res) => {
   try {
     const userId = req.user.userId
     const { articles_id } = req.body
-    console.log(req.body)
 
     if (!articles_id) {
       return res.status(400).json({ message: 'article_id manquant' })

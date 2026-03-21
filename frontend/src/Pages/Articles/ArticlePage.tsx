@@ -14,6 +14,9 @@ function ArticlePage(props) {
   const [all, setAll] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+const [books, setBooks] = useState([])
+
+
 
   const { token } = useAuth()
 
@@ -34,6 +37,17 @@ function ArticlePage(props) {
     }
   }
 
+const fetchBooks = async () => {
+  try {
+    const response = await fetchWithAuth('/data/books', { method: 'GET' })
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+    const data = await response.json()
+    return data.data
+  } catch (err) {
+    console.error('Erreur books:', err)
+    setError(err.message)
+  }
+}
   const fetchImages = async () => {
     try {
       const response = await fetchWithAuth('/data/images', { method: 'GET' })
@@ -61,20 +75,21 @@ function ArticlePage(props) {
 
 
 
+const fetchAll = async () => {
+  const [articlesData, newsData, photosData, booksData] = await Promise.all([
+    fetchArticles(),
+    fetchNews(),
+    fetchImages(),
+    fetchBooks(),    
+  ])
 
-  const fetchAll = async () => {
-    const [articlesData, newsData, photosData] = await Promise.all([
-      fetchArticles(),
-      fetchNews(),
-      fetchImages(),
-    ])
-
-    if (articlesData && newsData && photosData) {
-      setLoading(false)
-      const shuffled = shuffleArray([...articlesData, ...newsData, ...photosData])
-      setAll(shuffled)
-    }
+  if (articlesData && newsData && photosData && booksData) {
+    setLoading(false)
+    setBooks(booksData || [])
+    const shuffled = shuffleArray([...articlesData, ...newsData, ...photosData])
+    setAll(shuffled)
   }
+}
 
   function shuffleArray(data) {
     let shuffled = [...data]
@@ -117,8 +132,9 @@ function ArticlePage(props) {
 
         <div className="container my-5 max-vh-100">
           <div className="col-12">
+                          <CarouselBooks books={books} />
+
             <ul className="list-unstyled row" aria-label="Liste des articles et photos">
-              <CarouselBooks/>
               {all.map((item, idx) => {
                 switch (item.type) {
                   case 'article':

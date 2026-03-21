@@ -155,7 +155,6 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ where: { email } })
 
-    console.log('user => ', user)
     const plainPassword = user.getDataValue('password')
 
     if (!user) {
@@ -165,11 +164,9 @@ const loginUser = async (req, res) => {
       })
     }
 
-    console.log('pwd dans la bdd => ', plainPassword)
 
     const passwordMatch = await bcrypt.compare(password, plainPassword)
     bcrypt.compare(password, user.password, function (err, result) {
-      console.log('result => ', result)
     })
     if (!passwordMatch) {
       return res.status(401).json({

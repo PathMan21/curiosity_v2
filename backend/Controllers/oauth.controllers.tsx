@@ -115,8 +115,6 @@ const updateProfile = async (req, res) => {
   const { username, password, interests } = req.body
   let selectedinterests = JSON.stringify(interests)
 
-  console.log('update profile pwd : ', password)
-
   const userId = req.user?.userId || req.userId
 
   if (!userId) {

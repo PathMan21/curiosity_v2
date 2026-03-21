@@ -1,128 +1,151 @@
 import User from '../Models/User'
 import redisClient from '../Config/redis.conf'
 
-const handleInterestsUnsplash = (interests: string[]) => {
-  const interestToQuery: { [key: string]: string } = {
-    'ai-ml': 'artificial intelligence technology',
-    'computer-science': 'programming code screen',
-    cybersecurity: 'cybersecurity digital lock',
-    robotics: 'robot automation',
-    engineering: 'engineering blueprint',
-    mathematics: 'mathematics equations',
-    physics: 'physics laboratory',
-    chemistry: 'chemistry lab beaker',
-    biology: 'biology microscope cells',
-    medicine: 'medical research hospital',
-    neuroscience: 'brain scan neuroscience',
-    ecology: 'nature forest biodiversity',
-    climate: 'climate earth atmosphere',
-    energy: 'solar panels renewable energy',
-    economics: 'economics graph chart',
-    finance: 'stock market trading',
-    psychology: 'psychology therapy mind',
-    sociology: 'people community society',
-    business: 'business meeting office',
-    space: 'space galaxy stars',
-    art: 'art museum painting',
-    sport: 'sports athlete training',
-  }
+const CACHE_TTL = 3600 * 24 * 30  
 
-  return interests.map((interest) => interestToQuery[interest]).filter(Boolean)
+const INTEREST_TO_QUERY = {
+  'ai-ml':            'artificial intelligence technology',
+  'computer-science': 'programming code screen',
+  cybersecurity:      'cybersecurity digital lock',
+  robotics:           'robot automation',
+  engineering:        'engineering blueprint',
+  mathematics:        'mathematics equations',
+  physics:            'physics laboratory',
+  chemistry:          'chemistry lab beaker',
+  biology:            'biology microscope cells',
+  medicine:           'medical research hospital',
+  neuroscience:       'brain scan neuroscience',
+  ecology:            'nature forest biodiversity',
+  climate:            'climate earth atmosphere',
+  energy:             'solar panels renewable energy',
+  economics:          'economics graph chart',
+  finance:            'stock market trading',
+  psychology:         'psychology therapy mind',
+  sociology:          'people community society',
+  business:           'business meeting office',
+  space:              'space galaxy stars',
+  art:                'art museum painting',
+  sport:              'sports athlete training',
 }
 
-export const handleUnsplash = async (req, res) => {
+
+function mapInterestsToQueries(interests) {
+  return interests.map((i) => INTEREST_TO_QUERY[i]).filter(Boolean)
+}
+
+async function getFromCache(cacheKey) {
+  try {
+    const raw = await redisClient.get(cacheKey)
+    if (!raw?.trim()) return null
+
+    const parsed = JSON.parse(raw)
+    return parsed?.photos?.length > 0 ? parsed.photos : null
+  } catch (err) {
+    console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
+    return null
+  }
+}
+
+async function setInCache(cacheKey, interest, photos) {
+  try {
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify({ interest, totalResults: photos.length, photos })
+    )
+    console.log(`💾 Cache OK — ${cacheKey} (${photos.length} photos)`)
+  } catch (err) {
+    console.warn(`⚠️ Erreur Redis écriture (${cacheKey}):`, err.message)
+  }
+}
+
+
+async function fetchPhotosFromAPI(interest, baseUrl, clientId) {
+  const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&count=100&client_id=${clientId}`
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  })
+
+  if (!response.ok) {
+    console.warn(`⚠️ Unsplash non OK (${interest}): ${response.status} ${response.statusText}`)
+    return []
+  }
+
+  const data = await response.json()
+
+  return data.results.map((photo) => ({
+    id: photo.id,
+    url: photo.urls.regular,
+    thumb: photo.urls.thumb,
+    description: photo.alt_description,
+    photographer: photo.user.name,
+    photographerLink: photo.user.links.html,
+    downloadLink: photo.links.download,
+    type: 'photo',
+  }))
+}
+
+
+async function resolveQueries(queries, baseUrl, clientId) {
+  const allPhotos = []
+
+  await Promise.all(
+    queries.map(async (interest) => {
+      const cacheKey = `handle-unsplash-${interest}`
+
+      const cached = await getFromCache(cacheKey)
+      if (cached) {
+        console.log(`✅ Cache hit — ${cacheKey}`)
+        allPhotos.push(...cached)
+        return
+      }
+
+      console.log(`🌐 Fetch API — Unsplash "${interest}"`)
+      const photos = await fetchPhotosFromAPI(interest, baseUrl, clientId)
+
+      await setInCache(cacheKey, interest, photos)
+      allPhotos.push(...photos)
+    })
+  )
+
+  return allPhotos
+}
+
+
+async function handleUnsplash(req, res) {
   try {
     const baseUrl = process.env.BASE_URL_UNSPLASH || 'https://api.unsplash.com'
     const clientId = process.env.API_KEY_UNSPLASH
     const userId = req.user?.id || req.user?.userId
-    const defaultExpiration = 3600 * 24 * 30
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({ status: 'Failed', message: 'Utilisateur non authentifié' })
+      return res.status(401).json({ status: 'Failed', message: 'Utilisateur non authentifié' })
     }
 
-    const userConnected = await User.findByPk(userId)
-
-    if (!userConnected) {
-      return res
-        .status(404)
-        .json({ status: 'Failed', message: 'Utilisateur inconnu' })
+    const user = await User.findByPk(userId)
+    if (!user) {
+      return res.status(404).json({ status: 'Failed', message: 'Utilisateur inconnu' })
     }
 
-    let interests: string[] = []
+    let interests = []
     try {
-      interests = JSON.parse(userConnected.interests)
+      interests = JSON.parse(user.interests || '[]')
     } catch (e) {
-      console.warn('Impossible de parser les intérêts :', e)
+      console.warn('⚠️ Impossible de parser les intérêts :', e)
     }
 
-    if (interests.length === 0) {
+    if (!interests.length) {
       return res.json({ status: 'Success', photos: [] })
     }
 
-    const unsplashInterests = handleInterestsUnsplash(interests)
+    const queries = mapInterestsToQueries(interests)
+    const photos = await resolveQueries(queries, baseUrl, clientId)
 
-    const allPhotos: any[] = []
-
-    for (const interest of unsplashInterests) {
-      let page = 30
-      let i = 0
-      const photosForInterest: any[] = []
-
-      const cacheKey = `handle-unsplash-${interest}`
-      let cachedData = null
-      const raw = (await redisClient.get(cacheKey)) as string
-
-      if (raw) {
-        cachedData = JSON.parse(raw)
-        allPhotos.push(...cachedData.photos)
-        console.log('allPhotos ', allPhotos)
-      } else {
-        const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&count=100&client_id=${clientId}`
-        console.log(url)
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: { Accept: 'application/json' },
-        })
-
-        if (!response.ok) {
-          console.warn(
-            `Erreur Unsplash pour ${interest} : ${response.status} ${response.statusText}`
-          )
-          continue
-        }
-
-        const data = await response.json()
-        console.log('data ', data)
-        const photos = data.results.map((photo) => ({
-          id: photo.id,
-          url: photo.urls.regular,
-          thumb: photo.urls.thumb,
-          description: photo.alt_description,
-          photographer: photo.user.name,
-          photographerLink: photo.user.links.html,
-          downloadLink: photo.links.download,
-          type: 'photo',
-        }))
-        photosForInterest.push(...photos)
-      }
-      await redisClient.setEx(
-        cacheKey,
-        defaultExpiration,
-        JSON.stringify({
-          interest,
-          totalResults: photosForInterest.length,
-          photos: photosForInterest,
-        })
-      )
-      allPhotos.push(...photosForInterest)
-    }
-
-    return res.json({ status: 'Success', photos: allPhotos })
+    return res.json({ status: 'Success', photos })
   } catch (err) {
-    console.error('Erreur getUnsplashPhotos :', err)
+    console.error('❌ Erreur handleUnsplash:', err)
     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
   }
 }

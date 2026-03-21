@@ -16,7 +16,7 @@
       "description": "Algorithmes, structures de données, développement logiciel",
       "openalex_field_id": "17",
       "newsmech_category": "technology",
-      "open_library": "computer_science"
+      "open_library": "computer"
     },
     {
       "id": "cybersecurity",
@@ -25,7 +25,7 @@
       "description": "Sécurité informatique, cryptographie, protection des données",
       "openalex_field_id": "17",
       "newsmech_category": "technology",
-      "open_library": "computer_security"
+      "open_library": "cybersecurity"
     },
     {
       "id": "robotics",

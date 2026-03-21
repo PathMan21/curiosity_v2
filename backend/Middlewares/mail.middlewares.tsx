@@ -12,7 +12,6 @@ const validateByMail = (req, res, next) => {
         .status(405)
         .json({ message: "N'a pas réussis a envoyer le mail" })
     } else {
-      console.log('success : ' + success)
 
       next()
     }

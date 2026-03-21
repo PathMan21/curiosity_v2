@@ -619,3 +619,10 @@ mon code il n'y aucun intéret d'avoir une récupération de code
 
 - Corriger l'erreur 401 de la page d'accueil X Fait
 - Ajouter openLibrary : avec des livres connus du domaine - réfléchir comment le stocker - si je dois le stocker etc.. (EN COURS)
+
+
+**---------------------------------19-03----------------------------------**
+
+
+- Ajout de openlibrary : récupérer une autre api - car celle ci n'a pas de vérification de "ratings", "scoring" etc...
+- Stockage en reddis à faire, même appel que pour les autres

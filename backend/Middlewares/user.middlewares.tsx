@@ -4,8 +4,6 @@ import { stringify } from 'querystring'
 const validateUserOauth = (req, res, next) => {
   const { username, interests, password } = req.body
 
-  console.log('password ', password)
-
   const pwdValidate =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
   const usernameValidate = /^[a-zA-Z0-9 ]*$/
