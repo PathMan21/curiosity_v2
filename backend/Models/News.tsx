@@ -2,8 +2,8 @@ import { Model, DataTypes, Optional } from 'sequelize'
 import bcrypt from 'bcrypt'
 import sequelizeDb from '../Config/dbInit'
 
-const Likes = sequelizeDb.define(
-  'Likes',
+const News = sequelizeDb.define(
+  'News',
   {
     id: {
       field: 'id',
@@ -11,18 +11,28 @@ const Likes = sequelizeDb.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    type: {
-        field: 'userId',
-        type: DataTypes.INTEGER,
+    description: {
+        field: 'description',
+        type: DataTypes.TEXT,
+        allowNull: true,
+        defaultValue: "No excerpt"
 
     },
-    contentId: {
-        field: 'contentId',
-        type: DataTypes.INTEGER,
+    publishedAt: {
+        field: 'publishedAt',
+        type: DataTypes.DATE,
         
     },
-    contentType: {
-        field: 'contentType',
-        type: DataTypes.STRING 
+    source: {
+        field: 'source',
+        type: DataTypes.STRING,
+        allowNull: true,        
+
+    },
+    author: {
+        field: 'author',
+        type: DataTypes.STRING,
+        allowNull: true,
+
     }
   });
