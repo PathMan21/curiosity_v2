@@ -76,17 +76,16 @@ function ArticlePage(props) {
 
 
   const fetchAll = async () => {
-    const [articlesData, newsData, photosData, booksData] = await Promise.all([
-      fetchArticles(),
+    const [newsData] = await Promise.all([
+      // fetchArticles(),
       fetchNews(),
-      fetchImages(),
-      fetchBooks(),
+      // fetchImages(),
+      // fetchBooks(),
     ])
 
-    if (articlesData && newsData && photosData && booksData) {
+    if (newsData) {
       setLoading(false)
-      setBooks(booksData || [])
-      const shuffled = shuffleArray([...articlesData, ...newsData, ...photosData])
+      const shuffled = shuffleArray([ ...newsData])
       setAll(shuffled)
     }
   }

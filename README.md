@@ -17,4 +17,4 @@ _Pour gérer redis via docker_
 
 `docker exec -it redis redis-cli`
 `KEYS *` pour lister le cache
-`FLUSH ALL` pour retirer le cache
+`FLUSHALL` pour retirer le cache

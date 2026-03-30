@@ -6,7 +6,7 @@ import User from '../Models/User.js'
 const connectDB = async () => {
   try {
     await sequelizeDb.authenticate()
-    await sequelizeDb.sync()
+    await sequelizeDb.sync({ alter: true })
   } catch (err: any) {
     console.error('❌ Erreur connection/sync :', err?.name, err?.message)
     if (err?.stack) console.error(err.stack)

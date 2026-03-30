@@ -26,3 +26,6 @@ const Likes = sequelizeDb.define(
         type: DataTypes.STRING 
     }
   });
+
+
+  export default Likes;

@@ -1,6 +1,5 @@
-import { Model, DataTypes, Optional } from 'sequelize'
-import bcrypt from 'bcrypt'
 import sequelizeDb from '../Config/dbInit'
+import { DataTypes } from 'sequelize'
 
 const News = sequelizeDb.define(
   'News',
@@ -11,28 +10,47 @@ const News = sequelizeDb.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    title: {
+      field: 'title',
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    url: {
+      field: 'url',
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    category: {
+      field: 'category',
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     description: {
-        field: 'description',
-        type: DataTypes.TEXT,
-        allowNull: true,
-        defaultValue: "No excerpt"
-
+      field: 'description',
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: "No excerpt",
     },
     publishedAt: {
-        field: 'publishedAt',
-        type: DataTypes.DATE,
-        
+      field: 'publishedAt',
+      type: DataTypes.DATE,
     },
     source: {
-        field: 'source',
-        type: DataTypes.STRING,
-        allowNull: true,        
-
+      field: 'source',
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     author: {
-        field: 'author',
+      field: 'author',
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    type: {
+        field: "news",
         type: DataTypes.STRING,
-        allowNull: true,
-
+        defaultValue: "news",
     }
-  });
+  },
+)
+
+export default News

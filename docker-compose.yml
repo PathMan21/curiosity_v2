@@ -27,6 +27,9 @@ services:
       start_period: 10s
     networks:
       - appnet
+        
+    ports:
+        - "3306:3306"
 
   backend:
       build: ./backend

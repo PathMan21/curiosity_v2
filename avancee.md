@@ -633,10 +633,6 @@ mon code il n'y aucun intéret d'avoir une récupération de code
 - Ajouts des modèles de données en bdd - plutot que faire ça que via redis - pas efficace 
 - Faire une table Likes pour gérer 
 
-
-
-
-
 - Ajouts de Cron pour les appels récurrent reddis => On installe node-cron avec un petit test & 
 également on peux voir comment ça fonctionne sur =>
 https://crontab.guru/
@@ -644,3 +640,8 @@ https://crontab.guru/
 -> Pourquoi il ne me sort pas les livres également ?
 
 - Tester la sécurité
+
+
+**---------------------------------30-03----------------------------------**
+
+-> Aujourd'hui stocker news dans la bdd

@@ -7,6 +7,9 @@ import { createServer } from 'http'
 import userRoutes from './Routes/user.routes'
 import authRoutes from './Routes/auth.routes'
 import apiroutes from './Routes/api.routes'
+import './Models/News';
+import './Models/Likes';
+
 import cors from 'cors'
 
 import './Helpers/cron.schedules';
@@ -34,6 +37,6 @@ app.use(
 
  
   server.listen(PORT, () => {
-    console.log(`✅ Serveur lancé sur le port ${PORT}`)
+    console.log(`Serveur lancé sur le port ${PORT}`)
   })
 })()
