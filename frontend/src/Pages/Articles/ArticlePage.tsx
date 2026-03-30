@@ -76,27 +76,29 @@ function ArticlePage(props) {
 
 
   const fetchAll = async () => {
-    const [newsData] = await Promise.all([
-      // fetchArticles(),
+    const [articlesData, newsData, imageData, booksData] = await Promise.all([
+      fetchArticles(),
       fetchNews(),
-      // fetchImages(),
-      // fetchBooks(),
+      fetchImages(),
+      fetchBooks(),
     ])
 
-    if (newsData) {
+    if (newsData && booksData && imageData && articlesData) {
       setLoading(false)
-      const shuffled = shuffleArray([ ...newsData])
+      const shuffledBooks = shuffleArray(booksData, 5);
+      setBooks(shuffledBooks);
+      const shuffled = shuffleArray([ ...newsData, ...articlesData, ...imageData], 20)
       setAll(shuffled)
     }
   }
 
-  function shuffleArray(data) {
+  function shuffleArray(data, amount) {
     let shuffled = [...data]
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
         ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
-    return shuffled.slice(0, 20)
+    return shuffled.slice(0, amount)
   }
 
   return (
@@ -129,14 +131,14 @@ function ArticlePage(props) {
           </div>
         )}
         <div className="d-flex flex-row-reverse w-100">
-          <div className="btn-group btn-group-toggle" data-toggle="buttons">
+          {/* <div className="btn-group btn-group-toggle" data-toggle="buttons">
             <label className="btn btn-secondary active rounded">
               <input type="radio" name="options" id="option1" checked/> Pour vous
             </label>
             <label className="btn btn-secondary rounded">
               <input type="radio" name="options" id="option2"/> Les plus appréciés
             </label>
-          </div>
+          </div> */}
         </div>
         <div className="container my-5 max-vh-100">
           <div className="col-12">

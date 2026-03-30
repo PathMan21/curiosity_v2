@@ -1,10 +1,12 @@
 import { User } from '../Models'
+import Book from '../Models/Book'
 import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
 
 const BASE_URL = 'https://openlibrary.org'
 const COVERS_URL = 'https://covers.openlibrary.org/b/id'
-const CACHE_TTL = 3600 * 24 * 10 
+const CACHE_TTL = 3600 * 24 * 90
+const MAX_BOOK_AGE_DAYS = 90
 const SEARCH_LIMIT = 5
 
 const CATEGORIES_SUBJECT = {
@@ -32,8 +34,7 @@ const CATEGORIES_SUBJECT = {
   business:                ['management', 'marketing', 'entrepreneurship', 'strategy', 'operations'],
 }
 
-
-function mapInterestsToOpenLibrary(interestIds) {
+function mapInterestsToOpenLibrary(interestIds: string[]) {
   const categories = []
 
   interestIds.forEach((interestId) => {
@@ -44,14 +45,23 @@ function mapInterestsToOpenLibrary(interestIds) {
     if (!subjects?.length) return
 
     const random = subjects[Math.floor(Math.random() * subjects.length)]
-    categories.push([interest.open_library, random])
+    categories.push({ category: interest.open_library, subject: random })
   })
 
   return categories
 }
 
+function isBooksTooOld(books: any[]): boolean {
+  if (!books || books.length === 0) return true
 
-async function getFromCache(cacheKey) {
+  const limitDate = new Date()
+  limitDate.setDate(limitDate.getDate() - MAX_BOOK_AGE_DAYS)
+
+  const tooOldCount = books.filter((b) => new Date(b.createdAt) < limitDate).length
+  return tooOldCount > books.length / 2
+}
+
+async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
     if (!raw?.trim()) return null
@@ -64,8 +74,44 @@ async function getFromCache(cacheKey) {
   }
 }
 
-async function setInCache(cacheKey, books) {
-  if (!books.length) return  
+async function getFromDB(cacheKey: string) {
+  try {
+    const books = await Book.findAll({ where: { cacheKey } })
+    if (books.length === 0) return null
+
+    const mapped = books.map((b) => b.toJSON())
+
+    if (isBooksTooOld(mapped)) {
+      console.log(`🗑️ Livres trop vieux pour "${cacheKey}", réhydratation...`)
+      return null
+    }
+
+    return mapped
+  } catch (err) {
+    console.warn(`⚠️ Erreur BDD OpenLibrary (${cacheKey}):`, err.message)
+    return null
+  }
+}
+
+async function setInCache(cacheKey: string, books: any[]) {
+  if (!books.length) return
+
+  await Book.destroy({ where: { cacheKey } })
+
+  await Promise.all(
+    books.map(async (book) => {
+      await Book.create({
+        title: book.title,
+        author: book.author,
+        description: book.description,
+        subject: book.subject,
+        url: book.url,
+        cover: book.cover,
+        cacheKey,
+        type: 'book',
+      })
+    })
+  )
 
   try {
     await redisClient.setEx(
@@ -79,7 +125,6 @@ async function setInCache(cacheKey, books) {
   }
 }
 
-
 function parseDescription(raw) {
   if (!raw) return null
   if (typeof raw === 'string') return raw
@@ -87,7 +132,7 @@ function parseDescription(raw) {
   return null
 }
 
-async function fetchBookDetail(book, subjects) {
+async function fetchBookDetail(book, subject: string) {
   try {
     const workRes = await fetch(`${BASE_URL}${book.key}.json`)
     if (!workRes.ok) return null
@@ -104,8 +149,10 @@ async function fetchBookDetail(book, subjects) {
       title: result.title,
       author: book.author_name?.join(', ') || 'Unknown',
       description: parseDescription(result.description),
-      subject: subjects,
+      subject,
+      url: `https://openlibrary.org${book.key}`,
       cover: coverUrl,
+      type: 'book',
     }
   } catch (err) {
     console.error('❌ Erreur fetch livre:', err.message)
@@ -113,11 +160,10 @@ async function fetchBookDetail(book, subjects) {
   }
 }
 
+async function fetchBooksFromAPI(category: string, subject: string) {
+  const url = `${BASE_URL}/search.json?q=${encodeURIComponent(subject)}&has_fulltext=true&language=eng&limit=${SEARCH_LIMIT}`
 
-async function fetchBooksFromAPI(categories) {
-  const subjects = categories.flat()
-  const searchTerms = subjects.join(' ')
-  const url = `${BASE_URL}/search.json?q=${encodeURIComponent(searchTerms)}&has_fulltext=true&language=eng&limit=${SEARCH_LIMIT}`
+  console.log(`🌐 Fetch OpenLibrary — category: "${category}" subject: "${subject}"`)
 
   const response = await fetch(url, {
     method: 'GET',
@@ -129,10 +175,47 @@ async function fetchBooksFromAPI(categories) {
   }
 
   const { docs } = await response.json()
-  const books = await Promise.all(docs.map((book) => fetchBookDetail(book, subjects)))
+  const books = await Promise.all(docs.map((book) => fetchBookDetail(book, subject)))
   return books.filter(Boolean)
 }
 
+async function resolveCategories(categories: { category: string; subject: string }[]) {
+  const allBooks = []
+
+  await Promise.all(
+    categories.map(async ({ category, subject }) => {
+      const cacheKey = `handle-open-library-${category}`
+
+      // 1. Cache Redis
+      const cached = await getFromCache(cacheKey)
+      if (cached) {
+        console.log(`✅ Cache hit — ${cacheKey}`)
+        allBooks.push(...cached)
+        return
+      }
+
+      // 2. BDD
+      const fromDB = await getFromDB(cacheKey)
+      if (fromDB) {
+        console.log(`✅ BDD hit — ${cacheKey}`)
+        allBooks.push(...fromDB)
+        await redisClient.setEx(
+          cacheKey,
+          CACHE_TTL,
+          JSON.stringify({ totalResults: fromDB.length, books: fromDB })
+        )
+        return
+      }
+
+      // 3. API
+      const books = await fetchBooksFromAPI(category, subject)
+      allBooks.push(...books)
+      await setInCache(cacheKey, books)
+    })
+  )
+
+  return allBooks
+}
 
 async function handleOpenLibrary(req, res) {
   try {
@@ -148,19 +231,9 @@ async function handleOpenLibrary(req, res) {
       return res.status(400).json({ status: 'Failed', message: 'Aucun intérêt valide trouvé' })
     }
 
-    const cacheKey = `handle-open-library-${categories.flat().sort().join('-')}`
+    const books = await resolveCategories(categories)
 
-    const cached = await getFromCache(cacheKey)
-    if (cached) {
-      console.log(`✅ Cache hit — ${cacheKey}`)
-      return res.json({ status: 'Success', data: cached })
-    }
-
-    console.log(`🌐 Fetch API — OpenLibrary`)
-    const books = await fetchBooksFromAPI(categories)
-    await setInCache(cacheKey, books)
-
-    return res.json({ status: 'Success', data: books })
+    return res.json({ status: 'Success', totalResults: books.length, data: books })
   } catch (err) {
     console.error('❌ Erreur handleOpenLibrary:', err)
     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })

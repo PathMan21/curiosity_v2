@@ -104,6 +104,10 @@
   color: var(--text-muted);
 }
 
+.Carousel h3 {
+  color: rgb(209, 209, 209);
+}
+
 .carousel-content h5 {
   font-size: 16px;
   margin-bottom: 5px;

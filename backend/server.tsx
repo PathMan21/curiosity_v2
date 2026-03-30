@@ -9,6 +9,9 @@ import authRoutes from './Routes/auth.routes'
 import apiroutes from './Routes/api.routes'
 import './Models/News';
 import './Models/Likes';
+import './Models/Book';
+import './Models/Article';
+import './Models/Photo';
 
 import cors from 'cors'
 

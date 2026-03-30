@@ -7,23 +7,23 @@ function CarouselImg() {
       <Carousel.Item>
         <ExampleCarouselImage/>
         <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          <h3>Apprenez, découvrez, restez curieux !</h3>
+          <p>Les derniers articles juste en dessous</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
         <ExampleCarouselImage/>
         <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <h3>Une passion ?</h3>
+          <p>Découvrez nos nouveaux articles</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
         <ExampleCarouselImage/>
         <Carousel.Caption>
-          <h3>Third slide label</h3>
+          <h3>Une idée ?</h3>
           <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+            Et si vous vous penchiez sur votre prochaine passion
           </p>
         </Carousel.Caption>
       </Carousel.Item>
