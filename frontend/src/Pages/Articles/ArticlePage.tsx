@@ -14,7 +14,7 @@ function ArticlePage(props) {
   const [all, setAll] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-const [books, setBooks] = useState([])
+  const [books, setBooks] = useState([])
 
 
 
@@ -37,17 +37,17 @@ const [books, setBooks] = useState([])
     }
   }
 
-const fetchBooks = async () => {
-  try {
-    const response = await fetchWithAuth('/data/books', { method: 'GET' })
-    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-    const data = await response.json()
-    return data.data
-  } catch (err) {
-    console.error('Erreur books:', err)
-    setError(err.message)
+  const fetchBooks = async () => {
+    try {
+      const response = await fetchWithAuth('/data/books', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+      const data = await response.json()
+      return data.data
+    } catch (err) {
+      console.error('Erreur books:', err)
+      setError(err.message)
+    }
   }
-}
   const fetchImages = async () => {
     try {
       const response = await fetchWithAuth('/data/images', { method: 'GET' })
@@ -75,35 +75,36 @@ const fetchBooks = async () => {
 
 
 
-const fetchAll = async () => {
-  const [articlesData, newsData, photosData, booksData] = await Promise.all([
-    fetchArticles(),
-    fetchNews(),
-    fetchImages(),
-    fetchBooks(),    
-  ])
+  const fetchAll = async () => {
+    const [articlesData, newsData, imageData, booksData] = await Promise.all([
+      fetchArticles(),
+      fetchNews(),
+      fetchImages(),
+      fetchBooks(),
+    ])
 
-  if (articlesData && newsData && photosData && booksData) {
-    setLoading(false)
-    setBooks(booksData || [])
-    const shuffled = shuffleArray([...articlesData, ...newsData, ...photosData])
-    setAll(shuffled)
+    if (newsData && booksData && imageData && articlesData) {
+      setLoading(false)
+      const shuffledBooks = shuffleArray(booksData, 5);
+      setBooks(shuffledBooks);
+      const shuffled = shuffleArray([ ...newsData, ...articlesData, ...imageData], 20)
+      setAll(shuffled)
+    }
   }
-}
 
-  function shuffleArray(data) {
+  function shuffleArray(data, amount) {
     let shuffled = [...data]
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
-    return shuffled.slice(0, 20)
+    return shuffled.slice(0, amount)
   }
 
   return (
     <>
       <NavbarSite></NavbarSite>
-                    <CarouselImg />
+      <CarouselImg />
 
       <a href="#contenu-principal" className="visually-hidden-focusable">
         Aller au contenu principal
@@ -129,10 +130,19 @@ const fetchAll = async () => {
             <span className="visually-hidden">Chargement…</span>
           </div>
         )}
-
+        <div className="d-flex flex-row-reverse w-100">
+          {/* <div className="btn-group btn-group-toggle" data-toggle="buttons">
+            <label className="btn btn-secondary active rounded">
+              <input type="radio" name="options" id="option1" checked/> Pour vous
+            </label>
+            <label className="btn btn-secondary rounded">
+              <input type="radio" name="options" id="option2"/> Les plus appréciés
+            </label>
+          </div> */}
+        </div>
         <div className="container my-5 max-vh-100">
           <div className="col-12">
-                          <CarouselBooks books={books} />
+            <CarouselBooks books={books} />
 
             <ul className="list-unstyled row" aria-label="Liste des articles et photos">
               {all.map((item, idx) => {
@@ -141,7 +151,7 @@ const fetchAll = async () => {
                   case 'news':
                     return (
                       <li key={`article-${idx}`} className="col-12 col-md-6">
-                        
+
                         <Article
                           id={idx}
                           title={item.title}
@@ -178,7 +188,7 @@ const fetchAll = async () => {
           </div>
         </div>
       </main>
-                <FooterSite></FooterSite>
+      <FooterSite></FooterSite>
 
     </>
   )

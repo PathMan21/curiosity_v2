@@ -2,7 +2,6 @@ import { configDotenv } from 'dotenv'
 import { Sequelize } from 'sequelize'
 import sequelizeDb from './dbInit.js'
 import User from '../Models/User.js'
-import '../Models/index.js'
 
 const connectDB = async () => {
   try {

@@ -1,7 +1,10 @@
 import User from '../Models/User'
+import Photo from '../Models/Photo'
 import redisClient from '../Config/redis.conf'
+import { Op } from 'sequelize'
 
-const CACHE_TTL = 3600 * 24 * 30  
+const CACHE_TTL = 3600 * 24 * 90
+const MAX_PHOTO_AGE_DAYS = 90
 
 const INTEREST_TO_QUERY = {
   'ai-ml':            'artificial intelligence technology',
@@ -28,12 +31,21 @@ const INTEREST_TO_QUERY = {
   sport:              'sports athlete training',
 }
 
-
-function mapInterestsToQueries(interests) {
+function mapInterestsToQueries(interests: string[]) {
   return interests.map((i) => INTEREST_TO_QUERY[i]).filter(Boolean)
 }
 
-async function getFromCache(cacheKey) {
+function isPhotosTooOld(photos: any[]): boolean {
+  if (!photos || photos.length === 0) return true
+
+  const limitDate = new Date()
+  limitDate.setDate(limitDate.getDate() - MAX_PHOTO_AGE_DAYS)
+
+  const tooOldCount = photos.filter((p) => new Date(p.createdAt) < limitDate).length
+  return tooOldCount > photos.length / 2
+}
+
+async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
     if (!raw?.trim()) return null
@@ -41,26 +53,62 @@ async function getFromCache(cacheKey) {
     const parsed = JSON.parse(raw)
     return parsed?.photos?.length > 0 ? parsed.photos : null
   } catch (err) {
-    console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
+    console.warn(`Erreur Redis lecture (${cacheKey}):`, err.message)
     return null
   }
 }
 
-async function setInCache(cacheKey, interest, photos) {
+async function getFromDB(interest: string) {
+  try {
+    const photos = await Photo.findAll({ where: { interest } })
+    if (photos.length === 0) return null
+
+    const mapped = photos.map((p) => p.toJSON())
+
+    if (isPhotosTooOld(mapped)) {
+      console.log(`🗑️ Photos trop vieilles pour "${interest}", réhydratation...`)
+      return null
+    }
+
+    return mapped
+  } catch (err) {
+    console.warn(` Erreur BDD Unsplash (${interest}):`, err.message)
+    return null
+  }
+}
+
+async function setInCache(cacheKey: string, interest: string, photos: any[]) {
+  await Photo.destroy({ where: { interest } })
+
+  await Promise.all(
+    photos.map(async (photo) => {
+      await Photo.create({
+        unsplashId: photo.id,
+        url: photo.url,
+        thumb: photo.thumb,
+        description: photo.description,
+        photographer: photo.photographer,
+        photographerLink: photo.photographerLink,
+        downloadLink: photo.downloadLink,
+        interest,
+        type: "photo"
+      })
+    })
+  )
+
   try {
     await redisClient.setEx(
       cacheKey,
       CACHE_TTL,
       JSON.stringify({ interest, totalResults: photos.length, photos })
     )
-    console.log(`💾 Cache OK — ${cacheKey} (${photos.length} photos)`)
+    console.log(`Cache OK — ${cacheKey} (${photos.length} photos)`)
   } catch (err) {
-    console.warn(`⚠️ Erreur Redis écriture (${cacheKey}):`, err.message)
+    console.warn(`Erreur Redis écriture (${cacheKey}):`, err.message)
   }
 }
 
-
-async function fetchPhotosFromAPI(interest, baseUrl, clientId) {
+async function fetchPhotosFromAPI(interest: string, baseUrl: string, clientId: string) {
   const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&count=100&client_id=${clientId}`
 
   const response = await fetch(url, {
@@ -69,7 +117,7 @@ async function fetchPhotosFromAPI(interest, baseUrl, clientId) {
   })
 
   if (!response.ok) {
-    console.warn(`⚠️ Unsplash non OK (${interest}): ${response.status} ${response.statusText}`)
+    console.warn(`Unsplash non OK (${interest}): ${response.status}`)
     return []
   }
 
@@ -87,14 +135,15 @@ async function fetchPhotosFromAPI(interest, baseUrl, clientId) {
   }))
 }
 
-
-async function resolveQueries(queries, baseUrl, clientId) {
+async function resolveQueries(queries: string[], baseUrl: string, clientId: string) {
   const allPhotos = []
+  const toFetch = []
 
   await Promise.all(
     queries.map(async (interest) => {
       const cacheKey = `handle-unsplash-${interest}`
 
+      // 1. Cache Redis
       const cached = await getFromCache(cacheKey)
       if (cached) {
         console.log(`✅ Cache hit — ${cacheKey}`)
@@ -102,17 +151,39 @@ async function resolveQueries(queries, baseUrl, clientId) {
         return
       }
 
-      console.log(`🌐 Fetch API — Unsplash "${interest}"`)
-      const photos = await fetchPhotosFromAPI(interest, baseUrl, clientId)
+      // 2. BDD
+      const fromDB = await getFromDB(interest)
+      if (fromDB) {
+        console.log(`✅ BDD hit — ${interest}`)
+        allPhotos.push(...fromDB)
+        await redisClient.setEx(
+          cacheKey,
+          CACHE_TTL,
+          JSON.stringify({ interest, totalResults: fromDB.length, photos: fromDB })
+        )
+        return
+      }
 
-      await setInCache(cacheKey, interest, photos)
-      allPhotos.push(...photos)
+      // 3. API
+      console.log(`🌐 Fetch API — Unsplash "${interest}"`)
+      toFetch.push(interest)
     })
   )
 
+  if (toFetch.length > 0) {
+    await Promise.all(
+      toFetch.map(async (interest) => {
+        const cacheKey = `handle-unsplash-${interest}`
+        const photos = await fetchPhotosFromAPI(interest, baseUrl, clientId)
+
+        allPhotos.push(...photos)
+        await setInCache(cacheKey, interest, photos)
+      })
+    )
+  }
+
   return allPhotos
 }
-
 
 async function handleUnsplash(req, res) {
   try {
@@ -133,7 +204,7 @@ async function handleUnsplash(req, res) {
     try {
       interests = JSON.parse(user.interests || '[]')
     } catch (e) {
-      console.warn('⚠️ Impossible de parser les intérêts :', e)
+      console.warn('Impossible de parser les intérêts :', e)
     }
 
     if (!interests.length) {
@@ -145,7 +216,7 @@ async function handleUnsplash(req, res) {
 
     return res.json({ status: 'Success', photos })
   } catch (err) {
-    console.error('❌ Erreur handleUnsplash:', err)
+    console.error('Erreur handleUnsplash:', err)
     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
   }
 }
