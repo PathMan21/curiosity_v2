@@ -10,7 +10,6 @@ const googleAuthUrl = process.env.URL_OAUTH
 const state = 'test'
 const googleAuthCallback = process.env.CALLBACK_OAUTH
 
-// scope :
 const GOOGLE_OAUTH_SCOPES = [process.env.SCOPE1, process.env.SCOPE2]
 const URL_EXCHANGE = process.env.URL_EXCHANGE
 const URL_TOKEN = process.env.TOKEN_URL_OAUTH

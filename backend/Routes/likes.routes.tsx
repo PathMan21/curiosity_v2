@@ -1,14 +1,28 @@
 import { Router } from 'express'
 import bodyParser from 'body-parser'
 import { authentificatedUser } from '../Middlewares/user.middlewares'
+import { addLikes } from '../Controllers/likes.controllers'
+
+
+
 const router = Router()
 
-router.post('/articles', bodyParser.json(), authentificatedUser)
 
+// Ajouter les likes
 router.post(
-  '/getArticles',
+  '/add',
   bodyParser.json(),
   authentificatedUser,
+  addLikes
 )
+
+
+// Récupérer les likes sur la page
+// router.get(
+//   '/get',
+//   bodyParser.json(),
+//   authentificatedUser,
+//   getLikes
+// )
 
 export default router
