@@ -1,28 +1,30 @@
 import { Router } from 'express'
 import bodyParser from 'body-parser'
 import { authentificatedUser } from '../Middlewares/user.middlewares'
-import { addLikes } from '../Controllers/likes.controllers'
-
-
+import { toggleLikes, getUserLikes, checkLikeStatus } from '../Controllers/likes.controllers'
 
 const router = Router()
 
-
-// Ajouter les likes
+// Toggle likes (add/remove)
 router.post(
-  '/add',
+  '/toggle',
   bodyParser.json(),
   authentificatedUser,
-  addLikes
+  toggleLikes
 )
 
+// Get user's likes
+router.get(
+  '/user',
+  authentificatedUser,
+  getUserLikes
+)
 
-// Récupérer les likes sur la page
-// router.get(
-//   '/get',
-//   bodyParser.json(),
-//   authentificatedUser,
-//   getLikes
-// )
+// Check if user has liked specific content
+router.get(
+  '/status',
+  authentificatedUser,
+  checkLikeStatus
+)
 
 export default router

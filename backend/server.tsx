@@ -38,7 +38,7 @@ app.use(
   app.use('/api/users', userRoutes)
   app.use('/api/auth', authRoutes)
   app.use('/api/data', apiroutes)
-  app.use('/likes', likesRoutes)
+  app.use('/api/likes', likesRoutes)
 
  
   server.listen(PORT, () => {

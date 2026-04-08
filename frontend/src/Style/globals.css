@@ -202,7 +202,7 @@ a:hover {
 }
 
 .articleText {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-subtle);
   font-weight: 700;
   text-transform: uppercase;
   padding: 10px;
@@ -254,6 +254,9 @@ a:hover {
   border: none;
   color: var(--highlight-card-light);
   transition: transform 0.2s;
+}
+.articleComp .likes.liked {
+  color: #8B6914;
 }
 .card {
   background: var(--bg) !important;

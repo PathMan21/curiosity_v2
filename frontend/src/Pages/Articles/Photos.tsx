@@ -1,4 +1,50 @@
-function Photos({ title, date, url, description, photographer, photographerUrl }: any) {
+import React, { useState, useEffect } from 'react'
+import { useAuth } from '../../Context/AuthContext'
+import { fetchWithAuth } from '../../Services/apiClient'
+
+function Photos({ id, title, date, url, description, photographer, photographerUrl }: any) {
+  const { token } = useAuth()
+  const [isLiked, setIsLiked] = useState(false)
+
+  useEffect(() => {
+    checkLikeStatus()
+  }, [id])
+
+  const checkLikeStatus = async () => {
+    try {
+      const response = await fetchWithAuth(`/likes/status?contentId=${id}&contentType=photo`)
+      if (response.ok) {
+        const data = await response.json()
+        setIsLiked(data.liked)
+      }
+    } catch (error) {
+      console.error('Error checking like status:', error)
+    }
+  }
+
+  const toggleLikes = async () => {
+    try {
+      const response = await fetchWithAuth('/likes/toggle', {
+        method: 'POST',
+        body: JSON.stringify({ contentId: id, contentType: 'photo' }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Erreur lors de la mise à jour')
+      }
+
+      const data = await response.json()
+      setIsLiked(data.liked)
+      console.log(data)
+    } catch (error) {
+      console.error('Error toggling like:', error)
+    }
+  }
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
     try {
@@ -79,22 +125,40 @@ function Photos({ title, date, url, description, photographer, photographerUrl }
           {truncateText(description)}
         </p>
 
-        {url && (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Voir la photo en taille réelle : ${title} (nouvelle fenêtre)`}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {url && (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Voir la photo en taille réelle : ${title} (nouvelle fenêtre)`}
+              style={{
+                fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase',
+                letterSpacing: '0.06em', color: '#8B6914', textDecoration: 'none',
+                borderBottom: '1.5px solid rgba(139,105,20,0.35)', paddingBottom: '1px',
+              }}
+            >
+              Voir la photo
+              <span className="visually-hidden"> (nouvelle fenêtre)</span>
+            </a>
+          )}
+          <button
+            className={`likes ${isLiked ? 'liked' : ''}`}
+            onClick={toggleLikes}
+            aria-label={isLiked ? `Retirer "${title}" des favoris` : `Ajouter "${title}" aux favoris`}
             style={{
-              fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase',
-              letterSpacing: '0.06em', color: '#8B6914', textDecoration: 'none',
-              borderBottom: '1.5px solid rgba(139,105,20,0.35)', paddingBottom: '1px',
+              background: 'none',
+              border: 'none',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              color: isLiked ? '#8B6914' : '#ccc',
             }}
           >
-            Voir la photo
-            <span className="visually-hidden"> (nouvelle fenêtre)</span>
-          </a>
-        )}
+            <span aria-hidden="true">
+              {isLiked ? '♥' : '♡'}
+            </span>
+          </button>
+        </div>
       </div>
     </article>
   )

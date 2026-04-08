@@ -1,11 +1,28 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../Context/AuthContext'
 import { useSearchParams } from 'react-router-dom'
 import { fetchWithAuth } from '../../Services/apiClient'
 
 function Article({ id, title, date, excerpt, author, type, url, concepts }: any) {
-  const { token, fetchUserProfile } = useAuth()
+  const { token } = useAuth()
   const [searchParams] = useSearchParams()
+  const [isLiked, setIsLiked] = useState(false)
+
+  useEffect(() => {
+    checkLikeStatus()
+  }, [id, type])
+
+  const checkLikeStatus = async () => {
+    try {
+      const response = await fetchWithAuth(`/likes/status?contentId=${id}&contentType=${type}`)
+      if (response.ok) {
+        const data = await response.json()
+        setIsLiked(data.liked)
+      }
+    } catch (error) {
+      console.error('Error checking like status:', error)
+    }
+  }
 
   const formatDate = (dateStr) => {
     if (!dateStr) return ''
@@ -22,15 +39,15 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
     return text.length > maxLength ? text.substring(0, maxLength) + '…' : text
   }
 
-  async function addLikes( id, type ){
-
-        const response = await fetchWithAuth('/likes/add', {
+  async function toggleLikes() {
+    try {
+      const response = await fetchWithAuth('/likes/toggle', {
         method: 'POST',
         body: JSON.stringify({ contentId: id, contentType: type }),
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       if (!response.ok) {
@@ -38,9 +55,12 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
         throw new Error(errorData.message || 'Erreur lors de la mise à jour')
       }
 
-      let data = await response.json();
-      console.log(data);
-
+      const data = await response.json()
+      setIsLiked(data.liked)
+      console.log(data)
+    } catch (error) {
+      console.error('Error toggling like:', error)
+    }
   }
 
 
@@ -86,15 +106,12 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
                 <span className="visually-hidden"> (nouvelle fenêtre)</span>
               </a>
             )}
-            <button className='likes'
-              onClick={() => addLikes( id, title )}
-              aria-label={`Ajouter "${title}" aux favoris`}
+            <button className={`likes ${isLiked ? 'liked' : ''}`}
+              onClick={toggleLikes}
+              aria-label={isLiked ? `Retirer "${title}" des favoris` : `Ajouter "${title}" aux favoris`}
             >
-
               <span aria-hidden="true">
-♡
-
-
+                {isLiked ? '♥' : '♡'}
               </span>
             </button>
           </div>

@@ -151,9 +151,9 @@ function ArticlePage(props) {
                   case 'news':
                     return (
                       <li key={`article-${idx}`} className="col-12 col-md-6">
-
+                        
                         <Article
-                          id={idx}
+                          id={item.id}
                           title={item.title}
                           date={item.published || item.date || item.publishedAt}
                           concepts={item.concepts || item.category}
@@ -169,7 +169,7 @@ function ArticlePage(props) {
                     return (
                       <li key={`photo-${idx}`} className="col-12 col-md-6">
                         <Photos
-                          id={idx}
+                          id={item.id}
                           title={item.title}
                           date={item.published}
                           url={item.url}
