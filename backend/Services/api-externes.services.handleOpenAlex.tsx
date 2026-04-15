@@ -2,9 +2,10 @@ import User from '../Models/User'
 import Article from '../Models/Article'
 import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
+import { isArticlesTooOld } from '../Helpers/CheckTooOld'
+
 
 const CACHE_TTL = 3600 * 24 * 30
-const MAX_ARTICLE_AGE_DAYS = 30
 const MAX_PAGES = 10
 const PER_PAGE = 10
 const TOPIC_SCORE_THRESHOLD = 0.75
@@ -55,18 +56,6 @@ function mapInterestsToSubfields(interestIds) {
   }, [])
 }
 
-function isArticlesTooOld(articles: any[]): boolean {
-  if (!articles || articles.length === 0) return true
-
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_ARTICLE_AGE_DAYS)
-
-  const tooOldCount = articles.filter((a) => {
-    return new Date(a.createdAt) < limitDate
-  }).length
-
-  return tooOldCount > articles.length / 2
-}
 
 async function getFromCache(cacheKey: string) {
   try {

@@ -9,7 +9,7 @@ _Avancée du jour :_
 -> Ajout de express - node js - typescript en backend
 -> React - ajout en front end
 
--> Trello : https://trello.com/b/6fi3BJm4/projet-m2-curiosity
+-> Trello : 
 
 _Choix techniques :_
 
@@ -644,4 +644,8 @@ https://crontab.guru/
 
 **---------------------------------30-03----------------------------------**
 
--> Aujourd'hui stocker news dans la bdd
+-> Aujourd'hui stocker news dans la bdd X
+
+**---------------------------------30-03----------------------------------**
+
+-> Aujourd'hui Ajouter les crons

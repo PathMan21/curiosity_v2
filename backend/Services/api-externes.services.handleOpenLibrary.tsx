@@ -2,7 +2,7 @@ import { User } from '../Models'
 import Book from '../Models/Book'
 import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
-
+import { isBooksTooOld } from '../Helpers/CheckTooOld'
 const BASE_URL = 'https://openlibrary.org'
 const COVERS_URL = 'https://covers.openlibrary.org/b/id'
 const CACHE_TTL = 3600 * 24 * 90
@@ -51,15 +51,7 @@ function mapInterestsToOpenLibrary(interestIds: string[]) {
   return categories
 }
 
-function isBooksTooOld(books: any[]): boolean {
-  if (!books || books.length === 0) return true
 
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_BOOK_AGE_DAYS)
-
-  const tooOldCount = books.filter((b) => new Date(b.createdAt) < limitDate).length
-  return tooOldCount > books.length / 2
-}
 
 async function getFromCache(cacheKey: string) {
   try {

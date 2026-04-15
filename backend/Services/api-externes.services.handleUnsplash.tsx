@@ -3,6 +3,8 @@ import Photo from '../Models/Photo'
 import redisClient from '../Config/redis.conf'
 import { Op } from 'sequelize'
 
+import { isPhotosTooOld } from '..CheckTooOld/Helpers/CheckTooOld'
+
 const CACHE_TTL = 3600 * 24 * 90
 const MAX_PHOTO_AGE_DAYS = 90
 
@@ -35,15 +37,7 @@ function mapInterestsToQueries(interests: string[]) {
   return interests.map((i) => INTEREST_TO_QUERY[i]).filter(Boolean)
 }
 
-function isPhotosTooOld(photos: any[]): boolean {
-  if (!photos || photos.length === 0) return true
 
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_PHOTO_AGE_DAYS)
-
-  const tooOldCount = photos.filter((p) => new Date(p.createdAt) < limitDate).length
-  return tooOldCount > photos.length / 2
-}
 
 async function getFromCache(cacheKey: string) {
   try {

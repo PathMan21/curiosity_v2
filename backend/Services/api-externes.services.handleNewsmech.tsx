@@ -3,10 +3,12 @@ import { User } from '../Models'
 import News from '../Models/News'
 import redisClient from '../Config/redis.conf'
 
+import { isNewsTooOld,  } from '../Helpers/CheckTooOld'
+import { json } from 'body-parser'
+
 const CACHE_TTL = 3600 * 24 * 10
 const RATE_LIMIT_DELAY = 1000
 const ARTICLES_PER_CATEGORY = 25
-const MAX_ARTICLE_AGE_DAYS = 7
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -38,27 +40,14 @@ function shuffleArray(arr) {
 }
 
 
-function isArticlesTooOld(articles: any[]): boolean {
-  if (!articles || articles.length === 0) return true
-
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_ARTICLE_AGE_DAYS)
-
-  const tooOldCount = articles.filter((a) => {
-    const publishedAt = new Date(a.publishedAt)
-    return publishedAt < limitDate
-  }).length
-
-  // Si plus de la moitié des articles sont trop vieux => on le considère périmé
-  return tooOldCount > articles.length / 2
-}
-
 // Cache reddis 
 
 async function getFromCache(cacheKey: string) {
   try {
-    const raw = await redisClient.get(cacheKey)
-    if (!raw?.trim()) return null
+    const raw = await redisClient.get(cacheKey);
+    if (!raw) {
+      return null
+    } 
 
     const parsed = JSON.parse(raw)
     return parsed?.articles?.length > 0 ? parsed.articles : null
@@ -81,7 +70,7 @@ async function getFromDB(category) {
     const mapped = articles.map((a) => a.toJSON())
 
     // Si les articles sont trop vieux => on force un appel API
-    if (isArticlesTooOld(mapped)) {
+    if (isNewsTooOld(mapped)) {
       console.log(`Les articles sont trop vieux => plus de 7 jours`)
       return null
     }
