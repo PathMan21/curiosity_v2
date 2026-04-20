@@ -257,12 +257,18 @@ async function resolveSubfields(subfieldItems: any[]) {
       }
 
       // 3. API
-      console.log(`🌐 Fetch API — subfield ${subfield}`)
+      console.log(`Fetch API — subfield ${subfield}`)
       toFetch.push(subfield)
     })
   )
 
   if (toFetch.length > 0) {
+    checkArticles();
+  }
+
+  return allResults
+}
+export async function checkArticles() {
     await Promise.all(
       toFetch.map(async (subfield) => {
         const cacheKey = `handle-open-alex-${subfield}`
@@ -273,11 +279,7 @@ async function resolveSubfields(subfieldItems: any[]) {
         await setInCache(cacheKey, subfield, formatted)
       })
     )
-  }
-
-  return allResults
 }
-
 async function handleOpenAlex(req, res) {
   try {
     const user = await User.findOne({ where: { id: req.userId } })
@@ -312,5 +314,10 @@ async function handleOpenAlex(req, res) {
     })
   }
 }
+
+
+
+
+
 
 export default handleOpenAlex

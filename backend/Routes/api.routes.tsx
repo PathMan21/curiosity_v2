@@ -7,9 +7,9 @@ import handleOpenLibrary from '../Services/api-externes.services.handleOpenLibra
 import { authentificatedUser } from '../Middlewares/user.middlewares'
 const router = Router()
 
-router.get('/images/', authentificatedUser, handleUnsplash)
-router.get('/news/', authentificatedUser, handleNewsmech)
+// router.get('/images/', authentificatedUser, handleUnsplash)
+// router.get('/news/', authentificatedUser, handleNewsmech)
 router.get('/articles/', authentificatedUser, handleOpenAlex)
-router.get('/books/', authentificatedUser, handleOpenLibrary)
+// router.get('/books/', authentificatedUser, handleOpenLibrary)
 
 export default router
