@@ -2,7 +2,7 @@ import { User } from '../Models'
 import Book from '../Models/Book'
 import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
-
+import { isBooksTooOld } from '../Helpers/CheckTooOld'
 const BASE_URL = 'https://openlibrary.org'
 const COVERS_URL = 'https://covers.openlibrary.org/b/id'
 const CACHE_TTL = 3600 * 24 * 90
@@ -51,15 +51,7 @@ function mapInterestsToOpenLibrary(interestIds: string[]) {
   return categories
 }
 
-function isBooksTooOld(books: any[]): boolean {
-  if (!books || books.length === 0) return true
 
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_BOOK_AGE_DAYS)
-
-  const tooOldCount = books.filter((b) => new Date(b.createdAt) < limitDate).length
-  return tooOldCount > books.length / 2
-}
 
 async function getFromCache(cacheKey: string) {
   try {
@@ -74,7 +66,7 @@ async function getFromCache(cacheKey: string) {
   }
 }
 
-async function getFromDB(cacheKey: string) {
+export async function getFromDB(cacheKey: string) {
   try {
     const books = await Book.findAll({ where: { cacheKey } })
     if (books.length === 0) return null
@@ -237,6 +229,28 @@ async function handleOpenLibrary(req, res) {
   } catch (err) {
     console.error('❌ Erreur handleOpenLibrary:', err)
     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
+  }
+}
+
+// CRON: Récupérer tous les sujets et mettre à jour les livres
+export async function getAllLibraryCategories() {
+  const allInterestIds = []
+  const interestsData_local = require('../Assets/interests.json')
+  interestsData_local.interests.forEach(interest => {
+    if (interest.id) allInterestIds.push(interest.id)
+  })
+  return mapInterestsToOpenLibrary(allInterestIds)
+}
+
+export async function checkBooks(categories) {
+  try {
+    console.log('📚 [CRON] Mise à jour OpenLibrary - Catégories:', categories?.length || 0)
+    const books = await resolveCategories(categories)
+    console.log('✅ [CRON] Livres mis à jour:', books.length)
+    return books
+  } catch (error) {
+    console.error('❌ [CRON] Erreur OpenLibrary:', error.message)
+    throw error
   }
 }
 

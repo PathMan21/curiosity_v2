@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3000/api'
+const API_URL = "http://localhost:3000/api"
+
 
 interface RefreshResponse {
   status: string
@@ -34,6 +35,8 @@ export const fetchWithAuth = async (
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> => {
+  
+  console.log("api url => ", API_URL);
   const token = localStorage.getItem('authToken')
   const refreshToken = localStorage.getItem('refreshToken')
 

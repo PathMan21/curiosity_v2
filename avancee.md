@@ -9,7 +9,7 @@ _Avancée du jour :_
 -> Ajout de express - node js - typescript en backend
 -> React - ajout en front end
 
--> Trello : https://trello.com/b/6fi3BJm4/projet-m2-curiosity
+-> Trello : 
 
 _Choix techniques :_
 
@@ -644,4 +644,33 @@ https://crontab.guru/
 
 **---------------------------------30-03----------------------------------**
 
--> Aujourd'hui stocker news dans la bdd
+-> Aujourd'hui stocker news dans la bdd X
+
+**---------------------------------30-03----------------------------------**
+
+-> Aujourd'hui Ajouter les crons
+
+**---------------------------------19-04----------------------------------**
+
+
+le but ici et de savoir si les articles photos etc.. sont trop vieux et doivent être re-fetch des apis 
+comment faire ? Je pensais à on va checker l'intérieur du reddis
+
+on met isArticleTooOld pour savoir où on en est
+on ressort true -> on va chercher dans la base de données (tout ça est déjà fait dans tout ce qui est api etc...)
+La je propose qu'on fasse intervenir les crons 
+
+Les crons vont faire tout les appels api - on va changer le système actuel qui fetch côté client 
+=> On va chercher en backend quand les crons s'executent - selon les articles etc... 
+
+
+actuellement, je vais checker si les articles sont trop vieux. Si ils sont trop vieux je les ""refresh""
+Donc ce que je vais faire c'est que tout les jours, je vais faire un appel - voir si tout n'est pas trop vieux
+ça permet d'avoir le controle à plusieurs endroits centralisés, au lieu de répèter deux fois la même chose
+
+EGALEMENT => du coup il me faut charger TOUT les intérets, au lieu d'un seul, donc la logique doit changer
+comment l'utilisateur récupère tout ça doit aussi changer => 
+
+**---------------------------------22-04----------------------------------**
+
+Je dois également sécuriser le site - mettre un throttle pour limiter les robots qui s'ajoutent en boucles pour break le mot de passe

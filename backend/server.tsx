@@ -7,6 +7,7 @@ import { createServer } from 'http'
 import userRoutes from './Routes/user.routes'
 import authRoutes from './Routes/auth.routes'
 import apiroutes from './Routes/api.routes'
+import likesRoutes from './Routes/likes.routes'
 import './Models/News';
 import './Models/Likes';
 import './Models/Book';
@@ -37,6 +38,7 @@ app.use(
   app.use('/api/users', userRoutes)
   app.use('/api/auth', authRoutes)
   app.use('/api/data', apiroutes)
+  app.use('/api/likes', likesRoutes)
 
  
   server.listen(PORT, () => {

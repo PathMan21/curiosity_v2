@@ -31,7 +31,6 @@ function ProfileSettings() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // ✅ RGAA 11.3 — ref pour gérer le focus sur la zone de statut
   const statusRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -64,7 +63,7 @@ function ProfileSettings() {
       if (data.status === 'Success') {
         updateProfile(data.accessToken, data.refreshToken)
         await fetchUserProfile()
-        // ✅ RGAA 11.3 — message de succès annoncé via aria-live
+
         setSuccess('Profil mis à jour avec succès !')
         setTimeout(() => setSuccess(''), 3000)
       }
@@ -84,7 +83,6 @@ function ProfileSettings() {
             <div className="col-md-8 mx-auto">
               <div className="card shadow">
                 <div className="card-body">
-                  {/* ✅ RGAA 7.3 — indicateur de chargement accessible */}
                   <p role="status" aria-live="polite">Chargement du profil…</p>
                 </div>
               </div>
@@ -115,7 +113,6 @@ function ProfileSettings() {
       <form onSubmit={handlesubmit} noValidate>
 
         <div className="mb-3">
-          {/* ✅ RGAA 11.1 — label associé via htmlFor / id */}
           <label htmlFor="settings-username" className="form-label">
             Nom d'utilisateur
           </label>
@@ -129,7 +126,6 @@ function ProfileSettings() {
           />
         </div>
 
-        {/* ✅ RGAA 11.5 — fieldset + legend pour les cases à cocher groupées */}
         <fieldset className="mb-3">
           <legend className="form-label">Sélectionnez vos centres d'intérêt</legend>
           {interestsData?.interests.map((item) => (
@@ -141,7 +137,6 @@ function ProfileSettings() {
                 checked={interests.includes(item.id)}
                 onChange={() => handleInterests(item.id)}
               />
-              {/* ✅ RGAA 11.1 — chaque checkbox a son label associé */}
               <label htmlFor={`interest-${item.id}`} className="form-check-label">
                 {item.label}
               </label>

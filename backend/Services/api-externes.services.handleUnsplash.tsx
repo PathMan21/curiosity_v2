@@ -3,6 +3,8 @@ import Photo from '../Models/Photo'
 import redisClient from '../Config/redis.conf'
 import { Op } from 'sequelize'
 
+import { isPhotosTooOld } from '../Helpers/CheckTooOld'
+
 const CACHE_TTL = 3600 * 24 * 90
 const MAX_PHOTO_AGE_DAYS = 90
 
@@ -35,15 +37,7 @@ function mapInterestsToQueries(interests: string[]) {
   return interests.map((i) => INTEREST_TO_QUERY[i]).filter(Boolean)
 }
 
-function isPhotosTooOld(photos: any[]): boolean {
-  if (!photos || photos.length === 0) return true
 
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_PHOTO_AGE_DAYS)
-
-  const tooOldCount = photos.filter((p) => new Date(p.createdAt) < limitDate).length
-  return tooOldCount > photos.length / 2
-}
 
 async function getFromCache(cacheKey: string) {
   try {
@@ -58,7 +52,7 @@ async function getFromCache(cacheKey: string) {
   }
 }
 
-async function getFromDB(interest: string) {
+export async function getFromDB(interest: string) {
   try {
     const photos = await Photo.findAll({ where: { interest } })
     if (photos.length === 0) return null
@@ -146,7 +140,7 @@ async function resolveQueries(queries: string[], baseUrl: string, clientId: stri
       // 1. Cache Redis
       const cached = await getFromCache(cacheKey)
       if (cached) {
-        console.log(`✅ Cache hit — ${cacheKey}`)
+        console.log(`Cache hit — ${cacheKey}`)
         allPhotos.push(...cached)
         return
       }
@@ -154,7 +148,7 @@ async function resolveQueries(queries: string[], baseUrl: string, clientId: stri
       // 2. BDD
       const fromDB = await getFromDB(interest)
       if (fromDB) {
-        console.log(`✅ BDD hit — ${interest}`)
+        console.log(`BDD hit — ${interest}`)
         allPhotos.push(...fromDB)
         await redisClient.setEx(
           cacheKey,
@@ -165,7 +159,7 @@ async function resolveQueries(queries: string[], baseUrl: string, clientId: stri
       }
 
       // 3. API
-      console.log(`🌐 Fetch API — Unsplash "${interest}"`)
+      console.log(`Fetch API — Unsplash "${interest}"`)
       toFetch.push(interest)
     })
   )
@@ -218,6 +212,30 @@ async function handleUnsplash(req, res) {
   } catch (err) {
     console.error('Erreur handleUnsplash:', err)
     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
+  }
+}
+
+// CRON
+export async function getAllUnsplashQueries() {
+  const allInterestIds = []
+  const interestsData_local = require('../Assets/interests.json')
+  interestsData_local.interests.forEach(interest => {
+    if (interest.id) allInterestIds.push(interest.id)
+  })
+  return mapInterestsToQueries(allInterestIds)
+}
+
+export async function checkPhotos(queries) {
+  try {
+    console.log('mise à jour via cron => unsplash ', queries?.length)
+    const baseUrl = process.env.BASE_URL_UNSPLASH || 'https://api.unsplash.com'
+    const clientId = process.env.API_KEY_UNSPLASH
+    const photos = await resolveQueries(queries, baseUrl, clientId)
+    console.log('Photos => ', photos.length)
+    return photos
+  } catch (error) {
+    console.error('Erreur Unsplash :', error.message)
+    throw error
   }
 }
 

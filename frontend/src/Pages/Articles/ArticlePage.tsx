@@ -37,57 +37,57 @@ function ArticlePage(props) {
     }
   }
 
-  const fetchBooks = async () => {
-    try {
-      const response = await fetchWithAuth('/data/books', { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      const data = await response.json()
-      return data.data
-    } catch (err) {
-      console.error('Erreur books:', err)
-      setError(err.message)
-    }
-  }
-  const fetchImages = async () => {
-    try {
-      const response = await fetchWithAuth('/data/images', { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      const data = await response.json()
-      return data.photos
-    } catch (err) {
-      console.error('Erreur:', err)
-      setError(err.message)
-    }
-  }
+  // const fetchBooks = async () => {
+  //   try {
+  //     const response = await fetchWithAuth('/data/books', { method: 'GET' })
+  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+  //     const data = await response.json()
+  //     return data.data
+  //   } catch (err) {
+  //     console.error('Erreur books:', err)
+  //     setError(err.message)
+  //   }
+  // }
+  // const fetchImages = async () => {
+  //   try {
+  //     const response = await fetchWithAuth('/data/images', { method: 'GET' })
+  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+  //     const data = await response.json()
+  //     return data.photos
+  //   } catch (err) {
+  //     console.error('Erreur:', err)
+  //     setError(err.message)
+  //   }
+  // }
 
-  const fetchNews = async () => {
-    try {
-      const response = await fetchWithAuth('/data/news', { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+  // const fetchNews = async () => {
+  //   try {
+  //     const response = await fetchWithAuth('/data/news', { method: 'GET' })
+  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
 
-      const data = await response.json()
-      return data.articles
-    } catch (err) {
-      console.error('Erreur:', err)
-      setError(err.message)
-    }
-  }
+  //     const data = await response.json()
+  //     return data.articles
+  //   } catch (err) {
+  //     console.error('Erreur:', err)
+  //     setError(err.message)
+  //   }
+  // }
 
 
 
   const fetchAll = async () => {
-    const [articlesData, newsData, imageData, booksData] = await Promise.all([
+    const [articlesData] = await Promise.all([
       fetchArticles(),
-      fetchNews(),
-      fetchImages(),
-      fetchBooks(),
+      // fetchNews(),
+      // fetchImages(),
+      // fetchBooks(),
     ])
 
-    if (newsData && booksData && imageData && articlesData) {
+    if (articlesData) {
       setLoading(false)
-      const shuffledBooks = shuffleArray(booksData, 5);
-      setBooks(shuffledBooks);
-      const shuffled = shuffleArray([ ...newsData, ...articlesData, ...imageData], 20)
+      // const shuffledBooks = shuffleArray(booksData, 5);
+      // setBooks(shuffledBooks);
+      const shuffled = shuffleArray([ ...articlesData], 20)
       setAll(shuffled)
     }
   }
@@ -151,9 +151,9 @@ function ArticlePage(props) {
                   case 'news':
                     return (
                       <li key={`article-${idx}`} className="col-12 col-md-6">
-
+                        
                         <Article
-                          id={idx}
+                          id={item.id}
                           title={item.title}
                           date={item.published || item.date || item.publishedAt}
                           concepts={item.concepts || item.category}
@@ -169,7 +169,7 @@ function ArticlePage(props) {
                     return (
                       <li key={`photo-${idx}`} className="col-12 col-md-6">
                         <Photos
-                          id={idx}
+                          id={item.id}
                           title={item.title}
                           date={item.published}
                           url={item.url}

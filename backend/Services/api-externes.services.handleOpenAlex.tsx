@@ -2,9 +2,10 @@ import User from '../Models/User'
 import Article from '../Models/Article'
 import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
+import { isArticlesTooOld } from '../Helpers/CheckTooOld'
+
 
 const CACHE_TTL = 3600 * 24 * 30
-const MAX_ARTICLE_AGE_DAYS = 30
 const MAX_PAGES = 10
 const PER_PAGE = 10
 const TOPIC_SCORE_THRESHOLD = 0.75
@@ -55,25 +56,14 @@ function mapInterestsToSubfields(interestIds) {
   }, [])
 }
 
-function isArticlesTooOld(articles: any[]): boolean {
-  if (!articles || articles.length === 0) return true
-
-  const limitDate = new Date()
-  limitDate.setDate(limitDate.getDate() - MAX_ARTICLE_AGE_DAYS)
-
-  const tooOldCount = articles.filter((a) => {
-    return new Date(a.createdAt) < limitDate
-  }).length
-
-  return tooOldCount > articles.length / 2
-}
 
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
     if (!raw?.trim()) return null
 
-    const parsed = JSON.parse(raw)
+    const parsed = JSON.parse(raw);
+    console.log("parsed => ", parsed);
     return parsed?.articles?.length > 0 ? parsed.articles : null
   } catch (err) {
     console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
@@ -89,7 +79,7 @@ async function getFromDB(subfield: string) {
     const mapped = articles.map((a) => a.toJSON())
 
     if (isArticlesTooOld(mapped)) {
-      console.log(`🗑️ Articles OpenAlex trop vieux pour "${subfield}", réhydratation...`)
+      console.log(`Articles OpenAlex trop vieux pour "${subfield}", réhydratation...`)
       return null
     }
 
@@ -268,12 +258,32 @@ async function resolveSubfields(subfieldItems: any[]) {
       }
 
       // 3. API
-      console.log(`🌐 Fetch API — subfield ${subfield}`)
+      console.log(`Fetch API — subfield ${subfield}`)
       toFetch.push(subfield)
     })
   )
 
   if (toFetch.length > 0) {
+    allResults.push(await checkArticles(toFetch));
+  }
+
+  return allResults
+}
+
+export async function getAllSubjects() {
+    let allSubfield = [];
+    for (const property in SUBFIELD_MAPPING) {
+      allSubfield.push(property);
+      console.log(property);
+    }
+    return allSubfield;
+}
+
+
+
+
+export async function checkArticles(toFetch) {
+  let allResults = [];
     await Promise.all(
       toFetch.map(async (subfield) => {
         const cacheKey = `handle-open-alex-${subfield}`
@@ -282,13 +292,11 @@ async function resolveSubfields(subfieldItems: any[]) {
 
         allResults.push(...formatted)
         await setInCache(cacheKey, subfield, formatted)
+        return allResults;
       })
     )
-  }
-
-  return allResults
+    return allResults;
 }
-
 async function handleOpenAlex(req, res) {
   try {
     const user = await User.findOne({ where: { id: req.userId } })
@@ -323,5 +331,10 @@ async function handleOpenAlex(req, res) {
     })
   }
 }
+
+
+
+
+
 
 export default handleOpenAlex
