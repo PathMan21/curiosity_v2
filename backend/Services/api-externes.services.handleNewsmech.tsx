@@ -59,7 +59,7 @@ async function getFromCache(cacheKey: string) {
 
 // On récupère de la bdd
 
-async function getFromDB(category) {
+export async function getFromDB(category) {
   try {
     const articles = await News.findAll({ where: { category } })
 
@@ -250,6 +250,30 @@ async function handleNewsmech(req, res) {
     })
   } catch (error) {
     console.log("error => ", error);
+  }
+}
+
+// CRON: Récupérer toutes les catégories et mettre à jour les news
+export async function getAllNewsmechCategories() {
+  const allInterestIds = []
+  const interestsData_local = require('../Assets/interests.json')
+  interestsData_local.interests.forEach(interest => {
+    if (interest.id) allInterestIds.push(interest.id)
+  })
+  return Array.from(mapInterestsToNewsMech(allInterestIds))
+}
+
+export async function checkNews(categories) {
+  try {
+    console.log('📰 [CRON] Mise à jour Newsmech - Catégories:', categories?.length || 0)
+    const baseurl = process.env.BASE_URL_NEWSMECH
+    const apiKey = process.env.API_KEY_NEWSMECH
+    const articles = await resolveCategories(categories, baseurl, apiKey)
+    console.log('✅ [CRON] Articles news mis à jour:', articles.length)
+    return articles
+  } catch (error) {
+    console.error('❌ [CRON] Erreur Newsmech:', error.message)
+    throw error
   }
 }
 

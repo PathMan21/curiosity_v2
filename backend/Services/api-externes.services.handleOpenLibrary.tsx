@@ -66,7 +66,7 @@ async function getFromCache(cacheKey: string) {
   }
 }
 
-async function getFromDB(cacheKey: string) {
+export async function getFromDB(cacheKey: string) {
   try {
     const books = await Book.findAll({ where: { cacheKey } })
     if (books.length === 0) return null
@@ -229,6 +229,28 @@ async function handleOpenLibrary(req, res) {
   } catch (err) {
     console.error('❌ Erreur handleOpenLibrary:', err)
     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
+  }
+}
+
+// CRON: Récupérer tous les sujets et mettre à jour les livres
+export async function getAllLibraryCategories() {
+  const allInterestIds = []
+  const interestsData_local = require('../Assets/interests.json')
+  interestsData_local.interests.forEach(interest => {
+    if (interest.id) allInterestIds.push(interest.id)
+  })
+  return mapInterestsToOpenLibrary(allInterestIds)
+}
+
+export async function checkBooks(categories) {
+  try {
+    console.log('📚 [CRON] Mise à jour OpenLibrary - Catégories:', categories?.length || 0)
+    const books = await resolveCategories(categories)
+    console.log('✅ [CRON] Livres mis à jour:', books.length)
+    return books
+  } catch (error) {
+    console.error('❌ [CRON] Erreur OpenLibrary:', error.message)
+    throw error
   }
 }
 

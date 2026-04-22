@@ -670,3 +670,7 @@ Donc ce que je vais faire c'est que tout les jours, je vais faire un appel - voi
 
 EGALEMENT => du coup il me faut charger TOUT les intérets, au lieu d'un seul, donc la logique doit changer
 comment l'utilisateur récupère tout ça doit aussi changer => 
+
+**---------------------------------22-04----------------------------------**
+
+Je dois également sécuriser le site - mettre un throttle pour limiter les robots qui s'ajoutent en boucles pour break le mot de passe

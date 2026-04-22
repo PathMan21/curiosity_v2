@@ -62,7 +62,8 @@ async function getFromCache(cacheKey: string) {
     const raw = await redisClient.get(cacheKey)
     if (!raw?.trim()) return null
 
-    const parsed = JSON.parse(raw)
+    const parsed = JSON.parse(raw);
+    console.log("parsed => ", parsed);
     return parsed?.articles?.length > 0 ? parsed.articles : null
   } catch (err) {
     console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
@@ -78,7 +79,7 @@ async function getFromDB(subfield: string) {
     const mapped = articles.map((a) => a.toJSON())
 
     if (isArticlesTooOld(mapped)) {
-      console.log(`🗑️ Articles OpenAlex trop vieux pour "${subfield}", réhydratation...`)
+      console.log(`Articles OpenAlex trop vieux pour "${subfield}", réhydratation...`)
       return null
     }
 
@@ -263,12 +264,26 @@ async function resolveSubfields(subfieldItems: any[]) {
   )
 
   if (toFetch.length > 0) {
-    checkArticles();
+    allResults.push(await checkArticles(toFetch));
   }
 
   return allResults
 }
-export async function checkArticles() {
+
+export async function getAllSubjects() {
+    let allSubfield = [];
+    for (const property in SUBFIELD_MAPPING) {
+      allSubfield.push(property);
+      console.log(property);
+    }
+    return allSubfield;
+}
+
+
+
+
+export async function checkArticles(toFetch) {
+  let allResults = [];
     await Promise.all(
       toFetch.map(async (subfield) => {
         const cacheKey = `handle-open-alex-${subfield}`
@@ -277,8 +292,10 @@ export async function checkArticles() {
 
         allResults.push(...formatted)
         await setInCache(cacheKey, subfield, formatted)
+        return allResults;
       })
     )
+    return allResults;
 }
 async function handleOpenAlex(req, res) {
   try {
