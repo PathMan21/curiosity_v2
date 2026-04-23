@@ -42,10 +42,22 @@ function mapInterestsToQueries(interests: string[]) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
-    if (!raw?.trim()) return null
 
-    const parsed = JSON.parse(raw)
-    return parsed?.photos?.length > 0 ? parsed.photos : null
+    const rawString = raw.toString();
+    if (!rawString.trim()) return null
+
+    const parsed = JSON.parse(rawString);
+
+    
+    console.log(parsed);
+    if (!parsed?.photos?.length) return null
+
+    if (isPhotosTooOld(parsed.photos)) {
+      console.log(`Photos trop vieilles dans cache pour "${cacheKey}"`)
+      return null
+    }
+
+    return parsed.photos
   } catch (err) {
     console.warn(`Erreur Redis lecture (${cacheKey}):`, err.message)
     return null

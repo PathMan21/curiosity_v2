@@ -56,12 +56,23 @@ function mapInterestsToOpenLibrary(interestIds: string[]) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
-    if (!raw?.trim()) return null
+    
+    const rawString = raw.toString();
+    if (!rawString.trim()) return null
 
-    const parsed = JSON.parse(raw)
-    return parsed?.books?.length > 0 ? parsed.books : null
+    const parsed = JSON.parse(rawString);
+
+    console.log(parsed);
+    if (!parsed?.books?.length) return null
+
+    if (isBooksTooOld(parsed.books)) {
+      console.log(`Livres trop vieux dans cache pour "${cacheKey}"`)
+      return null
+    }
+
+    return parsed.books
   } catch (err) {
-    console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
+    console.warn(`Erreur Redis lecture (${cacheKey}):`, err.message)
     return null
   }
 }

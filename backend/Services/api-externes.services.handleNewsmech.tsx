@@ -45,12 +45,19 @@ function shuffleArray(arr) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey);
-    if (!raw) {
-      return null
-    } 
+    const rawString = raw.toString();
+    if (!rawString.trim()) return null
 
-    const parsed = JSON.parse(raw)
-    return parsed?.articles?.length > 0 ? parsed.articles : null
+    const parsed = JSON.parse(rawString)
+
+    if (!parsed?.articles?.length) return null
+
+    if (isNewsTooOld(parsed.articles)) {
+      console.log(`Articles trop vieux dans cache pour "${cacheKey}"`)
+      return null
+    }
+
+    return parsed.articles
   } catch (err) {
     console.warn(`⚠️ Erreur Redis (${cacheKey}):`, err.message)
     return null
@@ -265,14 +272,14 @@ export async function getAllNewsmechCategories() {
 
 export async function checkNews(categories) {
   try {
-    console.log('📰 [CRON] Mise à jour Newsmech - Catégories:', categories?.length || 0)
+    console.log('cron Mise à jour Newsmech - Catégories : ', categories.length)
     const baseurl = process.env.BASE_URL_NEWSMECH
     const apiKey = process.env.API_KEY_NEWSMECH
     const articles = await resolveCategories(categories, baseurl, apiKey)
-    console.log('✅ [CRON] Articles news mis à jour:', articles.length)
+    console.log('cron articles news mis à jour : ', articles.length)
     return articles
   } catch (error) {
-    console.error('❌ [CRON] Erreur Newsmech:', error.message)
+    console.error('cron erreur Newsmech :', error.message)
     throw error
   }
 }

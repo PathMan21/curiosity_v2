@@ -60,11 +60,22 @@ function mapInterestsToSubfields(interestIds) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
-    if (!raw?.trim()) return null
 
-    const parsed = JSON.parse(raw);
-    console.log("parsed => ", parsed);
-    return parsed?.articles?.length > 0 ? parsed.articles : null
+    const rawString = raw.toString();
+    if (!rawString.trim()) return null
+
+
+    const parsed = JSON.parse(rawString);
+    console.log(parsed);
+    if (!parsed?.books?.length) return null
+
+
+    if (isArticlesTooOld(parsed.articles)) {
+      console.log(`Articles trop vieux dans cache pour "${cacheKey}"`)
+      return null
+    }
+
+    return parsed.articles
   } catch (err) {
     console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
     return null
@@ -271,12 +282,9 @@ async function resolveSubfields(subfieldItems: any[]) {
 }
 
 export async function getAllSubjects() {
-    let allSubfield = [];
-    for (const property in SUBFIELD_MAPPING) {
-      allSubfield.push(property);
-      console.log(property);
-    }
-    return allSubfield;
+  const allSubfields = Object.values(SUBFIELD_MAPPING).map((entry: any) => entry.subfield)
+  console.log('OpenAlex subjects:', allSubfields)
+  return allSubfields
 }
 
 
