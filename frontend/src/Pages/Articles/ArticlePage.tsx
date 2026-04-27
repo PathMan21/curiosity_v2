@@ -37,57 +37,57 @@ function ArticlePage(props) {
     }
   }
 
-  // const fetchBooks = async () => {
-  //   try {
-  //     const response = await fetchWithAuth('/data/books', { method: 'GET' })
-  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-  //     const data = await response.json()
-  //     return data.data
-  //   } catch (err) {
-  //     console.error('Erreur books:', err)
-  //     setError(err.message)
-  //   }
-  // }
-  // const fetchImages = async () => {
-  //   try {
-  //     const response = await fetchWithAuth('/data/images', { method: 'GET' })
-  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-  //     const data = await response.json()
-  //     return data.photos
-  //   } catch (err) {
-  //     console.error('Erreur:', err)
-  //     setError(err.message)
-  //   }
-  // }
+  const fetchBooks = async () => {
+    try {
+      const response = await fetchWithAuth('/data/books', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+      const data = await response.json()
+      return data.data
+    } catch (err) {
+      console.error('Erreur books:', err)
+      setError(err.message)
+    }
+  }
+  const fetchImages = async () => {
+    try {
+      const response = await fetchWithAuth('/data/images', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+      const data = await response.json()
+      return data.photos
+    } catch (err) {
+      console.error('Erreur:', err)
+      setError(err.message)
+    }
+  }
 
-  // const fetchNews = async () => {
-  //   try {
-  //     const response = await fetchWithAuth('/data/news', { method: 'GET' })
-  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+  const fetchNews = async () => {
+    try {
+      const response = await fetchWithAuth('/data/news', { method: 'GET' })
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
 
-  //     const data = await response.json()
-  //     return data.articles
-  //   } catch (err) {
-  //     console.error('Erreur:', err)
-  //     setError(err.message)
-  //   }
-  // }
+      const data = await response.json()
+      return data.articles
+    } catch (err) {
+      console.error('Erreur:', err)
+      setError(err.message)
+    }
+  }
 
 
 
   const fetchAll = async () => {
-    const [articlesData] = await Promise.all([
+    const [articlesData, articleNews, articleImages, articleBooks] = await Promise.all([
       fetchArticles(),
-      // fetchNews(),
-      // fetchImages(),
-      // fetchBooks(),
+      fetchNews(),
+      fetchImages(),
+      fetchBooks(),
     ])
 
     if (articlesData) {
       setLoading(false)
-      // const shuffledBooks = shuffleArray(booksData, 5);
-      // setBooks(shuffledBooks);
-      const shuffled = shuffleArray([ ...articlesData], 20)
+      const shuffledBooks = shuffleArray(articleBooks, 5);
+      setBooks(shuffledBooks);
+      const shuffled = shuffleArray([ ...articlesData, ...articleNews, ...articleImages, ...articleBooks], 20)
       setAll(shuffled)
     }
   }
