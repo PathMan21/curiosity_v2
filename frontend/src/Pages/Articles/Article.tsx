@@ -57,7 +57,6 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
 
       const data = await response.json()
       setIsLiked(data.liked)
-      console.log(data)
     } catch (error) {
       console.error('Error toggling like:', error)
     }

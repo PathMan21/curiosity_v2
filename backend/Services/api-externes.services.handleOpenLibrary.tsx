@@ -56,13 +56,13 @@ function mapInterestsToOpenLibrary(interestIds: string[]) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
+    if (!raw) return null
     
     const rawString = raw.toString();
     if (!rawString.trim()) return null
 
     const parsed = JSON.parse(rawString);
 
-    console.log(parsed);
     if (!parsed?.books?.length) return null
 
     if (isBooksTooOld(parsed.books)) {

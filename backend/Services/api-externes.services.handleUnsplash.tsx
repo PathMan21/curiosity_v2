@@ -42,6 +42,7 @@ function mapInterestsToQueries(interests: string[]) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
+    if (!raw) return null
 
     const rawString = raw.toString();
     if (!rawString.trim()) return null
@@ -49,7 +50,6 @@ async function getFromCache(cacheKey: string) {
     const parsed = JSON.parse(rawString);
 
     
-    console.log(parsed);
     if (!parsed?.photos?.length) return null
 
     if (isPhotosTooOld(parsed.photos)) {

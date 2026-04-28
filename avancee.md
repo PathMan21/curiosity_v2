@@ -674,3 +674,7 @@ comment l'utilisateur récupère tout ça doit aussi changer =>
 **---------------------------------22-04----------------------------------**
 
 Je dois également sécuriser le site - mettre un throttle pour limiter les robots qui s'ajoutent en boucles pour break le mot de passe
+
+**---------------------------------28-04----------------------------------**
+
+Beaucoup trop d'articles sont cherchés
