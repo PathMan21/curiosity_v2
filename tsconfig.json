@@ -7,11 +7,11 @@
     "skipLibCheck": true,
     "strict": false,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "outDir": "dist",
     "rootDir": "./",
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "types": ["vite/client"]
   },
   "include": ["backend/**/*", "frontend/**/*", "tests"]
 }

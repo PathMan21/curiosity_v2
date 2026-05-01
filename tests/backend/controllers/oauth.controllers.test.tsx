@@ -1,3 +1,7 @@
+
+
+const API_URL = `${process.env.SERVER_URL}`;
+
 describe('OAuth Controllers Tests', () => {
   let req: any
   let res: any
@@ -20,7 +24,7 @@ describe('OAuth Controllers Tests', () => {
     it('should generate google oauth URL', () => {
       // Mock OAuth provider
       const clientId = 'test-client-id'
-      const redirectUri = 'http://localhost:3000/api/auth/google/callback'
+      const redirectUri = `${ API_URL }/api/auth/google/callback`
       const scope = 'openid profile email'
 
       // Google OAuth URL format

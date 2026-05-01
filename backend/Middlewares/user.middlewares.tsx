@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { stringify } from 'querystring'
 
+import "../Helpers/configLink";
 const validateUserOauth = (req, res, next) => {
   const { username, interests, password } = req.body
 

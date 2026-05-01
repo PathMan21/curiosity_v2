@@ -674,3 +674,25 @@ comment l'utilisateur récupère tout ça doit aussi changer =>
 **---------------------------------22-04----------------------------------**
 
 Je dois également sécuriser le site - mettre un throttle pour limiter les robots qui s'ajoutent en boucles pour break le mot de passe
+
+**---------------------------------28-04----------------------------------**
+
+Beaucoup trop d'articles sont cherchés - X réglé
+
+
+**---------------------------------01-05----------------------------------**
+
+-> Les dix failles owasp - à vérifier
+  -> Une faille par jour => 
+
+-> Monitoring prometheus
+
+
+<!-- -> Retravailler le front
+  -> Filtre de contenus - news - articles etc...
+  -> faire un effet scroll
+  -> Retravailler le côté hierarchisation des données
+
+
+-> Redis : structurer combien va me couter sur la prod
+  ->   -->

@@ -9,6 +9,8 @@ const CACHE_TTL = 3600 * 24 * 90
 const MAX_BOOK_AGE_DAYS = 90
 const SEARCH_LIMIT = 5
 
+import interestsData_local from "../Assets/interests.json"
+
 const CATEGORIES_SUBJECT = {
   artificial_intelligence: ['machine learning', 'deep learning', 'neural networks', 'computer vision', 'natural language processing'],
   computer:                ['algorithms', 'data structures', 'software engineering', 'programming', 'operating systems'],
@@ -56,13 +58,13 @@ function mapInterestsToOpenLibrary(interestIds: string[]) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
+    if (!raw) return null
     
     const rawString = raw.toString();
     if (!rawString.trim()) return null
 
     const parsed = JSON.parse(rawString);
 
-    console.log(parsed);
     if (!parsed?.books?.length) return null
 
     if (isBooksTooOld(parsed.books)) {
@@ -246,7 +248,7 @@ async function handleOpenLibrary(req, res) {
 // CRON: Récupérer tous les sujets et mettre à jour les livres
 export async function getAllLibraryCategories() {
   const allInterestIds = []
-  const interestsData_local = require('../Assets/interests.json')
+  
   interestsData_local.interests.forEach(interest => {
     if (interest.id) allInterestIds.push(interest.id)
   })

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api"
+
 
 
 interface RefreshResponse {
@@ -36,6 +36,8 @@ export const fetchWithAuth = async (
   options: RequestInit = {}
 ): Promise<Response> => {
   
+
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
   console.log("api url => ", API_URL);
   const token = localStorage.getItem('authToken')
   const refreshToken = localStorage.getItem('refreshToken')

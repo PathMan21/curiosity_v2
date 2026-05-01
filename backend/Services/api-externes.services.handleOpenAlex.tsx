@@ -5,8 +5,9 @@ import redisClient from '../Config/redis.conf'
 import { isArticlesTooOld } from '../Helpers/CheckTooOld'
 
 
+
 const CACHE_TTL = 3600 * 24 * 30
-const MAX_PAGES = 10
+const MAX_PAGES = 3
 const PER_PAGE = 10
 const TOPIC_SCORE_THRESHOLD = 0.75
 const MAX_FINAL_RESULTS = 20
@@ -48,7 +49,7 @@ function mapInterestsToSubfields(interestIds) {
   return interestIds.reduce((acc, id) => {
     const mapping = SUBFIELD_MAPPING[id]
     if (!mapping) {
-      console.warn(`⚠️ Intérêt "${id}" non mappé`)
+      console.warn(` Intérêt "${id}" non mappé`)
       return acc
     }
     acc.push({ subfield: mapping.subfield, journals: mapping.journals })
@@ -60,14 +61,14 @@ function mapInterestsToSubfields(interestIds) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
+    if (!raw) return null
 
     const rawString = raw.toString();
     if (!rawString.trim()) return null
 
 
     const parsed = JSON.parse(rawString);
-    console.log(parsed);
-    if (!parsed?.books?.length) return null
+    if (!parsed?.articles?.length) return null
 
 
     if (isArticlesTooOld(parsed.articles)) {
@@ -96,12 +97,17 @@ async function getFromDB(subfield: string) {
 
     return mapped
   } catch (err) {
-    console.warn(`⚠️ Erreur BDD OpenAlex (${subfield}):`, err.message)
+    console.warn(` Erreur BDD OpenAlex (${subfield}):`, err.message)
     return null
   }
 }
 
 async function setInCache(cacheKey: string, subfield: string, articles: any[]) {
+  if (!articles || articles.length === 0) {
+    console.warn(`Aucun article à mettre en cache pour ${cacheKey} ; conservation des données existantes.`)
+    return
+  }
+
   await Article.destroy({ where: { subfield } })
 
   await Promise.all(
@@ -183,7 +189,7 @@ function reconstructAbstract(invertedIndex) {
       ? abstract.substring(0, ABSTRACT_MAX_LENGTH) + '...'
       : abstract || 'Résumé non disponible'
   } catch (err) {
-    console.error('❌ Erreur reconstruction résumé:', err)
+    console.error(' Erreur reconstruction résumé:', err)
     return 'Résumé non disponible'
   }
 }
@@ -250,7 +256,7 @@ async function resolveSubfields(subfieldItems: any[]) {
       // 1. Cache Redis
       const cached = await getFromCache(cacheKey)
       if (cached) {
-        console.log(`Cache hit — ${subfield}`)
+        console.log(`Cache hit — handle-open-alex-${subfield}`)
         allResults.push(...cached)
         return
       }
@@ -275,7 +281,8 @@ async function resolveSubfields(subfieldItems: any[]) {
   )
 
   if (toFetch.length > 0) {
-    allResults.push(await checkArticles(toFetch));
+    console.log("to fetch à 0 => On va chercher");
+    allResults.push(...await checkArticles(toFetch));
   }
 
   return allResults
@@ -283,7 +290,6 @@ async function resolveSubfields(subfieldItems: any[]) {
 
 export async function getAllSubjects() {
   const allSubfields = Object.values(SUBFIELD_MAPPING).map((entry: any) => entry.subfield)
-  console.log('OpenAlex subjects:', allSubfields)
   return allSubfields
 }
 
@@ -291,19 +297,21 @@ export async function getAllSubjects() {
 
 
 export async function checkArticles(toFetch) {
-  let allResults = [];
-    await Promise.all(
-      toFetch.map(async (subfield) => {
-        const cacheKey = `handle-open-alex-${subfield}`
-        const raw = await fetchSubfieldFromAPI(subfield)
-        const formatted = raw.map(formatWork)
 
-        allResults.push(...formatted)
-        await setInCache(cacheKey, subfield, formatted)
-        return allResults;
-      })
-    )
-    return allResults;
+  const results = await Promise.all(
+
+    toFetch.map(async (subfield) => {
+      
+      const cacheKey = `handle-open-alex-${subfield}`
+      const raw = await fetchSubfieldFromAPI(subfield)
+      const formatted = raw.map(formatWork)
+      await setInCache(cacheKey, subfield, formatted)
+      return formatted  
+
+    })
+
+  )
+  return results.flat()
 }
 async function handleOpenAlex(req, res) {
   try {

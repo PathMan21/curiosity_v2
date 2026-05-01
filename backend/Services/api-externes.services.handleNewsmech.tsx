@@ -3,8 +3,8 @@ import { User } from '../Models'
 import News from '../Models/News'
 import redisClient from '../Config/redis.conf'
 
+import "../Helpers/configLink";
 import { isNewsTooOld,  } from '../Helpers/CheckTooOld'
-import { json } from 'body-parser'
 
 const CACHE_TTL = 3600 * 24 * 10
 const RATE_LIMIT_DELAY = 1000
@@ -21,7 +21,7 @@ function mapInterestsToNewsMech(interestIds) {
 
     if (!interest) return categories
     if (!interest.newsmech_category) {
-      console.warn(`⚠️ Pas de newsmech_category pour "${interestId}"`)
+      console.warn(`Pas de newsmech_category pour "${interestId}"`)
       return categories
     }
 
@@ -45,6 +45,7 @@ function shuffleArray(arr) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey);
+    if (!raw) return null
     const rawString = raw.toString();
     if (!rawString.trim()) return null
 
@@ -59,7 +60,7 @@ async function getFromCache(cacheKey: string) {
 
     return parsed.articles
   } catch (err) {
-    console.warn(`⚠️ Erreur Redis (${cacheKey}):`, err.message)
+    console.warn(`Erreur Redis (${cacheKey}):`, err.message)
     return null
   }
 }
@@ -93,6 +94,7 @@ export async function getFromDB(category) {
 
 async function setInCache(cacheKey, category, articles) {
   // On supprime les anciens articles de la catégorie avant d'insérer
+    if (articles.length === 0) return null
   await News.destroy({ where: { category } })
 
   await Promise.all(
@@ -117,7 +119,7 @@ async function setInCache(cacheKey, category, articles) {
       JSON.stringify({ category, totalResults: articles.length, articles })
     )
   } catch (err) {
-    console.warn(`⚠️ Erreur écriture Redis (${cacheKey}):`, err.message)
+    console.warn(`Erreur écriture Redis (${cacheKey}):`, err.message)
   }
 }
 
@@ -195,7 +197,7 @@ async function resolveCategories(categories ,baseurl, apiKey) {
       // 1. On cherche dans le cache reddis
       const cached = await getFromCache(cacheKey)
       if (cached) {
-        console.log("on récupère du cache");
+        console.log("cache hit - ", cacheKey);
         allArticles.push(...cached)
         return
       }

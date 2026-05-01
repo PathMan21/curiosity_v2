@@ -5,6 +5,8 @@ import { useAuth } from '../Context/AuthContext'
  * Hook pour rafraîchir automatiquement le token avant son expiration
  * Rafraîchit le token 1 minute avant son expiration
  */
+
+const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 export const useAutoRefreshToken = () => {
   const { token, setToken, logout } = useAuth()
 
@@ -44,7 +46,7 @@ export const useAutoRefreshToken = () => {
 
     try {
       const response = await fetch(
-        'http://localhost:3000/api/users/refresh-token',
+        `${ API_URL }/api/users/refresh-token`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

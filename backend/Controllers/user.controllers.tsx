@@ -1,13 +1,10 @@
 import User from '../Models/User'
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
-import UserVerifications from '../Models/UserVerifications'
-import { transport } from '../Config/emailConfig'
-import { v4 as uuidv4 } from 'uuid'
 import { sendVerificationEmail } from '../Services/mail.services'
 import jwt from 'jsonwebtoken'
-import { error } from 'console'
 
+import "../Helpers/configLink";
 const generateTokens = (userId: number) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: '15m',

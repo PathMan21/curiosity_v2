@@ -40,7 +40,6 @@ function Photos({ id, title, date, url, description, photographer, photographerU
 
       const data = await response.json()
       setIsLiked(data.liked)
-      console.log(data)
     } catch (error) {
       console.error('Error toggling like:', error)
     }

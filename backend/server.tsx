@@ -1,9 +1,15 @@
-import express, { Request, Response } from 'express'
-import dotenv from 'dotenv'
-import path from 'path'
-import connectDB from './Config/connexion'
-import { json } from 'sequelize'
+import express from 'express'
 import { createServer } from 'http'
+import cors from 'cors'
+
+import options from './Config/swaggerOptions';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsDoc from 'swagger-jsdoc';
+
+import "./Helpers/configLink";
+
+import './Helpers/cron.schedules'
+import connectDB from './Config/connexion'
 import userRoutes from './Routes/user.routes'
 import authRoutes from './Routes/auth.routes'
 import apiroutes from './Routes/api.routes'
@@ -14,34 +20,31 @@ import './Models/Book';
 import './Models/Article';
 import './Models/Photo';
 
-import cors from 'cors'
-
-import './Helpers/cron.schedules';
-dotenv.config({
-  path: path.resolve(process.cwd(), 'Config/.env'),
-})
 const app = express()
 const server = createServer(app)
-const PORT = process.env.PORT
 
+      const env = process.env.ENVIRONNEMENT || "test";
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-  })
-)
+      console.log("env => ", env);
 
 ;(async () => {
-  await connectDB()
+    await connectDB();
 
-  app.use(cors({ origin: 'http://localhost:5173' }))
-  app.use('/api/users', userRoutes)
-  app.use('/api/auth', authRoutes)
-  app.use('/api/data', apiroutes)
-  app.use('/api/likes', likesRoutes)
+    app.use(cors({
+        origin: 'http://localhost:5173',
+    }));
 
- 
-  server.listen(PORT, () => {
-    console.log(`Serveur lancé sur le port ${PORT}`)
-  })
-})()
+    app.use('/api/users', userRoutes);
+    app.use('/api/auth', authRoutes);
+    app.use('/api/data', apiroutes);
+    app.use('/api/likes', likesRoutes);
+
+    if (env == "dev") {
+        console.log("environnement dev démarré");
+    }
+
+      const PORT = process.env.PORT
+    server.listen(PORT, () => {
+        console.log(`Serveur lancé sur le port ${PORT}`);
+    });
+})();

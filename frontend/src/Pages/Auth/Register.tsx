@@ -1,8 +1,9 @@
 import { useState } from 'react'
 
+const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 const handleOAuthRegister = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/auth/google/url', {
+    const response = await fetch(`${ API_URL }/api/auth/google/url`, {
       method: 'GET',
     })
     const data = await response.json()
@@ -26,7 +27,7 @@ function Register() {
     setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:3000/api/users', {
+      const response = await fetch(`${ API_URL }/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),

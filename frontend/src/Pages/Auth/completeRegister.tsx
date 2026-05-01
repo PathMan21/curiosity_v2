@@ -45,7 +45,7 @@ function CompleteInscription() {
     try {
       const interests = selectedInterests
       const response = await fetch(
-        'http://localhost:3000/api/auth/complete-inscription-oauth',
+        `${ API_URL }/api/auth/complete-inscription-oauth`,
         {
           method: 'POST',
           headers: {

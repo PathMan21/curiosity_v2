@@ -2,6 +2,8 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiCall, fetchWithAuth } from '../Services/apiClient'
 
+
+const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 interface User {
   id: string
   email: string
@@ -68,7 +70,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:3000/api/users/login', {
+      const response = await fetch(`${ API_URL }/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

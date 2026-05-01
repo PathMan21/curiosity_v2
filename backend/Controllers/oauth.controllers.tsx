@@ -3,6 +3,7 @@ import User from '../Models/User'
 import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
 
+import "../Helpers/configLink";
 const baseUrl = process.env.BASE_URL_FRONT
 
 const googleAuthId = process.env.ID_OAUTH
