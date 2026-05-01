@@ -8,7 +8,10 @@ const MAX_BOOK_AGE_DAYS = 50
 const MAX_PHOTO_AGE_DAYS = 50
 
 function isArticlesTooOld(articles: any[]): boolean {
-  if (!articles || articles.length === 0) return true
+
+  if (!articles || articles.length === 0){
+    
+  } return true
 
   const limitDate = new Date()
   limitDate.setDate(limitDate.getDate() - MAX_ARTICLE_AGE_DAYS)
@@ -18,7 +21,6 @@ function isArticlesTooOld(articles: any[]): boolean {
     return publishedAt < limitDate
   }).length
 
-  // Si plus de la moitié des articles sont trop vieux => on le considère périmé
   return tooOldCount > articles.length / 2
 }
 function isNewsTooOld(articles: any[]): boolean {

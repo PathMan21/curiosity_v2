@@ -58,17 +58,21 @@ function mapInterestsToSubfields(interestIds) {
 }
 
 
-async function getFromCache(cacheKey: string) {
-  try {
+async function getFromCache(cacheKey) {
     const raw = await redisClient.get(cacheKey)
-    if (!raw) return null
-
+    if (!raw) {
+      return null
+    }
     const rawString = raw.toString();
-    if (!rawString.trim()) return null
+    if (!rawString.trim())  {
+      return null
+    }
 
 
     const parsed = JSON.parse(rawString);
-    if (!parsed?.articles?.length) return null
+    if (!parsed || parsed.article.length < 1) {
+      return null
+    } 
 
 
     if (isArticlesTooOld(parsed.articles)) {
@@ -77,18 +81,18 @@ async function getFromCache(cacheKey: string) {
     }
 
     return parsed.articles
-  } catch (err) {
-    console.warn(`⚠️ Erreur Redis lecture (${cacheKey}):`, err.message)
-    return null
-  }
+
 }
 
-async function getFromDB(subfield: string) {
-  try {
+async function getFromDB(subfield) {
     const articles = await Article.findAll({ where: { subfield } })
-    if (articles.length === 0) return null
+    if (!articles || articles.length < 1){
+      return null
 
-    const mapped = articles.map((a) => a.toJSON())
+    } 
+    const mapped = articles.map(
+      (a) => a.toJSON()
+    )
 
     if (isArticlesTooOld(mapped)) {
       console.log(`Articles OpenAlex trop vieux pour "${subfield}", réhydratation...`)
@@ -96,10 +100,7 @@ async function getFromDB(subfield: string) {
     }
 
     return mapped
-  } catch (err) {
-    console.warn(` Erreur BDD OpenAlex (${subfield}):`, err.message)
-    return null
-  }
+  
 }
 
 async function setInCache(cacheKey: string, subfield: string, articles: any[]) {
@@ -107,7 +108,7 @@ async function setInCache(cacheKey: string, subfield: string, articles: any[]) {
     console.warn(`Aucun article à mettre en cache pour ${cacheKey} ; conservation des données existantes.`)
     return
   }
-
+  console.warn('données détruite car trop vielle');
   await Article.destroy({ where: { subfield } })
 
   await Promise.all(
@@ -227,44 +228,56 @@ function formatWork(work) {
   }
 }
 
-function shuffleArray(arr: any[]) {
+function shuffleArray(arr) {
   const shuffled = [...arr]
   for (let i = shuffled.length - 1; i > 0; i--) {
+
     const j = Math.floor(Math.random() * (i + 1))
     ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    
   }
   return shuffled
 }
 
-function dedupeWorksById(works = []) {
-  const seen = new Set()
-  return works.filter((w) => {
-    if (!w?.id || seen.has(w.id)) return false
-    seen.add(w.id)
-    return true
-  })
+
+function copyChecked(articles) {
+  const trimedArray = new Set();
+  articles.filter((article=> {
+    if (article.id && !trimedArray.has(article.id)) {
+      trimedArray.add(article.id);
+      return true
+    }
+    return false
+  }))
+
+  return articles;
+  
 }
 
-async function resolveSubfields(subfieldItems: any[]) {
+async function resolveSubfields(subfieldItems) {
   const allResults = []
   const toFetch = []
 
+
   await Promise.all(
     subfieldItems.map(async ({ subfield }) => {
+
       const cacheKey = `handle-open-alex-${subfield}`
 
       // 1. Cache Redis
+
       const cached = await getFromCache(cacheKey)
       if (cached) {
-        console.log(`Cache hit — handle-open-alex-${subfield}`)
+        console.log(`Cache hit - handle-open-alex-${subfield}`)
         allResults.push(...cached)
         return
       }
 
       // 2. BDD
+
       const fromDB = await getFromDB(subfield)
       if (fromDB) {
-        console.log(`BDD hit — ${subfield}`)
+        console.log(`BDD hit - ${subfield}`)
         allResults.push(...fromDB)
         await redisClient.setEx(
           cacheKey,
@@ -275,13 +288,13 @@ async function resolveSubfields(subfieldItems: any[]) {
       }
 
       // 3. API
-      console.log(`Fetch API — subfield ${subfield}`)
+      
+      console.log(`Fetch API - ${subfield} non trouvé `)
       toFetch.push(subfield)
     })
   )
 
   if (toFetch.length > 0) {
-    console.log("to fetch à 0 => On va chercher");
     allResults.push(...await checkArticles(toFetch));
   }
 
@@ -314,8 +327,8 @@ export async function checkArticles(toFetch) {
   return results.flat()
 }
 async function handleOpenAlex(req, res) {
-  try {
     const user = await User.findOne({ where: { id: req.userId } })
+    
     if (!user) {
       return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
     }
@@ -328,7 +341,7 @@ async function handleOpenAlex(req, res) {
     }
 
     const allResults = await resolveSubfields(subfieldIds)
-    const unique = dedupeWorksById(allResults)
+    const unique = await copyChecked(allResults)
     const articles = shuffleArray(unique).slice(0, MAX_FINAL_RESULTS)
 
     return res.json({
@@ -338,14 +351,6 @@ async function handleOpenAlex(req, res) {
       subfieldCount: subfieldIds.length,
       articles,
     })
-  } catch (error) {
-    console.error('Erreur handleOpenAlex:', error)
-    return res.status(500).json({
-      status: 'Failed',
-      message: 'Erreur lors de la récupération des données OpenAlex',
-      error: error.message,
-    })
-  }
 }
 
 
