@@ -12,7 +12,7 @@ const task = async () => {
         //OpenAlex
             const subjects = await getAllSubjects();
             console.log("cron OpenAlex - Sujets:", subjects?.length);
-            let isTooOld = await isArticlesTooOld(subjects);
+            isArticlesTooOld(subjects);
 
 
         // OpenLibrary

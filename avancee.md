@@ -696,3 +696,5 @@ Beaucoup trop d'articles sont cherchés - X réglé
 
 -> Redis : structurer combien va me couter sur la prod
   ->   -->
+
+  finalement retravail sur le code de manière générale => beaucoup de petits bugs qui s'accumulaient et qui ne voulait rien dire -> en cours toujours
