@@ -103,7 +103,7 @@ async function getFromDB(subfield) {
   
 }
 
-async function setInCache(cacheKey: string, subfield: string, articles: any[]) {
+async function setInCache(cacheKey, subfield, articles) {
   if (!articles || articles.length === 0) {
     console.warn(`Aucun article à mettre en cache pour ${cacheKey} ; conservation des données existantes.`)
     return
@@ -133,16 +133,13 @@ async function setInCache(cacheKey: string, subfield: string, articles: any[]) {
     })
   )
 
-  try {
     await redisClient.setEx(
       cacheKey,
       CACHE_TTL,
       JSON.stringify({ subfield, totalResults: articles.length, articles })
     )
     console.log(`Cache OK =>  ${cacheKey} (${articles.length} articles)`)
-  } catch (err) {
-    console.warn(`Erreur Redis écriture (${cacheKey}):`, err.message)
-  }
+
 }
 
 async function fetchSubfieldFromAPI(subfieldId: string) {
@@ -295,6 +292,7 @@ async function resolveSubfields(subfieldItems) {
   )
 
   if (toFetch.length > 0) {
+    console.log("j'appelle to fetch")
     allResults.push(...await checkArticles(toFetch));
   }
 
@@ -328,7 +326,7 @@ export async function checkArticles(toFetch) {
 }
 async function handleOpenAlex(req, res) {
     const user = await User.findOne({ where: { id: req.userId } })
-    
+
     if (!user) {
       return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
     }
