@@ -6,13 +6,16 @@ import jwt from 'jsonwebtoken'
 
 import "../Helpers/configLink";
 const generateTokens = (userId: number) => {
-  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '15m',
-  })
 
-  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
+    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: '15m',
+    })
+    const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: '7d',
-  })
+    })
+
+
+
 
   return { accessToken, refreshToken }
 }
@@ -75,14 +78,15 @@ const updatedProfile = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { username, password, email, interests } = req.body
+    const { username, password, email, interests } = req.body;
 
-    const user = await User.findOne({ where: { email } })
+    const user = await User.findOne({ where: { email } });
+
     if (user) {
       return res.status(400).json({
-        status: 'Failed',
-        message: 'Cet email existe déjà',
-      })
+        status: "Failed",
+        message: "Cet email existe déjà",
+      });
     }
 
     const newUser = await User.create({
@@ -91,95 +95,85 @@ const createUser = async (req, res) => {
       password,
       interests,
       verified: false,
-    })
+    });
 
-    let createdId: number | null
-    createdId =
-      newUser.get?.('id') ?? newUser.id ?? newUser.get?.('userId') ?? null
+    const userId = newUser.id;
 
-    if (!createdId) {
-      console.error(
-        "createUser: id utilisateur manquant pour l'enregistrement:",
-        newUser.toJSON()
-      )
-      return res.status(500).json({
-        status: 'Failed',
-        message:
-          "Erreur interne: impossible de récupérer l'ID de l'utilisateur",
-      })
-    }
+    const { accessToken, refreshToken } = generateTokens(userId);
 
-    await sendVerificationEmail(
-      { id: createdId, email: newUser.get('email') },
-      res
-    )
+    await newUser.update({ refreshToken });
 
-    const { accessToken, refreshToken } = generateTokens(createdId)
-
-    await newUser.update({ refreshToken })
-
-    res.cookie('jwt', accessToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
-    })
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(201).json({
-      status: 'Success',
-      message: 'Utilisateur créé avec succès',
+      status: "Success",
+      message: "Utilisateur créé avec succès",
       accessToken,
-      refreshToken,
-    })
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        username: newUser.username,
+        verified: newUser.verified,
+        interests: newUser.interests,
+        picture: newUser.picture,
+      },
+    });
   } catch (err) {
-    console.error('Erreur création utilisateur:', err)
-    res.status(500).json({
-      status: 'Failed',
-      message: "Erreur lors de la création de l'utilisateur",
-    })
+    console.error(err);
+    return res.status(500).json({
+      status: "Failed",
+      message: "Erreur création utilisateur",
+    });
   }
-}
-
+};
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
-        status: 'Failed',
-        message: 'Email et mot de passe requis',
-      })
+        status: "Failed",
+        message: "Email et mot de passe requis",
+      });
     }
 
-    const user = await User.findOne({ where: { email } })
-
-    const plainPassword = user.getDataValue('password')
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
       return res.status(401).json({
-        status: 'Failed',
-        message: 'Email incorrect',
-      })
+        status: "Failed",
+        message: "Email incorrect",
+      });
     }
 
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-    const passwordMatch = await bcrypt.compare(password, plainPassword)
-    bcrypt.compare(password, user.password, function (err, result) {
-    })
     if (!passwordMatch) {
       return res.status(401).json({
-        status: 'Failed',
-        message: 'mot de passe incorrect',
-      })
+        status: "Failed",
+        message: "Mot de passe incorrect",
+      });
     }
 
-    const { accessToken, refreshToken } = generateTokens(user.id)
+    const { accessToken, refreshToken } = generateTokens(user.id);
 
-    await user.update({ refreshToken })
+    await user.update({ refreshToken });
 
-    res.json({
-      status: 'Success',
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({
+      status: "Success",
       accessToken,
-      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -188,61 +182,65 @@ const loginUser = async (req, res) => {
         interests: user.interests,
         picture: user.picture,
       },
-    })
+    });
   } catch (err) {
-    console.error('Erreur login utilisateur:', err)
-    res.status(500).json({
-      status: 'Failed',
-      message: 'Erreur lors de la connexion',
-    })
+    console.error(err);
+    return res.status(500).json({
+      status: "Failed",
+      message: "Erreur login",
+    });
   }
-}
+};
 
 const refreshTokenHandler = async (req, res) => {
   try {
-    const { refreshToken } = req.body
+    const token = req.cookies.refreshToken;
 
-    if (!refreshToken) {
+    if (!token) {
       return res.status(401).json({
-        status: 'Failed',
-        message: 'Refresh token manquant',
-      })
+        status: "Failed",
+        message: "Refresh token manquant",
+      });
     }
 
     const decoded = jwt.verify(
-      refreshToken,
+      token,
       process.env.REFRESH_TOKEN_SECRET
-    ) as any
+    );
 
-    const user = await User.findByPk(decoded.userId)
+    const user = await User.findByPk(decoded.userId);
 
-    if (!user || user.refreshToken !== refreshToken) {
+    if (!user || user.refreshToken !== token) {
       return res.status(401).json({
-        status: 'Failed',
-        message: 'Refresh token invalide',
-      })
+        status: "Failed",
+        message: "Refresh token invalide",
+      });
     }
 
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(
-      user.id
-    )
+    const { accessToken, refreshToken: newRefreshToken } =
+      generateTokens(user.id);
 
-    await user.update({ refreshToken: newRefreshToken })
+    await user.update({ refreshToken: newRefreshToken });
 
-    res.json({
-      status: 'Success',
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({
+      status: "Success",
       accessToken,
-      refreshToken: newRefreshToken,
-    })
-  } catch (err) {
-    console.error('Erreur refresh token:', err)
-    res.status(401).json({
-      status: 'Failed',
-      message: 'Refresh token invalide ou expiré',
-    })
-  }
-}
+    });
 
+  } catch (err) {
+    return res.status(401).json({
+      status: "Failed",
+      message: "Refresh token expiré ou invalide",
+    });
+  }
+};
 const getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.userId
