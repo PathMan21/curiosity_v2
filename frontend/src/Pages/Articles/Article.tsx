@@ -12,9 +12,10 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
     checkLikeStatus()
   }, [id, type])
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
   const checkLikeStatus = async () => {
     try {
-      const response = await fetchWithAuth(`/likes/status?contentId=${id}&contentType=${type}`)
+      const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${id}&contentType=${type}`)
       if (response.ok) {
         const data = await response.json()
         setIsLiked(data.liked)
@@ -41,7 +42,7 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
 
   async function toggleLikes() {
     try {
-      const response = await fetchWithAuth('/likes/toggle', {
+      const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
         method: 'POST',
         body: JSON.stringify({ contentId: id, contentType: type }),
         headers: {

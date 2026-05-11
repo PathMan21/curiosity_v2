@@ -7,6 +7,7 @@ function CarouselBooks({ books }) {
   const { token } = useAuth();
   const [likedBooks, setLikedBooks] = useState(new Set());
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
   useEffect(() => {
     checkLikedBooks();
   }, [books]);
@@ -16,7 +17,7 @@ function CarouselBooks({ books }) {
     for (const book of books) {
       if (book.id) {
         try {
-          const response = await fetchWithAuth(`/likes/status?contentId=${book.id}&contentType=book`);
+          const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${book.id}&contentType=book`);
           if (response.ok) {
             const data = await response.json();
             if (data.liked) {
@@ -33,7 +34,7 @@ function CarouselBooks({ books }) {
 
   const toggleLike = async (book) => {
     try {
-      const response = await fetchWithAuth('/likes/toggle', {
+      const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
         method: 'POST',
         body: JSON.stringify({ contentId: book.id, contentType: 'book' }),
         headers: {

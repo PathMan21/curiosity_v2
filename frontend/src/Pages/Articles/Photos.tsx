@@ -10,9 +10,10 @@ function Photos({ id, title, date, url, description, photographer, photographerU
     checkLikeStatus()
   }, [id])
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
   const checkLikeStatus = async () => {
     try {
-      const response = await fetchWithAuth(`/likes/status?contentId=${id}&contentType=photo`)
+      const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${id}&contentType=photo`)
       if (response.ok) {
         const data = await response.json()
         setIsLiked(data.liked)
@@ -24,7 +25,7 @@ function Photos({ id, title, date, url, description, photographer, photographerU
 
   const toggleLikes = async () => {
     try {
-      const response = await fetchWithAuth('/likes/toggle', {
+      const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
         method: 'POST',
         body: JSON.stringify({ contentId: id, contentType: 'photo' }),
         headers: {

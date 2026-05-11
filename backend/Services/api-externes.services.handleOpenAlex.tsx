@@ -300,7 +300,13 @@ async function resolveSubfields(subfieldItems) {
 }
 
 export async function getAllSubjects() {
-  const allSubfields = Object.values(SUBFIELD_MAPPING).map((entry: any) => entry.subfield)
+  let allSubfields;
+  for (const [key, value] of Object.entries(SUBFIELD_MAPPING)) {
+    console.log("key => ", key, " value => ", value);
+    mapInterestsToSubfields(key);
+  }
+  
+
   return allSubfields
 }
 
@@ -332,6 +338,7 @@ async function handleOpenAlex(req, res) {
     }
 
     const userInterests = JSON.parse(user.interests || '[]')
+    console.log("user interestes = ", userInterests)
     const subfieldIds = mapInterestsToSubfields(userInterests)
 
     if (!subfieldIds.length) {

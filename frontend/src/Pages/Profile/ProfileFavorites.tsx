@@ -6,6 +6,7 @@ import Photos from '../Articles/Photos'
 import FooterSite from '../../Components/FooterSite'
 import NavbarSite from '../../Components/NavbarSite'
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 function ProfileFavorites() {
   const { token } = useAuth()
   const [favorites, setFavorites] = useState<{
@@ -26,7 +27,7 @@ function ProfileFavorites() {
     const fetchFavorites = async () => {
       setLoading(true)
       try {
-        const likesResponse = await fetchWithAuth('/likes/user')
+        const likesResponse = await fetchWithAuth(`${API_URL}/likes/user`)
         if (!likesResponse.ok) {
           throw new Error(`Erreur HTTP: ${likesResponse.status}`)
         }
@@ -63,7 +64,7 @@ function ProfileFavorites() {
       if (ids.length === 0) return []
 
       try {
-        const response = await fetchWithAuth(`/data/${endpoint}`)
+        const response = await fetchWithAuth(`${API_URL}/data/${endpoint}`)
         if (!response.ok) return []
 
         const data = await response.json()

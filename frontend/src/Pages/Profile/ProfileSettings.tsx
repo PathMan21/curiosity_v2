@@ -47,8 +47,9 @@ function ProfileSettings() {
     setSuccess('')
     setLoading(true)
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
     try {
-      const response = await fetchWithAuth('/users/updated-profile', {
+      const response = await fetchWithAuth(`${API_URL}/users/updated-profile`, {
         method: 'POST',
         body: JSON.stringify({ username, interests, picture }),
       })

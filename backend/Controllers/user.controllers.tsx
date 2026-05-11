@@ -272,7 +272,7 @@ const getCurrentUser = async (req, res) => {
     })
   } catch (err) {
     console.error('Erreur récupération profil:', err)
-    res.status(500).json({
+    res.status(401).json({
       status: 'Failed',
       message: 'Erreur lors de la récupération du profil',
     })

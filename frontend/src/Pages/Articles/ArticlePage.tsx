@@ -16,6 +16,7 @@ function ArticlePage(props) {
   const [error, setError] = useState('')
   const [books, setBooks] = useState([])
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 
 
   const { token } = useAuth()
@@ -26,7 +27,7 @@ function ArticlePage(props) {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetchWithAuth('/data/articles', { method: 'GET' })
+      const response = await fetchWithAuth(`${API_URL}/data/articles`, { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
       if (data.articles && Array.isArray(data.articles)) return data.articles
@@ -39,7 +40,7 @@ function ArticlePage(props) {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetchWithAuth('/data/books', { method: 'GET' })
+      const response = await fetchWithAuth(`${API_URL}/data/books`, { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
       return data.data
@@ -50,7 +51,7 @@ function ArticlePage(props) {
   }
   const fetchImages = async () => {
     try {
-      const response = await fetchWithAuth('/data/images', { method: 'GET' })
+      const response = await fetchWithAuth(`${API_URL}/data/images`, { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
       const data = await response.json()
       return data.photos
@@ -62,7 +63,7 @@ function ArticlePage(props) {
 
   const fetchNews = async () => {
     try {
-      const response = await fetchWithAuth('/data/news', { method: 'GET' })
+      const response = await fetchWithAuth(`${API_URL}/data/news`, { method: 'GET' })
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
 
       const data = await response.json()

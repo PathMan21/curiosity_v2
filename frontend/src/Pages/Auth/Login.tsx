@@ -25,7 +25,6 @@ function Login() {
   }
 
   return (
-    // ✅ RGAA 9.2 — landmark <main> avec id pour lien d'évitement
     <main id="contenu-principal" className="container mt-5">
 
       <div className="row justify-content-center">
@@ -33,16 +32,13 @@ function Login() {
           <div className="card shadow">
             <div className="card-body p-5">
 
-              {/* ✅ RGAA 9.1 — h1 présent et cohérent */}
               <h1 className="text-center mb-4">Connexion</h1>
 
               <p className="text-center mb-4">
                 Pas encore de compte ?{' '}
-                {/* ✅ RGAA 6.1 — intitulé de lien explicite (pas "cliquez ici") */}
                 <a href="/register">Créer un compte</a>
               </p>
 
-              {/* ✅ RGAA 11.3 — erreur avec role="alert" + aria-live="assertive" */}
               {error && (
                 <div
                   className="alert alert-danger"
@@ -57,7 +53,6 @@ function Login() {
               <form onSubmit={handleSubmit} noValidate>
 
                 <div className="mb-3">
-                  {/* ✅ RGAA 11.1 — label lié au champ via htmlFor / id */}
                   <label htmlFor="login-email" className="form-label">
                     Adresse e-mail{' '}
                     <span aria-hidden="true">*</span>
@@ -71,7 +66,6 @@ function Login() {
                     onChange={e => setEmail(e.target.value)}
                     required
                     aria-required="true"
-                    // ✅ RGAA 11.13 — autocomplete pour aide à la saisie
                     autoComplete="email"
                     className="form-control"
                   />
@@ -96,7 +90,6 @@ function Login() {
                   />
                 </div>
 
-                {/* ✅ RGAA 7.1 — aria-disabled reflète l'état désactivé */}
                 <button
                   type="submit"
                   disabled={loading}

@@ -14,6 +14,7 @@ function CompleteInscription() {
   const [searchParams] = useSearchParams()
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
 
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
   useEffect(() => {
     const urlToken = searchParams.get('token')
     if (urlToken) {

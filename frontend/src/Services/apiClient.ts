@@ -31,22 +31,17 @@ const processQueue = (error: any, token: string | null = null) => {
 }
 
 
-export const fetchWithAuth = async (
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<Response> => {
+export const fetchWithAuth = async (url, params) {
   
 
-  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
-  console.log("api url => ", API_URL);
   const token = localStorage.getItem('authToken')
   const refreshToken = localStorage.getItem('refreshToken')
 
   const headers: HeadersInit = {
-    ...(options.headers || {}),
+    ...(url.headers || {}),
   }
 
-  if (!headers['Content-Type'] && options.body) {
+  if (!headers['Content-Type'] && params.body) {
     headers['Content-Type'] = 'application/json'
   }
 
@@ -59,7 +54,7 @@ export const fetchWithAuth = async (
     headers,
   }
 
-  let response = await fetch(`${API_URL}${endpoint}`, mergedOptions)
+  let response = await fetch(`${url}`, mergedOptions)
 
   if (response.status === 401 && refreshToken) {
     if (isRefreshing) {
@@ -70,7 +65,7 @@ export const fetchWithAuth = async (
               ...mergedOptions.headers,
               Authorization: `Bearer ${token}`,
             }
-            fetch(`${API_URL}${endpoint}`, mergedOptions)
+            fetch(`${url}`, mergedOptions)
               .then(resolve)
               .catch(reject)
           },
@@ -90,7 +85,7 @@ export const fetchWithAuth = async (
       processQueue(null, refreshed.accessToken)
 
       headers.Authorization = `Bearer ${refreshed.accessToken}`
-      response = await fetch(`${API_URL}${endpoint}`, {
+      response = await fetch(`${endpoint}`, {
         ...mergedOptions,
         headers,
       })

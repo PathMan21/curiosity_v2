@@ -2,7 +2,6 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiCall, fetchWithAuth } from '../Services/apiClient'
 
-
 const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 interface User {
   id: string
@@ -25,7 +24,7 @@ interface AuthContextType {
   isLoading: boolean
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextType>(undefined)
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -33,6 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null)
   const [token, setTokenState] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  
 
   useEffect(() => {
     const initAuth = async () => {
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetchWithAuth('/users/me')
+      const response = await fetchWithAuth(`${API_URL}/users/me`)
 
       if (!response.ok) {
         throw new Error('Impossible de récupérer le profil')
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch(`${ API_URL }/api/users/login`, {
+      const response = await fetch(`${API_URL}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -87,7 +87,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       localStorage.setItem('refreshToken', data.refreshToken)
       setTokenState(data.accessToken)
 
-      // Récupérer le profil complet
       await fetchUserProfile()
     } catch (error) {
       console.error('Login error:', error)
@@ -114,7 +113,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     localStorage.setItem('authToken', newToken)
     localStorage.setItem('refreshToken', newRefreshToken)
     setTokenState(newToken)
-    // Le profil sera mis à jour au prochain appel de fetchUserProfile()
   }
 
   return (
