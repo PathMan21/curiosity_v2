@@ -4,10 +4,12 @@ import axios from 'axios';
 
 // typage
 type authType = {
-        accessToken: string;
-        isLogged: boolean;
-        isLoading: boolean;
-        login: (email: string, password: string) => void;
+    accessToken: string | null;
+    isLogged: boolean;
+    isLoading: boolean;
+    login: (email: string, password: string) => void;
+    logout: () => void;
+    
 }
 
 
@@ -27,11 +29,32 @@ const AuthentProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(null);
     const [isLogged, setIsLogged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
+
+    function logout() {
+
+            axios.post(
+                "/logout",
+                {},
+                { withCredentials: true }
+            )
+            .then((response) => {
+                if (response.data.status !== 'success') {
+                    setIsLoading(false);
+                    return `Erreur : ${response}`;
+                } else {
+
+                    setIsLoading(false);
+
+                }
+            })
+            setAccessToken(null);
+            setIsLogged(false);
+        
+    }
 
     function login(email: string, password: string) {
         setIsLoading(true);
-        axios.post(`${API_URL}/api/users/login`,
+        axios.post(`/login`,
             {
                 email,
                 password
@@ -42,6 +65,7 @@ const AuthentProvider = ({ children }) => {
                     setIsLoading(false);
 
                     return `Erreur : ${res}`;
+                    
 
                 } else {
                     let acc = response.data.accessToken;
@@ -55,17 +79,18 @@ const AuthentProvider = ({ children }) => {
 
 
     return (
-    <authentificationContext.Provider
-      value={{
-        accessToken,
-        isLogged,
-        isLoading,
-        login,
-      }}
-    >
-      {children}
-    </authentificationContext.Provider>
-  );
+        <authentificationContext.Provider
+            value={{
+                accessToken,
+                isLogged,
+                isLoading,
+                login,
+                logout,
+            }}
+        >
+            {children}
+        </authentificationContext.Provider>
+    );
 
 
 }

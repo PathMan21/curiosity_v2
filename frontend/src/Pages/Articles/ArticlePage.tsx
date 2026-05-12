@@ -1,124 +1,100 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+
 import Article from './Article'
-import CarouselImg from '../../Components/Carroussels'
 import Photos from './Photos'
+
+import CarouselImg from '../../Components/Carroussels'
 import FooterSite from '../../Components/FooterSite'
 import NavbarSite from '../../Components/NavbarSite'
-import { useAuth } from '../../Context/AuthContext'
-import { fetchWithAuth } from '../../Services/apiClient'
-import CarouselBooks from '../../Components/CarousselsBooks'
 
-function ArticlePage(props) {
-  const [articles, setArticles] = useState([])
-  const [photos, setPhotos] = useState([])
+import { useAuthentification } from '../../Context/Auth'
+
+import { privateApi } from '../../Context/Interceptor'
+
+function ArticlePage() {
+
   const [all, setAll] = useState([])
+
   const [loading, setLoading] = useState(true)
+
   const [error, setError] = useState('')
-  const [books, setBooks] = useState([])
 
-  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
-
-
-  const { token } = useAuth()
+  const { accessToken } = useAuthentification()
 
   useEffect(() => {
-    fetchAll()
-  }, [token])
+
+    if (!accessToken) return
+
+    fetchArticles()
+
+  }, [accessToken])
 
   const fetchArticles = async () => {
+
     try {
-      const response = await fetchWithAuth(`${API_URL}/data/articles`, { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      const data = await response.json()
-      if (data.articles && Array.isArray(data.articles)) return data.articles
-      throw new Error('Format de réponse invalide')
-    } catch (err) {
-      console.error('Erreur:', err)
-      setError(err.message)
-    }
-  }
 
-  const fetchBooks = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/data/books`, { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      const data = await response.json()
-      return data.data
-    } catch (err) {
-      console.error('Erreur books:', err)
-      setError(err.message)
-    }
-  }
-  const fetchImages = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/data/images`, { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      const data = await response.json()
-      return data.photos
-    } catch (err) {
-      console.error('Erreur:', err)
-      setError(err.message)
-    }
-  }
+      setLoading(true)
 
-  const fetchNews = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/data/news`, { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
+      const response = await privateApi.get('/data/articles')
 
-      const data = await response.json()
-      return data.articles
-    } catch (err) {
-      console.error('Erreur:', err)
-      setError(err.message)
-    }
-  }
+      const articles = response.data.articles
 
+      if (!Array.isArray(articles)) {
+        throw new Error('Format de réponse invalide')
+      }
 
+      const shuffled = shuffleArray(articles, 20)
 
-  const fetchAll = async () => {
-    const [articlesData, articleNews, articleImages, articleBooks] = await Promise.all([
-      fetchArticles(),
-      fetchNews(),
-      fetchImages(),
-      fetchBooks(),
-    ])
-
-    if (articlesData) {
-      setLoading(false)
-      const shuffledBooks = shuffleArray(articleBooks, 5);
-      setBooks(shuffledBooks);
-      const shuffled = shuffleArray([ ...articlesData, ...articleNews, ...articleImages, ...articleBooks], 20)
       setAll(shuffled)
+
+    } catch (err) {
+
+      console.error(err)
+
+      setError(err.message || 'Erreur inconnue')
+
+    } finally {
+
+      setLoading(false)
+
     }
   }
 
-  function shuffleArray(data, amount) {
-    let shuffled = [...data]
+  const shuffleArray = (data, amount) => {
+
+    const shuffled = [...data]
+
     for (let i = shuffled.length - 1; i > 0; i--) {
+
       const j = Math.floor(Math.random() * (i + 1))
-        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
+
     return shuffled.slice(0, amount)
   }
 
   return (
     <>
-      <NavbarSite></NavbarSite>
+      <NavbarSite />
+
       <CarouselImg />
 
-      <a href="#contenu-principal" className="visually-hidden-focusable">
-        Aller au contenu principal
-      </a>
+      <main
+        id="contenu-principal"
+        className="container my-5 min-vh-100 overflow-auto"
+      >
 
-
-      <main id="contenu-principal" className="container my-5 min-vh-100 overflow-auto">
-
-        <h1 className="section-title mb-4">Vos articles</h1>
+        <h1 className="section-title mb-4">
+          Vos articles
+        </h1>
 
         {error && (
-          <div className="alert alert-warning" role="alert" aria-live="polite">
-            Attention : {error}. Affichage des articles par défaut.
+          <div
+            className="alert alert-warning"
+            role="alert"
+          >
+            {error}
           </div>
         )}
 
@@ -126,71 +102,83 @@ function ArticlePage(props) {
           <div
             className="spinner-border"
             role="status"
-            aria-label="Chargement des articles en cours"
           >
-            <span className="visually-hidden">Chargement…</span>
+            <span className="visually-hidden">
+              Chargement...
+            </span>
           </div>
         )}
-        <div className="d-flex flex-row-reverse w-100">
-          {/* <div className="btn-group btn-group-toggle" data-toggle="buttons">
-            <label className="btn btn-secondary active rounded">
-              <input type="radio" name="options" id="option1" checked/> Pour vous
-            </label>
-            <label className="btn btn-secondary rounded">
-              <input type="radio" name="options" id="option2"/> Les plus appréciés
-            </label>
-          </div> */}
-        </div>
-        <div className="container my-5 max-vh-100">
-          <div className="col-12">
-            <CarouselBooks books={books} />
 
-            <ul className="list-unstyled row" aria-label="Liste des articles et photos">
-              {all.map((item, idx) => {
-                switch (item.type) {
-                  case 'article':
-                  case 'news':
-                    return (
-                      <li key={`article-${idx}`} className="col-12 col-md-6">
-                        
-                        <Article
-                          id={item.id}
-                          title={item.title}
-                          date={item.published || item.date || item.publishedAt}
-                          concepts={item.concepts || item.category}
-                          excerpt={item.summary || item.excerpt || item.description}
-                          author={item.authors?.[0] || item.author || item.source}
-                          type={item.type}
-                          url={item.link || item.url}
-                        />
-                      </li>
-                    )
+        <ul className="list-unstyled row">
 
-                  case 'photo':
-                    return (
-                      <li key={`photo-${idx}`} className="col-12 col-md-6">
-                        <Photos
-                          id={item.id}
-                          title={item.title}
-                          date={item.published}
-                          url={item.url}
-                          description={item.description}
-                          photographer={item.photographer}
-                          photographerUrl={item.photographerLink}
-                        />
-                      </li>
-                    )
+          {all.map((item, idx) => {
 
-                  default:
-                    return null
-                }
-              })}
-            </ul>
-          </div>
-        </div>
+            if (
+              item.type === 'article' ||
+              item.type === 'news'
+            ) {
+
+              return (
+                <li
+                  key={`article-${idx}`}
+                  className="col-12 col-md-6"
+                >
+                  <Article
+                    id={item.id}
+                    title={item.title}
+                    date={
+                      item.published ||
+                      item.date ||
+                      item.publishedAt
+                    }
+                    concepts={
+                      item.concepts ||
+                      item.category
+                    }
+                    excerpt={
+                      item.summary ||
+                      item.excerpt ||
+                      item.description
+                    }
+                    author={
+                      item.authors?.[0] ||
+                      item.author ||
+                      item.source
+                    }
+                    type={item.type}
+                    url={item.link || item.url}
+                  />
+                </li>
+              )
+            }
+
+            if (item.type === 'photo') {
+
+              return (
+                <li
+                  key={`photo-${idx}`}
+                  className="col-12 col-md-6"
+                >
+                  <Photos
+                    id={item.id}
+                    title={item.title}
+                    date={item.published}
+                    url={item.url}
+                    description={item.description}
+                    photographer={item.photographer}
+                    photographerUrl={item.photographerLink}
+                  />
+                </li>
+              )
+            }
+
+            return null
+          })}
+        </ul>
+
       </main>
-      <FooterSite></FooterSite>
 
+      <FooterSite />
     </>
   )
 }

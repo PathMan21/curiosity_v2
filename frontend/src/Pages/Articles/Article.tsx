@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../../Context/AuthContext'
+// import { useAuth } from '../../Context/AuthContext'
 import { useSearchParams } from 'react-router-dom'
-import { fetchWithAuth } from '../../Services/apiClient'
+// import { fetchWithAuth } from '../../Services/apiClient'
 
 function Article({ id, title, date, excerpt, author, type, url, concepts }: any) {
-  const { token } = useAuth()
+  // const { token } = useAuth()
   const [searchParams] = useSearchParams()
   const [isLiked, setIsLiked] = useState(false)
 
-  useEffect(() => {
-    checkLikeStatus()
-  }, [id, type])
+  // useEffect(() => {
+  //   checkLikeStatus()
+  // }, [id, type])
 
-  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
-  const checkLikeStatus = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${id}&contentType=${type}`)
-      if (response.ok) {
-        const data = await response.json()
-        setIsLiked(data.liked)
-      }
-    } catch (error) {
-      console.error('Error checking like status:', error)
-    }
-  }
+  // const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
+  // const checkLikeStatus = async () => {
+  //   try {
+  //     const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${id}&contentType=${type}`)
+  //     if (response.ok) {
+  //       const data = await response.json()
+  //       setIsLiked(data.liked)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking like status:', error)
+  //   }
+  // }
 
   const formatDate = (dateStr) => {
     if (!dateStr) return ''
@@ -40,28 +40,28 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
     return text.length > maxLength ? text.substring(0, maxLength) + '…' : text
   }
 
-  async function toggleLikes() {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
-        method: 'POST',
-        body: JSON.stringify({ contentId: id, contentType: type }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
+  // async function toggleLikes() {
+  //   try {
+  //     const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
+  //       method: 'POST',
+  //       body: JSON.stringify({ contentId: id, contentType: type }),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Erreur lors de la mise à jour')
-      }
+  //     if (!response.ok) {
+  //       const errorData = await response.json()
+  //       throw new Error(errorData.message || 'Erreur lors de la mise à jour')
+  //     }
 
-      const data = await response.json()
-      setIsLiked(data.liked)
-    } catch (error) {
-      console.error('Error toggling like:', error)
-    }
-  }
+  //     const data = await response.json()
+  //     setIsLiked(data.liked)
+  //   } catch (error) {
+  //     console.error('Error toggling like:', error)
+  //   }
+  // }
 
 
   const formattedDate = formatDate(date)
@@ -106,14 +106,14 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
                 <span className="visually-hidden"> (nouvelle fenêtre)</span>
               </a>
             )}
-            <button className={`likes ${isLiked ? 'liked' : ''}`}
+            {/* <button className={`likes ${isLiked ? 'liked' : ''}`}
               onClick={toggleLikes}
               aria-label={isLiked ? `Retirer "${title}" des favoris` : `Ajouter "${title}" aux favoris`}
             >
               <span aria-hidden="true">
                 {isLiked ? '♥' : '♡'}
               </span>
-            </button>
+            </button> */}
           </div>
 
         </div>

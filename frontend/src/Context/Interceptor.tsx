@@ -1,11 +1,18 @@
 import axios from "axios";
 import { getAccessToken } from "../Hooks/authStore";
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL,
-});
 
-axios.interceptors.request.use(
+export const publicApi = axios.create({
+  baseURL: import.meta.env.VITE_SERVER_URL,
+})
+
+export const privateApi = axios.create({
+  baseURL: import.meta.env.VITE_SERVER_URL,
+  withCredentials: true
+})
+
+
+privateApi.interceptors.request.use(
     
     (config) => {
           const token = getAccessToken();
@@ -20,5 +27,3 @@ axios.interceptors.request.use(
     }
 
 );
-
-axios.get('api/protected').then(console.log).catch(console.error);

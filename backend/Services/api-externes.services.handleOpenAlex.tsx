@@ -338,7 +338,6 @@ async function handleOpenAlex(req, res) {
     }
 
     const userInterests = JSON.parse(user.interests || '[]')
-    console.log("user interestes = ", userInterests)
     const subfieldIds = mapInterestsToSubfields(userInterests)
 
     if (!subfieldIds.length) {

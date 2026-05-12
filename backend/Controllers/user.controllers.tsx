@@ -131,6 +131,43 @@ const createUser = async (req, res) => {
     });
   }
 };
+const logoutUser = async (req, res) => {
+  try {
+
+    const token = req.cookies.refreshToken;
+
+    if (token) {
+
+      const user = await User.findOne({
+        where: { refreshToken: token }
+      });
+
+      if (user) {
+        await user.update({
+          refreshToken: null
+        });
+      }
+    }
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    return res.json({
+      status: "Success",
+      message: "Déconnecté",
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      status: "Failed",
+      message: "Erreur logout",
+    });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -283,4 +320,5 @@ export {
   refreshTokenHandler,
   updatedProfile,
   getCurrentUser,
+  logoutUser
 }

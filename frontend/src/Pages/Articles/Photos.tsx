@@ -1,50 +1,49 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../../Context/AuthContext'
+// import { useAuth } from '../../Context/AuthContext'
 import { fetchWithAuth } from '../../Services/apiClient'
 
 function Photos({ id, title, date, url, description, photographer, photographerUrl }: any) {
-  const { token } = useAuth()
+  // const { token } = useAuth()
   const [isLiked, setIsLiked] = useState(false)
 
-  useEffect(() => {
-    checkLikeStatus()
-  }, [id])
+  // useEffect(() => {
+  //   checkLikeStatus()
+  // }, [id])
 
-  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
-  const checkLikeStatus = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${id}&contentType=photo`)
-      if (response.ok) {
-        const data = await response.json()
-        setIsLiked(data.liked)
-      }
-    } catch (error) {
-      console.error('Error checking like status:', error)
-    }
-  }
+  // const checkLikeStatus = async () => {
+  //   try {
+  //     const response = await fetchWithAuth(`${API_URL}/likes/status?contentId=${id}&contentType=photo`)
+  //     if (response.ok) {
+  //       const data = await response.json()
+  //       setIsLiked(data.liked)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking like status:', error)
+  //   }
+  // }
 
-  const toggleLikes = async () => {
-    try {
-      const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
-        method: 'POST',
-        body: JSON.stringify({ contentId: id, contentType: 'photo' }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
+  // const toggleLikes = async () => {
+  //   try {
+  //     const response = await fetchWithAuth(`${API_URL}/likes/toggle`, {
+  //       method: 'POST',
+  //       body: JSON.stringify({ contentId: id, contentType: 'photo' }),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Erreur lors de la mise à jour')
-      }
+  //     if (!response.ok) {
+  //       const errorData = await response.json()
+  //       throw new Error(errorData.message || 'Erreur lors de la mise à jour')
+  //     }
 
-      const data = await response.json()
-      setIsLiked(data.liked)
-    } catch (error) {
-      console.error('Error toggling like:', error)
-    }
-  }
+  //     const data = await response.json()
+  //     setIsLiked(data.liked)
+  //   } catch (error) {
+  //     console.error('Error toggling like:', error)
+  //   }
+  // }
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
     try {
@@ -142,7 +141,7 @@ function Photos({ id, title, date, url, description, photographer, photographerU
               <span className="visually-hidden"> (nouvelle fenêtre)</span>
             </a>
           )}
-          <button
+          {/* <button
             className={`likes ${isLiked ? 'liked' : ''}`}
             onClick={toggleLikes}
             aria-label={isLiked ? `Retirer "${title}" des favoris` : `Ajouter "${title}" aux favoris`}
@@ -157,7 +156,7 @@ function Photos({ id, title, date, url, description, photographer, photographerU
             <span aria-hidden="true">
               {isLiked ? '♥' : '♡'}
             </span>
-          </button>
+          </button> */}
         </div>
       </div>
     </article>
