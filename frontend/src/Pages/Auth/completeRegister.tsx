@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuth } from '../../Context/AuthContext'
+import { useAuthentification } from '../../Context/Auth'
 import interestsValues from '../../Assets/interests.json'
 
 function CompleteInscription() {
-  const { user } = useAuth()
+  const { user } = useAuthentification()
   const [username, setUsername] = useState(user.username)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { token, setToken, fetchUserProfile } = useAuth()
+  const { token, setToken, fetchUserProfile } = useAuthentification()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
