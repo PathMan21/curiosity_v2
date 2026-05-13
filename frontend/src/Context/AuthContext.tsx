@@ -26,7 +26,7 @@
 
 // export const AuthContext = createContext<AuthContextType>(undefined)
 
-// export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+// export const AuthentProvider: React.FC<{ children: ReactNode }> = ({
 //   children,
 // }) => {
 //   const [user, setUser] = useState<User | null>(null)
@@ -136,7 +136,7 @@
 // export const useAuth = () => {
 //   const context = React.useContext(AuthContext)
 //   if (!context) {
-//     throw new Error('useAuth doit être utilisé dans AuthProvider')
+//     throw new Error('useAuth doit être utilisé dans AuthentProvider')
 //   }
 //   return context
 // }

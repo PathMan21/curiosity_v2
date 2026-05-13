@@ -1,9 +1,9 @@
-import { useAuth } from '../Context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import Switch from "../helpers/darkmode"
+import { useAuthentification } from '../Context/Auth'
 
 function NavbarSite() {
-  const { logout } = useAuth()
+  const { logout } = useAuthentification()
   const navigate = useNavigate()
 
   const handleLogout = () => {

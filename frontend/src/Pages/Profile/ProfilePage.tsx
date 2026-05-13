@@ -2,12 +2,12 @@ import React from 'react'
 import ProfileInfo from './ProfileInfo'
 import NavbarSite from '../../Components/NavbarSite'
 import FooterSite from '../../Components/FooterSite'
-import { useAuth } from '../../Context/AuthContext'
+import { useAuthentification } from '../../Context/Auth'
 
 function Profile() {
-  const { user } = useAuth()
+  const { fetchUserProfile } = useAuthentification()
 
-  if (!user) {
+  if (!fetchUserProfile) {
     return (
       <>
         <div className="bg-light min-vh-100 py-5">

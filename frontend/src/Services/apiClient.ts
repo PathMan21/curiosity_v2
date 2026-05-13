@@ -54,19 +54,19 @@ const refreshAccessToken = async (
 /**
  * Wrapper fetch standard pour les requêtes avec authentification
  */
-export const apiCall = async <T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> => {
-  const response = await fetchWithAuth(endpoint, options)
+// export const apiCall = async <T>(
+//   endpoint: string,
+//   options: RequestInit = {}
+// ): Promise<T> => {
+//   const response = await fetchWithAuth(endpoint, options)
 
-  if (!response.ok) {
-    const error: ApiError = new Error(
-      `Erreur API: ${response.status}`
-    ) as ApiError
-    error.status = response.status
-    throw error
-  }
+//   if (!response.ok) {
+//     const error: ApiError = new Error(
+//       `Erreur API: ${response.status}`
+//     ) as ApiError
+//     error.status = response.status
+//     throw error
+//   }
 
-  return response.json()
-}
+//   return response.json()
+// }
