@@ -41,7 +41,8 @@ useEffect(() => {
 
             if (response.data.status === 'Success') {
 
-                const token = response.data.accessToken
+                const token = response.data.token
+                console.log(token)
 
                 setAccessToken(token)
                 setTokenStore(token)
