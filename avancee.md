@@ -731,3 +731,5 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 
 
 -> Je vais retracer la route complète
+
+-> Checker pour le rate limiting

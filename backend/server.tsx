@@ -1,8 +1,7 @@
 import express from 'express'
 import { createServer } from 'http'
 import cors from 'cors'
-
-import options from './Config/swaggerOptions';
+import cookieParser from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 
@@ -25,23 +24,19 @@ const server = createServer(app)
 
       const env = process.env.ENVIRONNEMENT || "test";
 
-      console.log("env => ", env);
 
 ;(async () => {
     await connectDB();
-
+    app.use(cookieParser())
     app.use(cors({
         origin: 'http://localhost:5173',
+        credentials: true
     }));
 
-    app.use('/api/users', userRoutes);
-    app.use('/api/auth', authRoutes);
-    app.use('/api/data', apiroutes);
-    app.use('/api/likes', likesRoutes);
-
-    if (env == "dev") {
-        console.log("environnement dev démarré");
-    }
+    app.use('/api/', userRoutes);
+    app.use('/api/', authRoutes);
+    app.use('/api/', apiroutes);
+    app.use('/api/', likesRoutes);
 
       const PORT = process.env.PORT
     server.listen(PORT, () => {

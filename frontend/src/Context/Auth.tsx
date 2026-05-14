@@ -31,47 +31,47 @@ export const AuthentProvider = ({ children }) => {
     const [isLogged, setIsLogged] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
-    useEffect(() => {
+useEffect(() => {
 
-        const refreshSession = async () => {
+    const refreshSession = async () => {
 
-            try {
+        try {
 
-                const response = await privateApi.post('/refresh-token')
+            const response = await privateApi.post('/refresh-token')
+
+            if (response.data.status === 'Success') {
 
                 const token = response.data.accessToken
 
-                if (!token) {
-
-                    setAccessToken(null)
-
-                    setTokenStore(null)
-
-                    setIsLogged(false)
-
-                    return
-                }
-
                 setAccessToken(token)
-
                 setTokenStore(token)
                 setIsLogged(true)
 
-            } catch (error) {
-
-                console.error(error)
+            } else {
 
                 setAccessToken(null)
-
-                    setIsLogged(false)
-                    setTokenStore(null)
+                setTokenStore(null)
+                setIsLogged(false)
 
             }
+
+        } catch (err) {
+
+            const status = err.response?.status
+            const msg = err.response?.data?.message
+
+            console.error(status, msg)
+
+            setAccessToken(null)
+            setTokenStore(null)
+            setIsLogged(false)
+
         }
+    }
 
-        refreshSession()
+    refreshSession()
 
-    }, [])
+}, [])
 
     function fetchUserProfile() {
         privateApi.get('/me').then((res) => {
@@ -87,13 +87,14 @@ export const AuthentProvider = ({ children }) => {
 
     function logout() {
 
-        axios.post(
+        privateApi.post(
             "/logout",
             {},
             { withCredentials: true }
         )
             .then((response) => {
-                if (response.data.status !== 'success') {
+                if (response.data.status !== 'Success') {
+
                     setIsLoading(false);
                     return `Erreur : ${response}`;
                 } else {
@@ -110,17 +111,17 @@ export const AuthentProvider = ({ children }) => {
 
     function login(email: string, password: string) {
         setIsLoading(true);
-        axios.post(`/login`,
+        privateApi.post(`/login`,
             {
                 email,
                 password
             })
             .then((response) => {
-                if (response.data.status !== 'success') {
+                if (response.data.status !== 'Success') {
                     let res = response.data.status;
                     setIsLoading(false);
 
-                    return `Erreur : ${res}`;
+                    console.log(`Erreur : ${res}`) ;
 
 
                 } else {

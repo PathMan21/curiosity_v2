@@ -70,7 +70,8 @@ async function getFromCache(cacheKey) {
 
 
     const parsed = JSON.parse(rawString);
-    if (!parsed || parsed.article.length < 1) {
+    const totalResults = Object.keys(parsed.articles);
+    if (!parsed || totalResults.length < 1) {
       return null
     } 
 
@@ -290,8 +291,8 @@ async function resolveSubfields(subfieldItems) {
       toFetch.push(subfield)
     })
   )
-
-  if (toFetch.length > 0) {
+  console.log("test => ", toFetch);
+  if (Object.keys(toFetch).length < 1 ) {
     console.log("j'appelle to fetch")
     allResults.push(...await checkArticles(toFetch));
   }
@@ -331,16 +332,18 @@ export async function checkArticles(toFetch) {
   return results.flat()
 }
 async function handleOpenAlex(req, res) {
-    const user = await User.findOne({ where: { id: req.userId } })
+    const user = await req.user;
 
     if (!user) {
       return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
     }
 
     const userInterests = JSON.parse(user.interests || '[]')
-    const subfieldIds = mapInterestsToSubfields(userInterests)
 
-    if (!subfieldIds.length) {
+
+    
+    const subfieldIds = mapInterestsToSubfields(userInterests)
+    if (!subfieldIds || Object.keys(subfieldIds).length < 1) {
       return res.status(400).json({ status: 'Failed', message: 'Aucun intérêt valide trouvé' })
     }
 

@@ -9,18 +9,18 @@ import CompleteInscription from './Pages/Auth/completeRegister'
 
 import { AuthentProvider } from './Context/Auth'
 import Profile from './Pages/Profile/ProfilePage'
-import ProfileSettings from './Pages/Profile/ProfileSettings'
+// import ProfileSettings from './Pages/Profile/ProfileSettings'
 // import ProfileFavorites from './Pages/Profile/ProfileFavorites'
 
 import ArticlePage from './Pages/Articles/ArticlePage'
-import { useAutoRefreshToken } from './Hooks/useAutoRefreshToken'
+// import { useAutoRefreshToken } from './Hooks/useAutoRefreshToken'
 import { ThemeProvider } from './helpers/ChangeStyle'
 import FooterSite from './Components/FooterSite'
 import NavbarSite from './Components/NavbarSite'
 import { ProtectedRoute, PublicOnlyRoute } from './Services/ProtectedRoute'
 function AppContent() {
   // Utiliser le hook de refresh automatique
-  useAutoRefreshToken()
+  // useAutoRefreshToken()
 
   return (
     <BrowserRouter>
@@ -38,7 +38,7 @@ function AppContent() {
 
               <Route path="/Home" element={<ArticlePage />} />
               <Route path="/Profile" element={<Profile />} />
-              <Route path="/Profile/settings" element={<ProfileSettings />} />
+              {/* <Route path="/Profile/settings" element={<ProfileSettings />} /> */}
 
         </Route>
       </Routes>

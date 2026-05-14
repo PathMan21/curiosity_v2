@@ -19,15 +19,15 @@ function ArticlePage() {
 
   const [error, setError] = useState('')
 
-  const { accessToken } = useAuthentification()
+  const { isLogged } = useAuthentification()
 
   useEffect(() => {
 
-    if (!accessToken) return
+    if (!isLogged) return
 
     fetchArticles()
 
-  }, [accessToken])
+  }, [isLogged])
 
   const fetchArticles = async () => {
 
@@ -35,7 +35,7 @@ function ArticlePage() {
 
       setLoading(true)
 
-      const response = await privateApi.get('/data/articles')
+      const response = await privateApi.get('/articles')
 
       const articles = response.data.articles
 
@@ -49,9 +49,11 @@ function ArticlePage() {
 
     } catch (err) {
 
-      console.error(err)
+      let status = err.response.status;
+      let msg = err.response.data.message;
+      console.error(status, msg)
 
-      setError(err.message || 'Erreur inconnue')
+      setError(`${status} : ${msg}` || 'Erreur inconnue')
 
     } finally {
 

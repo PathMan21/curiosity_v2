@@ -63,12 +63,13 @@ const authentificatedUser = async (req, res, next) => {
       token[1],
       process.env.ACCESS_TOKEN_SECRET
     )
-    const user = await User.findByPk(decoded.userId)
+    let id = decoded.userId;
+    const user = await User.findByPk(id)
 
     if (!user) {
       return res.status(401).send("Utilisateur introuvable")
     }
-    req.user = decoded
+    req.user = user
     next()
 
 

@@ -7,7 +7,7 @@ export const publicApi = axios.create({
 })
 
 export const privateApi = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL,
+  baseURL: `${import.meta.env.VITE_SERVER_URL}/api`,
   withCredentials: true
 })
 

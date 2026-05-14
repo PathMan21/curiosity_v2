@@ -85,10 +85,12 @@ export const logoutUser = async (req, res) => {
 
 export const refresh = (req, res) => {
 
-  const token = req.cookies.refreshToken
+  const token = req.cookies.refreshToken;
 
   if (!token) {
-    return res.status(401)
+    return res.status(401).json({
+    message: 'Pas de refresh token'
+    })
   }
 
   try {
@@ -106,7 +108,8 @@ export const refresh = (req, res) => {
       }
     )
 
-    return res.json({
+    return res.status(200).json({
+      status: 'Success',
       token: accessToken,
     })
 
