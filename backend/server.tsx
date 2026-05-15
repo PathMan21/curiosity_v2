@@ -22,7 +22,6 @@ import './Models/Photo';
 const app = express()
 const server = createServer(app)
 
-      const env = process.env.ENVIRONNEMENT || "test";
 
 
 ;(async () => {
@@ -33,7 +32,7 @@ const server = createServer(app)
         credentials: true
     }));
 
-    app.use('/api/', userRoutes);
+    app.use('/api/user/', userRoutes);
     app.use('/api/', authRoutes);
     app.use('/api/', apiroutes);
     app.use('/api/', likesRoutes);

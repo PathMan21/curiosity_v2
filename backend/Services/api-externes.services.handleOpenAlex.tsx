@@ -291,9 +291,7 @@ async function resolveSubfields(subfieldItems) {
       toFetch.push(subfield)
     })
   )
-  console.log("test => ", toFetch);
   if (Object.keys(toFetch).length < 1 ) {
-    console.log("j'appelle to fetch")
     allResults.push(...await checkArticles(toFetch));
   }
 
@@ -303,7 +301,6 @@ async function resolveSubfields(subfieldItems) {
 export async function getAllSubjects() {
   let allSubfields;
   for (const [key, value] of Object.entries(SUBFIELD_MAPPING)) {
-    console.log("key => ", key, " value => ", value);
     mapInterestsToSubfields(key);
   }
   

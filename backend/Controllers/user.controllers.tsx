@@ -83,7 +83,7 @@ export const logoutUser = async (req, res) => {
   }
 }
 
-export const refresh = (req, res) => {
+export async function refresh(req, res) {
 
   const token = req.cookies.refreshToken;
 
@@ -107,6 +107,11 @@ export const refresh = (req, res) => {
         expiresIn: '15m',
       }
     )
+      const user = await User.findByPk(decoded.userId)
+
+      if (user.refreshToken !== token) {
+        return res.status(401)
+      }
 
     return res.status(200).json({
       status: 'Success',
@@ -115,7 +120,7 @@ export const refresh = (req, res) => {
 
   } catch (error) {
 
-    return res.status(401)
+    return res.status(401).json({status: 'failed', message: error})
 
   }
 }

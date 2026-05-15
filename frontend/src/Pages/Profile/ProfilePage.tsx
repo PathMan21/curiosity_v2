@@ -5,8 +5,9 @@ import FooterSite from '../../Components/FooterSite'
 import { useAuthentification } from '../../Context/Auth'
 
 function Profile() {
-  const { fetchUserProfile } = useAuthentification()
+  const { fetchUserProfile, user } = useAuthentification()
 
+  console.log("user => ", typeof(user), " => user ", user)
   if (!fetchUserProfile) {
     return (
       <>

@@ -5,6 +5,7 @@ import { setTokenStore } from '../Hooks/authStore';
 
 // typage
 type authType = {
+    user: object;
     accessToken: string | null;
     isLogged: boolean;
     isLoading: boolean;
@@ -29,67 +30,82 @@ export const AuthentProvider = ({ children }) => {
     // ici on met l'access token qui va être enregistré en state
     const [accessToken, setAccessToken] = useState(null);
     const [isLogged, setIsLogged] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
-useEffect(() => {
+    useLayoutEffect(() => {
 
-    const refreshSession = async () => {
+        const refreshSession = async () => {
 
-        try {
+            try {
 
-            const response = await privateApi.post('/refresh-token')
+                const response = await privateApi.post('/user/refresh-token')
 
-            if (response.data.status === 'Success') {
+                if (response.data.status === 'Success') {
 
-                const token = response.data.token
-                console.log(token)
+                    const token = response.data.token
 
-                setAccessToken(token)
-                setTokenStore(token)
-                setIsLogged(true)
+                    setAccessToken(token)
+                    setTokenStore(token)
+                    setIsLogged(true)
+                    setIsLoading(false)
 
-            } else {
+
+                } else {
+
+                    setAccessToken(null)
+                    setTokenStore(null)
+                    setIsLogged(false)
+                    setIsLoading(false)
+
+                }
+
+            } catch (err) {
+
+                const status = err.response?.status
+                const msg = err.response?.data?.message
+
+                console.error(status, msg)
 
                 setAccessToken(null)
                 setTokenStore(null)
                 setIsLogged(false)
+                    setIsLoading(false)
+
+            }
+        }
+
+        refreshSession()
+
+    }, [])
+
+    async function fetchUserProfile() {
+        try {
+
+            const res = await privateApi.get('/user/me')
+
+            if (res.data.status === 'Success') {
+
+                console.log(`${res.status} : ${res.data.message}`)
+
+                setUser(res.data.user)
+                
+                setIsLoading(false)
 
             }
 
         } catch (err) {
 
-            const status = err.response?.status
-            const msg = err.response?.data?.message
-
-            console.error(status, msg)
-
-            setAccessToken(null)
-            setTokenStore(null)
-            setIsLogged(false)
+            console.error(
+                `${err.response?.status} : ${err.response?.data?.message}`
+            )
 
         }
-    }
-
-    refreshSession()
-
-}, [])
-
-    function fetchUserProfile() {
-        privateApi.get('/me').then((res) => {
-            if (!res || res.data.status != 'success') {
-
-
-            } else {
-
-             setUser(res.data.user)
-            }
-        })
     }
 
     function logout() {
 
         privateApi.post(
-            "/logout",
+            "/user/logout",
             {},
             { withCredentials: true }
         )
@@ -112,7 +128,7 @@ useEffect(() => {
 
     function login(email: string, password: string) {
         setIsLoading(true);
-        privateApi.post(`/login`,
+        privateApi.post(`/user/login`,
             {
                 email,
                 password
@@ -122,7 +138,7 @@ useEffect(() => {
                     let res = response.data.status;
                     setIsLoading(false);
 
-                    console.log(`Erreur : ${res}`) ;
+                    console.log(`Erreur : ${res}`);
 
 
                 } else {
@@ -141,6 +157,7 @@ useEffect(() => {
     return (
         <authentificationContext.Provider
             value={{
+                user,
                 fetchUserProfile,
                 accessToken,
                 isLogged,

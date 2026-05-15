@@ -728,8 +728,4 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 
 
 -> Axios - pour les intercepteur - on va sécuriser avant d'envoyer une requête plutot que faire une requête avec un middleware au milieu qui check à chaque fois
-
-
--> Je vais retracer la route complète
-
--> Checker pour le rate limiting
+-> Faire toutes les autres api

@@ -8,7 +8,6 @@ const MAX_BOOK_AGE_DAYS = 50
 const MAX_PHOTO_AGE_DAYS = 50
 
 function isArticlesTooOld(articles): Boolean {
-  console.log("is article too old => articles reçu ", articles);
   if (!articles || articles.length === 0){
      return true
   }
