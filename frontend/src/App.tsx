@@ -9,6 +9,7 @@ import CompleteInscription from './Pages/Auth/completeRegister'
 import { AuthentProvider } from './Context/Auth'
 import Profile from './Pages/Profile/ProfilePage'
 
+import ProfileSettings from './Pages/Profile/ProfileSettings'
 import ArticlePage from './Pages/Articles/ArticlePage'
 import { ThemeProvider } from './helpers/ChangeStyle'
 
@@ -31,7 +32,7 @@ function AppContent() {
 
               <Route path="/Home" element={<ArticlePage />} />
               <Route path="/Profile" element={<Profile />} />
-              {/* <Route path="/Profile/settings" element={<ProfileSettings />} /> */}
+              <Route path="/Profile/settings" element={<ProfileSettings />} />
 
         </Route>
       </Routes>

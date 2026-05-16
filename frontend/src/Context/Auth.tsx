@@ -172,6 +172,12 @@ export const AuthentProvider = ({ children }) => {
 
         privateApi.defaults.headers.common.Authorization = `Bearer ${token}`;
     };
+
+
+
+
+
+
     return (
         <authentificationContext.Provider
             value={{
