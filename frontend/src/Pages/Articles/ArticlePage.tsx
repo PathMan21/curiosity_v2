@@ -114,6 +114,7 @@ function ArticlePage() {
 
           {all.map((item, idx) => {
 
+
             if (
               item.type === 'article' ||
               item.type === 'news'
@@ -122,11 +123,12 @@ function ArticlePage() {
               return (
                 <li
                   key={`article-${idx}`}
-                  className="col-12 col-md-6"
+                  className="col-12 col-md-12"
                 >
                   <Article
                     id={item.id}
                     title={item.title}
+                    topic={item.topic}
                     date={
                       item.published ||
                       item.date ||

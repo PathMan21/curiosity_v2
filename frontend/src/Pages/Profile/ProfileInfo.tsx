@@ -13,7 +13,7 @@ function ProfileInfo(props) {
     <main id="contenu-principal" className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <div className="card shadow">
+          <div className="card shadow cardGlobal">
             <div className="card-body text-center">
 
               {props.img ? (
@@ -40,7 +40,7 @@ function ProfileInfo(props) {
             </div>
 
             {interestArray && interestArray.length > 0 && (
-              <div className="text-center mb-1 text-muted">
+              <div className="text-center mb-1">
                 <p className="visually-hidden">Centres d'intérêt :</p>
                 <ul className="list-inline">
                   {interestArray.map((interest: string, i: number) => (
@@ -58,11 +58,11 @@ function ProfileInfo(props) {
                   Paramètres du profil
                 </a>
               </div>
-              <div className="text-center mb-1 fw-bold">
+              {/* <div className="text-center mb-1 fw-bold">
                 <a className="btn btn-outline-primary w-10" href="/Profile/Favorites">
                   Mes articles favoris
                 </a>
-              </div>
+              </div> */}
             </nav>
 
           </div>

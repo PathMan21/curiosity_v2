@@ -291,7 +291,7 @@ async function resolveSubfields(subfieldItems) {
       toFetch.push(subfield)
     })
   )
-  if (Object.keys(toFetch).length < 1 ) {
+    if (toFetch.length > 0) {
     allResults.push(...await checkArticles(toFetch));
   }
 

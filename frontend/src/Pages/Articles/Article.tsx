@@ -3,10 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 // import { fetchWithAuth } from '../../Services/apiClient'
 
-function Article({ id, title, date, excerpt, author, type, url, concepts }: any) {
+function Article({ id, title, date, excerpt, author, type, url, concepts, topic }: any) {
   // const { token } = useAuth()
-  const [searchParams] = useSearchParams()
-  const [isLiked, setIsLiked] = useState(false)
 
   // useEffect(() => {
   //   checkLikeStatus()
@@ -73,10 +71,14 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
       <div className='d-flex mx-auto'>
         <div className="mb-1">
 
-            <div className='mb-1 d-flex flex-wrap'>
+            <div className='mb-1 d-flex flex-wrap gap-3'>
                 <span className='articleText'
                 >
-               { type ? type : concepts }
+                  { type ? type : concepts }
+               </span>
+              <span className='articleText'
+                >
+                  { topic ? topic : concepts }
                </span>
             </div>
 
@@ -84,7 +86,7 @@ function Article({ id, title, date, excerpt, author, type, url, concepts }: any)
             {title}
           </h2>
 
-          <div>
+          <div className='subtitle'>
             {date && <time dateTime={date}>{formattedDate}</time>}
             {author && <span> · <span>{author}</span></span>}
           </div>

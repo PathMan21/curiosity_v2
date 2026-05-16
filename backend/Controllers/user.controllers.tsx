@@ -15,7 +15,7 @@ const COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 }
 
-const setRefreshCookie = (res, token: string) =>
+const setRefreshCookie = (res, token) =>
   res.cookie('refreshToken', token, COOKIE_OPTIONS)
 
 const formatUser = (user) => ({
@@ -27,7 +27,6 @@ const formatUser = (user) => ({
   picture: user.picture,
 })
 
-// ─── Controllers ────────────────────────────────────────────
 
 export const createUser = async (req, res) => {
   try {
@@ -39,6 +38,7 @@ export const createUser = async (req, res) => {
     const user = await User.create({ username, email, password, interests, verified: false })
     const { accessToken, refreshToken } = generateTokens(user.id)
     await user.update({ refreshToken })
+
     setRefreshCookie(res, refreshToken)
 
     return res.status(201).json({ status: 'Success', accessToken, user: formatUser(user) })
@@ -143,19 +143,23 @@ export const getCurrentUser = async (req, res) => {
 
 export const updatedProfile = async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.userId)
-    if (!user) return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
+    const user = await User.findByPk(req.user.id)
+    if (!user){
+      return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
+    } 
 
     const { username, email, interests, picture } = req.body
-    const updateData: any = {}
-    if (username !== undefined) updateData.username = username
-    if (email !== undefined) updateData.email = email
-    if (picture !== undefined) updateData.picture = picture
-    if (interests !== undefined) updateData.interests = JSON.stringify(interests)
+
+      const updateData = {}
+      updateData.username = username
+      updateData.email = email
+      updateData.picture = picture
+      updateData.interests = JSON.stringify(interests)
 
     await user.update(updateData)
 
     const { accessToken, refreshToken } = generateTokens(user.id)
+
     await user.update({ refreshToken })
     setRefreshCookie(res, refreshToken)
 

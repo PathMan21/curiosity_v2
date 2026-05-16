@@ -56,7 +56,7 @@ function ProfileSettings() {
         setLoading(true)
 
         try {
-            const response = await privateApi.post("/updated-profile", {
+            const response = await privateApi.post("/user/updated-profile", {
                 username,
                 interests,
                 picture
@@ -74,7 +74,7 @@ function ProfileSettings() {
 
             setTimeout(() => setSuccess(""), 3000)
 
-        } catch (err: any) {
+        } catch (err) {
             console.error("Erreur mise à jour profil:", err)
             setError(err.message || "Erreur serveur")
         } finally {

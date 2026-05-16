@@ -15,9 +15,10 @@
   --bg-body-card: #f7fafd;
   --text-title: #2a7abf;
 
-  --highlight-card: rgb(139, 105, 20);
+  --highlight-card: rgb(87 65 11);
   --highlight-card-light: rgb(198, 150, 29);
-  --text-muted-card: #343230;
+  --text-muted-card: #958472;
+  --text-muted-card-first: #82603c;
   --bg-type: rgb(255 242 213);;
   
   --danger: #b33a3a;
@@ -57,12 +58,23 @@
   --bg-body: #1a2a3d;
   --bg-section: #162236;
   --subtitles: #3a6fa8;
-  --text: #ffffff;
+  --text: #5f2a2a;
   --text-muted: #6a90b0;
   --alert: #0f2a45;
   --border: #93c5fd40;
   --bg-body-card: #1e2f42;
   --text-title: #60a5fa;
+  --bg-type: #0f2a45;
+
+
+  --highlight-card: #b8d4f0;
+  --text-muted-card: #5f82a2;
+  --text-muted-card-first: #6e9bc8;
+}
+
+
+.cardGlobal {
+  color: var(--text-muted-card);
 }
 
 h5 {
@@ -197,6 +209,7 @@ a:hover {
   font-weight: 550;
   color: var(--highlight-card);
   margin-bottom: 0.5rem;
+      letter-spacing: 1.1px;
   line-height: 1.3;
   font-size: var(--font-size-title-card);
 }
@@ -218,14 +231,19 @@ a:hover {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: rgb(139, 105, 20);
+    color: var(--highlight-card);
     text-decoration: none;
-    border-bottom: 1.5px solid rgba(139, 105, 20, 0.35);
+    border-bottom: 1.5px solid  var(--highlight-card);
     padding-bottom: 1px;
 }
 
 .paragraph {
   color: var(--text-muted-card);
+}
+
+.subtitle {
+  color: var(--text-muted-card-first);
+
 }
 
 
@@ -527,13 +545,13 @@ a:hover {
 }
 
 .font-large {
-  --font-size-subtle: 0.8rem;
+  --font-size-subtle: 0.9rem;
   --font-size-base: 1.2rem;
   --font-size-title-card: 1.6rem;
 }
 
 .font-xlarge {
-  --font-size-subtle: 0.9rem;
+  --font-size-subtle: 1.0rem;
   --font-size-base: 1.35rem;
   --font-size-title-card: 1.7rem;
 }

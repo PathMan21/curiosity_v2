@@ -45,6 +45,9 @@ services:
           condition: service_started
       ports:
         - '3000:3000'
+      volumes:
+      - ./backend:/app
+      - /app/node_modules
       networks:
         - appnet
       develop:
