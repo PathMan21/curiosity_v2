@@ -78,7 +78,6 @@ function ArticlePage() {
 
   return (
     <>
-      <NavbarSite />
 
       <CarouselImg />
 
@@ -180,7 +179,6 @@ function ArticlePage() {
 
       </main>
 
-      <FooterSite />
     </>
   )
 }

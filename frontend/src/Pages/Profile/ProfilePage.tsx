@@ -21,17 +21,15 @@ function Profile() {
 
   return (
     <div>
-    <NavbarSite></NavbarSite>
-      <div className="bg-light min-vh-100 py-5">
-        <ProfileInfo
-          img={user.picture}
-          email={user.email}
-          interests={user.interests}
-          username={user.username}
-        ></ProfileInfo>
-        
-    </div>
-    <FooterSite></FooterSite>
+          <div className="bg-light min-vh-100 py-5">
+            <ProfileInfo
+              img={user.picture}
+              email={user.email}
+              interests={user.interests}
+              username={user.username}
+            ></ProfileInfo>
+            
+        </div>
     </div>
   )
 }

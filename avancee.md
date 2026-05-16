@@ -724,8 +724,15 @@ L'access token va se mettre dans la mémoire vive de react (pas localstorage etc
 Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisateur est bon
 
 
-  **---------------------------------11-05----------------------------------**
-
+**---------------------------------11-05----------------------------------**
 
 -> Axios - pour les intercepteur - on va sécuriser avant d'envoyer une requête plutot que faire une requête avec un middleware au milieu qui check à chaque fois
--> Faire toutes les autres api
+-> Faire toutes les autres api  
+
+**---------------------------------16-05----------------------------------**
+
+-> Travail sur le FRONT
+
+    -> Filtre de contenus - news - articles etc...
+    -> faire un effet scroll
+    -> Retravailler le côté hierarchisation des données

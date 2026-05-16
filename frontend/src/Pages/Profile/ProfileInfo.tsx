@@ -9,7 +9,6 @@ function ProfileInfo(props) {
 
   return (
     <div>
-    <NavbarSite></NavbarSite>
 
     <main id="contenu-principal" className="container mt-5">
       <div className="row justify-content-center">
@@ -70,7 +69,6 @@ function ProfileInfo(props) {
         </div>
       </div>
     </main>
-    <FooterSite></FooterSite>
     </div>
   )
 }

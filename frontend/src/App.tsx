@@ -6,7 +6,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './Pages/Auth/Login'
 import CompleteInscription from './Pages/Auth/completeRegister'
 
+import Layout from './Pages/global/useLayout'
+
 import { AuthentProvider } from './Context/Auth'
+import NotFound from './Pages/global/notFound'
 import Profile from './Pages/Profile/ProfilePage'
 
 import ProfileSettings from './Pages/Profile/ProfileSettings'
@@ -18,8 +21,9 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-    <div className='mt-5'></div>
       <Routes>
+        <Route path="*" element={<NotFound />} />
+
         <Route element={<PublicOnlyRoute/>}>
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -28,13 +32,16 @@ function AppContent() {
 
         <Route path="/complete-inscription" element={<CompleteInscription />} />
 
-        <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route element={<ProtectedRoute />}>
 
-              <Route path="/Home" element={<ArticlePage />} />
-              <Route path="/Profile" element={<Profile />} />
-              <Route path="/Profile/settings" element={<ProfileSettings />} />
+                <Route path="/Home" element={<ArticlePage />} />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/Profile/settings" element={<ProfileSettings />} />
 
+          </Route>
         </Route>
+        
       </Routes>
     </BrowserRouter>
   )
@@ -44,7 +51,6 @@ function App() {
   return (
     <ThemeProvider>
     <AuthentProvider>
-      
       <AppContent />
     </AuthentProvider>
     </ThemeProvider>
