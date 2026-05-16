@@ -5,3 +5,4 @@ export const setTokenStore = (token) => {
 }
 
 export const getAccessToken = () => accessToken
+

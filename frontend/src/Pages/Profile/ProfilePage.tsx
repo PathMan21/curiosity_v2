@@ -5,10 +5,9 @@ import FooterSite from '../../Components/FooterSite'
 import { useAuthentification } from '../../Context/Auth'
 
 function Profile() {
-  const { fetchUserProfile, user } = useAuthentification()
-
-  console.log("user => ", typeof(user), " => user ", user)
-  if (!fetchUserProfile) {
+  const { user, isLoading } = useAuthentification()
+  console.log(user);
+  if (isLoading) {
     return (
       <>
         <div className="bg-light min-vh-100 py-5">

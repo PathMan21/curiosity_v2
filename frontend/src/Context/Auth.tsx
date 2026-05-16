@@ -33,51 +33,55 @@ export const AuthentProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
     useLayoutEffect(() => {
+        setIsLoading(true);
+        const init = async () => {
+            let sessionOk = await refreshSession();
+            if (sessionOk) {
 
-        const refreshSession = async () => {
+                await fetchUserProfile();
+            }
+            setIsLoading(false);
+        };
 
-            try {
+        init();
+    }, []);
+    const refreshSession = async () => {
 
-                const response = await privateApi.post('/user/refresh-token')
+        try {
 
-                if (response.data.status === 'Success') {
+            const response = await privateApi.post('/user/refresh-token')
 
-                    const token = response.data.token
+            if (response.data.status === 'Success') {
 
-                    setAccessToken(token)
-                    setTokenStore(token)
-                    setIsLogged(true)
-                    setIsLoading(false)
+                const token = response.data.token
 
 
-                } else {
+                applyToken(token)
+                setIsLogged(true)
+                return true;
 
-                    setAccessToken(null)
-                    setTokenStore(null)
-                    setIsLogged(false)
-                    setIsLoading(false)
 
-                }
+            } else {
 
-            } catch (err) {
 
-                const status = err.response?.status
-                const msg = err.response?.data?.message
-
-                console.error(status, msg)
-
-                setAccessToken(null)
-                setTokenStore(null)
+                applyToken(null)
                 setIsLogged(false)
-                    setIsLoading(false)
+                return false;
 
             }
+
+        } catch (err) {
+
+            const status = err.response?.status
+            const msg = err.response?.data?.message
+
+            console.error(status, msg)
+
+            applyToken(null)
+            setIsLogged(false)
+
         }
-
-        refreshSession()
-
-    }, [])
-
+    }
     async function fetchUserProfile() {
         try {
 
@@ -88,8 +92,6 @@ export const AuthentProvider = ({ children }) => {
                 console.log(`${res.status} : ${res.data.message}`)
 
                 setUser(res.data.user)
-                
-                setIsLoading(false)
 
             }
 
@@ -99,6 +101,9 @@ export const AuthentProvider = ({ children }) => {
                 `${err.response?.status} : ${err.response?.data?.message}`
             )
 
+        } finally {
+
+            setIsLoading(false)
         }
     }
 
@@ -116,8 +121,8 @@ export const AuthentProvider = ({ children }) => {
                     return `Erreur : ${response}`;
                 } else {
 
-                    setAccessToken(null);
-                    setTokenStore(null);
+
+                    applyToken(null)
                     setIsLogged(false);
                     setIsLoading(false);
 
@@ -140,20 +145,33 @@ export const AuthentProvider = ({ children }) => {
 
                     console.log(`Erreur : ${res}`);
 
+                    applyToken(null)
 
                 } else {
                     let acc = response.data.accessToken;
 
-                    setAccessToken(acc);
-                    setTokenStore(acc);
+                    applyToken(acc)
                     setIsLogged(true);
                     setIsLoading(false);
 
                 }
             })
     }
+    // apply token permet avant d'attendre que le axios récupère avec setAccessToken la validation-> il va chercher un header default
+    const applyToken = (token) => {
+        if (!token) {
+            setAccessToken(null);
+            setTokenStore(null);
+            delete privateApi.defaults.headers.common.Authorization;
 
+            return "non trouvé";
+        }
 
+        setAccessToken(token);
+        setTokenStore(token);
+
+        privateApi.defaults.headers.common.Authorization = `Bearer ${token}`;
+    };
     return (
         <authentificationContext.Provider
             value={{
