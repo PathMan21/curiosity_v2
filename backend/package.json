@@ -30,7 +30,8 @@
     "swagger-ui-express": "^5.0.1",
     "vite": "^5.0.0",
     "ws": "^8.18.3",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "zod": "^4.4.3"
   },
   "scripts": {
     "start": "tsx backend/server.tsx",

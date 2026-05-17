@@ -3,6 +3,7 @@ import Article from '../Models/Article'
 import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
 import { isArticlesTooOld } from '../Helpers/CheckTooOld'
+import sequelizeDb from '../Config/dbInit'
 
 
 
@@ -105,42 +106,58 @@ async function getFromDB(subfield) {
 }
 
 async function setInCache(cacheKey, subfield, articles) {
-  if (!articles || articles.length === 0) {
-    console.warn(`Aucun article à mettre en cache pour ${cacheKey} ; conservation des données existantes.`)
-    return
+
+  if (!articles?.length) {
+    console.warn(`Aucun article pour ${cacheKey}`);
+    return;
   }
-  console.warn('données détruite car trop vielle');
-  await Article.destroy({ where: { subfield } })
 
-  await Promise.all(
-    articles.map(async (article) => {
-      await Article.create({
-        openAlexId: article.id,
-        title: article.title,
-        authors: article.authors,
-        published: article.published,
-        summary: article.summary,
-        doi: article.doi,
-        pdfUrl: article.pdfUrl,
-        isOpenAccess: article.isOpenAccess,
-        publicationYear: article.publicationYear,
-        type: "article",
-        link: article.link,
-        mainTopic: article.mainTopic,
-        topicScore: article.topicScore,
-        concepts: article.concepts,
-        subfield,
-      })
+  console.warn('refresh DB + cache');
+
+  const validatedArticles = articles.map((article) =>
+    createArticleSchema.parse({
+      openAlexId: article.id,
+      title: article.title,
+      authors: article.authors,
+      published: article.published,
+      summary: article.summary,
+      doi: article.doi,
+      pdfUrl: article.pdfUrl,
+      isOpenAccess: article.isOpenAccess,
+      publicationYear: article.publicationYear,
+      type: "article",
+      link: article.link,
+      mainTopic: article.mainTopic,
+      topicScore: article.topicScore,
+      concepts: article.concepts,
+      subfield,
     })
-  )
+  );
 
-    await redisClient.setEx(
-      cacheKey,
-      CACHE_TTL,
-      JSON.stringify({ subfield, totalResults: articles.length, articles })
-    )
-    console.log(`Cache OK =>  ${cacheKey} (${articles.length} articles)`)
+  await sequelizeDb.transaction(async (t) => {
 
+    await Article.destroy({
+      where: { subfield },
+      transaction: t
+    });
+
+    await Article.bulkCreate(validatedArticles, {
+      transaction: t
+    });
+
+  });
+
+  await redisClient.setEx(
+    cacheKey,
+    CACHE_TTL,
+    JSON.stringify({
+      subfield,
+      totalResults: validatedArticles.length,
+      validatedArticles
+    })
+  );
+
+  console.log(`Cache OK => ${cacheKey}`);
 }
 
 async function fetchSubfieldFromAPI(subfieldId: string) {
