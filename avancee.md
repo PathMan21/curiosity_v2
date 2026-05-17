@@ -736,3 +736,9 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
     -> Filtre de contenus - news - articles etc...
     -> faire un effet scroll
     -> Retravailler le côté hierarchisation des données
+
+
+    
+**---------------------------------17-05----------------------------------**
+
+-> Retravail sur les dtos & zod, on essais de faire la protection entre les deux

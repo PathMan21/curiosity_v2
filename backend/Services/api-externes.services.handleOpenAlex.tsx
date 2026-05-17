@@ -5,7 +5,7 @@ import redisClient from '../Config/redis.conf'
 import { isArticlesTooOld } from '../Helpers/CheckTooOld'
 import sequelizeDb from '../Config/dbInit'
 
-
+import { createArticleSchema } from '../dtos/Article'
 
 const CACHE_TTL = 3600 * 24 * 30
 const MAX_PAGES = 3
@@ -106,6 +106,7 @@ async function getFromDB(subfield) {
 }
 
 async function setInCache(cacheKey, subfield, articles) {
+try {
 
   if (!articles?.length) {
     console.warn(`Aucun article pour ${cacheKey}`);
@@ -156,8 +157,10 @@ async function setInCache(cacheKey, subfield, articles) {
       validatedArticles
     })
   );
-
   console.log(`Cache OK => ${cacheKey}`);
+} catch (err) {
+  console.error("Transaction : ajouts d'articles dans la bdd et cache echoué -> ", err);
+}
 }
 
 async function fetchSubfieldFromAPI(subfieldId: string) {

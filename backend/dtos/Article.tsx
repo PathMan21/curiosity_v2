@@ -1,16 +1,14 @@
 import { z } from "zod";
 
 
-
-
-
-
-
 export const createArticleSchema = z.object({
   openAlexId: z.string(),
   title: z.string().min(1),
 
-  authors: z.array(z.string()),
+  authors: z.union([
+    z.string(),
+    z.array(z.string())
+    ]),
 
   published: z.string(),
 
@@ -31,7 +29,10 @@ export const createArticleSchema = z.object({
 
   topicScore: z.number(),
 
-  concepts: z.array(z.string()),
+  concepts: z.union([
+    z.string(),
+    z.array(z.string())
+    ]),
 
   subfield: z.string(),
 });
