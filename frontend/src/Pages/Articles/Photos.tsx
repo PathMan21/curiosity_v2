@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 
 function Photos({ id, title, date, url, description, photographer, photographerUrl }: any) {
-  const [liked, setLiked] = useState(false)
-  const [likes, setLikes] = useState(() => Math.floor(Math.random() * 80) + 5)
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
@@ -65,47 +63,7 @@ function Photos({ id, title, date, url, description, photographer, photographerU
           </p>
         )}
 
-        {/* Actions */}
-        <div className="d-flex align-items-center gap-2">
-          <button
-            onClick={() => { setLiked(!liked); setLikes(prev => liked ? prev - 1 : prev + 1) }}
-            style={{
-              background: liked ? 'rgba(232,121,160,0.1)' : 'none',
-              border: 'none', cursor: 'pointer',
-              fontSize: '0.8rem', color: liked ? 'var(--accent-pink)' : 'var(--text-muted)',
-              padding: '0.25rem 0.6rem', borderRadius: 'var(--radius-full)',
-              fontFamily: 'var(--font-ui)', fontWeight: 600,
-              display: 'flex', alignItems: 'center', gap: '0.3rem',
-              transition: 'all 0.2s',
-            }}
-          >
-            {liked ? '♥' : '♡'} {likes}
-          </button>
 
-          {url && (
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                marginLeft: 'auto',
-                fontFamily: 'var(--font-ui)',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                color: 'var(--accent-purple)',
-                padding: '0.25rem 0.8rem',
-                borderRadius: 'var(--radius-full)',
-                border: '1.5px solid rgba(124,92,191,0.25)',
-                transition: 'all 0.2s',
-                textDecoration: 'none',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(124,92,191,0.08)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none' }}
-            >
-              Voir la photo →
-            </a>
-          )}
-        </div>
       </div>
     </article>
   )

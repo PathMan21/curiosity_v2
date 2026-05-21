@@ -116,39 +116,8 @@ export default function FeedPost({ id, title, excerpt, author, date, topic, url 
 
           {/* Actions */}
           <div className="d-flex align-items-center gap-2 mt-2">
-            <button
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: '0.8rem', color: 'var(--text-muted)',
-                padding: '0.25rem 0.6rem', borderRadius: 'var(--radius-full)',
-                fontFamily: 'var(--font-ui)', fontWeight: 500,
-                display: 'flex', alignItems: 'center', gap: '0.3rem',
-                transition: 'background 0.2s, color 0.2s',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(124,92,191,0.08)'; (e.currentTarget as HTMLElement).style.color = 'var(--accent-purple)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)' }}
-              aria-label="Commenter"
-            >
-              💬 <span style={{ fontSize: '0.78rem' }}>{Math.floor(Math.random() * 12)}</span>
-            </button>
 
-            <button
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: '0.8rem', color: 'var(--text-muted)',
-                padding: '0.25rem 0.6rem', borderRadius: 'var(--radius-full)',
-                fontFamily: 'var(--font-ui)', fontWeight: 500,
-                display: 'flex', alignItems: 'center', gap: '0.3rem',
-                transition: 'background 0.2s, color 0.2s',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(79,142,247,0.08)'; (e.currentTarget as HTMLElement).style.color = 'var(--accent-blue)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)' }}
-              aria-label="Partager"
-            >
-              🔁
-            </button>
-
-            <button
+            {/* <button
               onClick={toggleLike}
               style={{
                 background: liked ? 'rgba(232,121,160,0.1)' : 'none',
@@ -164,7 +133,7 @@ export default function FeedPost({ id, title, excerpt, author, date, topic, url 
               aria-label="Aimer"
             >
               {liked ? '♥' : '♡'} <span style={{ fontSize: '0.78rem' }}>{likes}</span>
-            </button>
+            </button> */}
 
             <a
               href={url || '#'}

@@ -1,10 +1,9 @@
 import User from '../Models/User'
 import Article from '../Models/Article'
-import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
-import { isArticlesTooOld } from '../Helpers/CheckTooOld'
 import sequelizeDb from '../Config/dbInit'
 
+import { isArticlesTooOld } from '../Helpers/CheckTooOld'
 import { createArticleSchema } from '../dtos/Article'
 
 const CACHE_TTL = 3600 * 24 * 30
@@ -20,216 +19,223 @@ const OPENALEX_HEADERS = {
   'User-Agent': 'mailto:curiosity.the.social.network@gmail.com',
 }
 
+/* ---------------- MAPPING ---------------- */
+
 const SUBFIELD_MAPPING = {
-  'ai-ml':            { subfield: '1702', journals: ['S118930848', 'S2764455087', 'S114469174'] },
-  'computer-science': { subfield: '1705', journals: ['S118930848', 'S2764455087', 'S98762135'] },
-  'data-science':     { subfield: '2613', journals: ['S2764455087', 'S114469174', 'S70535770'] },
-  cybersecurity:      { subfield: '1712', journals: ['S118930848', 'S2764455087'] },
-  robotics:           { subfield: '2207', journals: ['S118930848', 'S70535770', 'S2764455087'] },
-  mathematics:        { subfield: '2604', journals: ['S2764455087', 'S70535770'] },
-  physics:            { subfield: '3109', journals: ['S125754415', 'S112505126', 'S70535770'] },
-  chemistry:          { subfield: '1605', journals: ['S70535770', 'S2764455087', 'S4210170802'] },
-  biology:            { subfield: '1312', journals: ['S2764455087', 'S156975444', 'S2764486067', 'S4210220386'] },
-  medicine:           { subfield: '2725', journals: ['S2764455087', 'S202339397', 'S152253655', 'S156975444'] },
-  neuroscience:       { subfield: '2801', journals: ['S2736105967', 'S2764455087', 'S156975444'] },
-  ecology:            { subfield: '2303', journals: ['S2764455087', 'S156975444', 'S100327389', 'S4210170802'] },
-  climate:            { subfield: '1902', journals: ['S100319019', 'S2764455087', 'S70535770', 'S4210193424'] },
-  energy:             { subfield: '2105', journals: ['S100319019', 'S2764455087', 'S70535770'] },
-  economics:          { subfield: '2002', journals: ['S2764455087', 'S70535770'] },
-  finance:            { subfield: '2003', journals: ['S2764455087', 'S70535770'] },
-  psychology:         { subfield: '3204', journals: ['S2736104481', 'S2764455087', 'S70535770'] },
-  sociology:          { subfield: '3312', journals: ['S2764455087', 'S58730300', 'S70535770'] },
-  engineering:        { subfield: '2205', journals: ['S118930848', 'S70535770', 'S2764455087'] },
-  space:              { subfield: '3103', journals: ['S125754415', 'S70535770', 'S2764455087'] },
-  art:                { subfield: '1213', journals: ['S2764455087', 'S4210170802'] },
-  sport:              { subfield: '2732', journals: ['S2764455087', 'S70535770', 'S95457728'] },
-  business:           { subfield: '1402', journals: ['S2764455087', 'S70535770'] },
+  'ai-ml': { subfield: '1702', journals: ['S118930848'] },
+  'computer-science': { subfield: '1705', journals: ['S118930848'] },
+  'data-science': { subfield: '2613', journals: ['S2764455087'] },
+  cybersecurity: { subfield: '1712', journals: ['S118930848'] },
+  robotics: { subfield: '2207', journals: ['S118930848'] },
+  mathematics: { subfield: '2604', journals: ['S2764455087'] },
+  physics: { subfield: '3109', journals: ['S125754415'] },
+  chemistry: { subfield: '1605', journals: ['S70535770'] },
+  biology: { subfield: '1312', journals: ['S2764455087'] },
+  medicine: { subfield: '2725', journals: ['S2764455087'] },
+  neuroscience: { subfield: '2801', journals: ['S2736105967'] },
+  ecology: { subfield: '2303', journals: ['S2764455087'] },
+  climate: { subfield: '1902', journals: ['S100319019'] },
+  energy: { subfield: '2105', journals: ['S100319019'] },
+  economics: { subfield: '2002', journals: ['S2764455087'] },
+  finance: { subfield: '2003', journals: ['S2764455087'] },
+  psychology: { subfield: '3204', journals: ['S2736104481'] },
+  sociology: { subfield: '3312', journals: ['S2764455087'] },
+  engineering: { subfield: '2205', journals: ['S118930848'] },
+  space: { subfield: '3103', journals: ['S125754415'] },
+  art: { subfield: '1213', journals: ['S2764455087'] },
+  sport: { subfield: '2732', journals: ['S2764455087'] },
+  business: { subfield: '1402', journals: ['S2764455087'] },
 }
 
-function mapInterestsToSubfields(interestIds) {
-  return interestIds.reduce((acc, id) => {
-    const mapping = SUBFIELD_MAPPING[id]
-    if (!mapping) {
-      console.warn(` Intérêt "${id}" non mappé`)
-      return acc
-    }
-    acc.push({ subfield: mapping.subfield, journals: mapping.journals })
-    return acc
-  }, [])
+/* ---------------- UTILS ---------------- */
+
+function mapInterestsToSubfields(interests: string[]) {
+  return interests
+    .map(i => SUBFIELD_MAPPING[i])
+    .filter(Boolean)
 }
 
+function shuffleArray(arr: any[]) {
+  const copy = [...arr]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy
+}
 
-async function getFromCache(cacheKey) {
-  try{
+function copyChecked(articles: any[]) {
+  const seen = new Set()
+
+  return articles.filter(a => {
+    if (!a?.id) return false
+    if (seen.has(a.id)) return false
+    seen.add(a.id)
+    return true
+  })
+}
+
+/* ---------------- CACHE ---------------- */
+
+async function getFromCache(cacheKey: string) {
+  try {
     const raw = await redisClient.get(cacheKey)
-    if (!raw) {
-      return null
-    }
-    const rawString = raw.toString();
-    if (!rawString.trim())  {
-      return null
-    }
+    if (!raw) return null
 
+    const parsed = JSON.parse(raw)
 
-    const parsed = JSON.parse(rawString);
-    const totalResults = Object.keys(parsed.validatedArticles);
-    if (!parsed || totalResults.length < 1) {
-      return null
-    } 
+    if (!parsed?.articles?.length) return null
 
+    if (isArticlesTooOld(parsed.articles)) return null
 
-    if (isArticlesTooOld(parsed.articles)) {
-      return null
-    }
-
-    return parsed.validatedArticles
-} catch(err) {
-}
+    return parsed.articles
+  } catch (err) {
+    console.warn('Redis error:', err)
+    return null
+  }
 }
 
-async function getFromDB(subfield) {
+/* ---------------- DB ---------------- */
+
+async function getFromDB(subfield: string) {
+  try {
     const articles = await Article.findAll({ where: { subfield } })
-    if (!articles || articles.length < 1){
-      return null
+    if (!articles?.length) return null
 
-    } 
-    const mapped = articles.map(
-      (a) => a.toJSON()
-    )
+    const mapped = articles.map(a => a.toJSON())
 
-    if (isArticlesTooOld(mapped)) {
-
-      return null
-    }
+    if (isArticlesTooOld(mapped)) return null
 
     return mapped
-  
-}
-
-async function setInCache(cacheKey, subfield, articles) {
-try {
-
-  if (!articles?.length) {
-    console.warn(`Aucun article pour ${cacheKey}`);
-    return;
-  }
-
-  console.warn('refresh DB + cache');
-
-  const validatedArticles = articles.map((article) =>
-    createArticleSchema.parse({
-      openAlexId: article.openAlexUrl,
-      title: article.title,
-      authors: article.authors,
-      published: article.published,
-      summary: article.summary,
-      doi: article.doi,
-      pdfUrl: article.pdfUrl,
-      isOpenAccess: article.isOpenAccess,
-      publicationYear: article.publicationYear,
-      type: "article",
-      link: article.link,
-      mainTopic: article.mainTopic,
-      topicScore: article.topicScore,
-      concepts: article.concepts,
-      subfield,
-    })
-  );
-
-  await sequelizeDb.transaction(async (t) => {
-
-    await Article.destroy({
-      where: { subfield },
-      transaction: t
-    });
-
-    await Article.bulkCreate(validatedArticles, {
-      transaction: t
-    });
-
-  });
-
-  await redisClient.setEx(
-    cacheKey,
-    CACHE_TTL,
-    JSON.stringify({
-      subfield,
-      totalResults: validatedArticles.length,
-      validatedArticles
-    })
-  );
   } catch (err) {
+    console.warn('DB error:', err)
+    return null
+  }
 }
+
+/* ---------------- CACHE WRITE ---------------- */
+
+async function setInCache(cacheKey: string, subfield: string, articles: any[]) {
+  if (!articles?.length) return
+
+  try {
+    const validatedArticles = articles.map(article =>
+      createArticleSchema.parse({
+        openAlexId: article.openAlexUrl,
+        title: article.title,
+        authors: article.authors,
+        published: article.published,
+        summary: article.summary,
+        doi: article.doi,
+        pdfUrl: article.pdfUrl,
+        isOpenAccess: article.isOpenAccess,
+        publicationYear: article.publicationYear,
+        type: 'article',
+        link: article.link,
+        mainTopic: article.mainTopic,
+        topicScore: article.topicScore,
+        concepts: article.concepts,
+        subfield,
+      })
+    )
+
+    await sequelizeDb.transaction(async t => {
+      await Article.destroy({
+        where: { subfield },
+        transaction: t,
+      })
+
+      await Article.bulkCreate(validatedArticles, {
+        transaction: t,
+      })
+    })
+
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify({
+        subfield,
+        articles: validatedArticles,
+      })
+    )
+  } catch (err) {
+    console.error('Cache write error:', err)
+  }
 }
+
+/* ---------------- API ---------------- */
 
 async function fetchSubfieldFromAPI(subfieldId: string) {
   const currentYear = new Date().getFullYear()
-  const allFetched = []
+  const all = []
 
   for (let page = 1; page <= MAX_PAGES; page++) {
     const url =
       `https://api.openalex.org/works` +
-      `?filter=topics.subfield.id:${subfieldId},is_oa:true,institutions.country_code:gb,language:en` +
+      `?filter=topics.subfield.id:${subfieldId},is_oa:true,language:en` +
       `,publication_year:${currentYear - 1}-${currentYear}` +
       `&per_page=${PER_PAGE}&page=${page}&sort=cited_by_count:desc`
 
-    const response = await fetch(url, { method: 'GET', headers: OPENALEX_HEADERS })
+    const res = await fetch(url, {
+      headers: OPENALEX_HEADERS,
+    })
 
-    if (!response.ok) {
-      console.warn(`OpenAlex non OK (${subfieldId}) page ${page}:`, response.status)
-      break
-    }
+    if (!res.ok) break
 
-    const data = await response.json()
+    const data = await res.json()
+
     if (!data.results?.length) break
 
-    allFetched.push(...data.results)
+    all.push(...data.results)
+
     if (data.results.length < PER_PAGE) break
   }
 
-  return allFetched.filter(
-    (e) => e?.topics?.some((t) => t.score >= TOPIC_SCORE_THRESHOLD)
+  return all.filter(work =>
+    work?.topics?.some(t => t.score >= TOPIC_SCORE_THRESHOLD)
   )
 }
 
-function reconstructAbstract(invertedIndex) {
-  if (!invertedIndex || typeof invertedIndex !== 'object') return 'Résumé non disponible'
+/* ---------------- FORMAT ---------------- */
+
+function reconstructAbstract(index: any) {
+  if (!index) return 'Résumé non disponible'
 
   try {
-    const words = []
-    for (const [word, positions] of Object.entries(invertedIndex)) {
-      if (Array.isArray(positions)) {
-        positions.forEach((pos) => { words[pos] = word })
-      }
+    const words: string[] = []
+
+    for (const [word, positions] of Object.entries(index)) {
+      ;(positions as number[]).forEach(pos => {
+        words[pos] = word
+      })
     }
-    const abstract = words.filter(Boolean).join(' ')
-    return abstract.length > ABSTRACT_MAX_LENGTH
-      ? abstract.substring(0, ABSTRACT_MAX_LENGTH) + '...'
-      : abstract || 'Résumé non disponible'
-  } catch (err) {
-    console.error(' Erreur reconstruction résumé:', err)
+
+    const text = words.filter(Boolean).join(' ')
+
+    return text.length > ABSTRACT_MAX_LENGTH
+      ? text.slice(0, ABSTRACT_MAX_LENGTH) + '...'
+      : text || 'Résumé non disponible'
+  } catch {
     return 'Résumé non disponible'
   }
 }
 
-function formatWork(work) {
-  const relevantTopics = (work.topics || [])
-    .filter((t) => t.score >= TOPIC_SCORE_THRESHOLD)
-    .sort((a, b) => b.score - a.score)
+function formatWork(work: any) {
+  const topics = (work.topics || [])
+    .filter((t: any) => t.score >= TOPIC_SCORE_THRESHOLD)
+    .sort((a: any, b: any) => b.score - a.score)
 
-  const primaryTopic = relevantTopics[0]
+  const main = topics[0]
 
   return {
     id: work.id,
     title: work.title,
     authors: work.authorships
       ?.slice(0, MAX_AUTHORS)
-      .map((a) => a.author?.display_name)
-      .filter(Boolean) || [],
+      .map((a: any) => a.author?.display_name)
+      .filter(Boolean),
     published: work.publication_date,
-    summary: work.abstract_inverted_index
-      ? reconstructAbstract(work.abstract_inverted_index)
-      : 'Résumé non disponible',
+    summary: reconstructAbstract(work.abstract_inverted_index),
     openAlexUrl: work.id,
     doi: work.doi,
     pdfUrl: work.open_access?.oa_url || null,
@@ -239,147 +245,102 @@ function formatWork(work) {
     link: work.doi
       ? `https://doi.org/${work.doi.replace('https://doi.org/', '')}`
       : work.id,
-    mainTopic: primaryTopic?.display_name || 'General',
-    topicScore: primaryTopic?.score || 0,
-    concepts: primaryTopic?.field?.display_name || null,
+    mainTopic: main?.display_name || 'General',
+    topicScore: main?.score || 0,
+    concepts: main?.field?.display_name || null,
   }
 }
 
-function shuffleArray(arr) {
-  const shuffled = [...arr]
-  for (let i = shuffled.length - 1; i > 0; i--) {
+/* ---------------- RESOLVE ---------------- */
 
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-    
-  }
-  return shuffled
-}
-
-
-function copyChecked(articles) {
-  const trimedArray = new Set();
-  articles.filter((article=> {
-    if (article.id && !trimedArray.has(article.id)) {
-      trimedArray.add(article.id);
-      return true
-    }
-    return false
-  }))
-
-  return articles;
-  
-}
-
-async function resolveSubfields(subfieldItems) {
-  const allResults = []
-  const toFetch = []
-
+async function resolveSubfields(subfields: any[]) {
+  const results: any[] = []
+  const toFetch: string[] = []
 
   await Promise.all(
-    subfieldItems.map(async ({ subfield }) => {
+    subfields.map(async ({ subfield }) => {
+      const key = `openalex-${subfield}`
 
-      const cacheKey = `handle-open-alex-${subfield}`
-
-      // 1. Cache Redis
-
-      const cached = await getFromCache(cacheKey)
+      const cached = await getFromCache(key)
       if (cached) {
-
-        allResults.push(...cached)
+        results.push(...cached)
         return
       }
 
-      // 2. BDD
+      const db = await getFromDB(subfield)
+      if (db) {
+        results.push(...db)
 
-      const fromDB = await getFromDB(subfield)
-      if (fromDB) {
-
-        allResults.push(...fromDB)
         await redisClient.setEx(
-          cacheKey,
+          key,
           CACHE_TTL,
-          JSON.stringify({ subfield, totalResults: fromDB.length, articles: fromDB })
+          JSON.stringify({ subfield, articles: db })
         )
+
         return
       }
 
-      // 3. API
-      
-      console.log(`Fetch API - ${subfield} non trouvé `)
-      toFetch.push(subfield);
-      console.log("toFetch.length => ", toFetch.length)
+      toFetch.push(subfield)
     })
   )
-    if (toFetch.length > 0) {
-    allResults.push(...await checkArticles(toFetch));
+
+  if (toFetch.length) {
+    const fetched = await checkArticles(toFetch)
+    results.push(...fetched)
   }
 
-  return allResults
+  return results
 }
 
-export async function getAllSubjects() {
-  let allSubfields;
-  for (const [key, value] of Object.entries(SUBFIELD_MAPPING)) {
-    mapInterestsToSubfields(key);
-  }
-  
+/* ---------------- FETCH + SAVE ---------------- */
 
-  return allSubfields
-}
-
-
-
-
-export async function checkArticles(toFetch) {
-
+export async function checkArticles(subfields: string[]) {
   const results = await Promise.all(
-
-    toFetch.map(async (subfield) => {
-      
-      const cacheKey = `handle-open-alex-${subfield}`
+    subfields.map(async subfield => {
       const raw = await fetchSubfieldFromAPI(subfield)
       const formatted = raw.map(formatWork)
-      await setInCache(cacheKey, subfield, formatted)
-      return formatted  
 
+      await setInCache(`openalex-${subfield}`, subfield, formatted)
+
+      return formatted
     })
-
   )
+
   return results.flat()
 }
-async function handleOpenAlex(req, res) {
-    const user = await req.user;
 
+/* ---------------- CONTROLLER ---------------- */
+
+async function handleOpenAlex(req: any, res: any) {
+  try {
+    console.log("arrivé - open alex")
+    const user = req.user
     if (!user) {
-      return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
+      return res.status(404).json({ message: 'User not found' })
     }
 
-    const userInterests = JSON.parse(user.interests || '[]')
+    const interests = JSON.parse(user.interests || '[]')
 
-
-    
-    const subfieldIds = mapInterestsToSubfields(userInterests)
-    if (!subfieldIds || Object.keys(subfieldIds).length < 1) {
-      return res.status(400).json({ status: 'Failed', message: 'Aucun intérêt valide trouvé' })
+    const mapped = mapInterestsToSubfields(interests)
+    if (!mapped.length) {
+      return res.status(400).json({ message: 'No valid interests' })
     }
 
-    const allResults = await resolveSubfields(subfieldIds)
-    const unique = await copyChecked(allResults)
-    const articles = shuffleArray(unique).slice(0, MAX_FINAL_RESULTS)
+    const data = await resolveSubfields(mapped)
+
+    const unique = copyChecked(data)
+    const final = shuffleArray(unique).slice(0, MAX_FINAL_RESULTS)
 
     return res.json({
-      status: 'Success',
-      totalResults: allResults.length,
-      filteredCount: articles.length,
-      subfieldCount: subfieldIds.length,
-      articles,
+      totalResults: data.length,
+      filteredCount: final.length,
+      subfieldCount: mapped.length,
+      articles: final,
     })
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ message: 'Server error' })
+  }
 }
-
-
-
-
-
 
 export default handleOpenAlex

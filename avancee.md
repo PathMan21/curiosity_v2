@@ -742,3 +742,20 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 **---------------------------------17-05----------------------------------**
 
 -> Retravail sur les dtos & zod, on essais de faire la protection entre les deux
+
+
+
+**---------------------------------21-05----------------------------------**
+
+-> J'active les images mais c'est tout, le but est d'avoir une appli pour l'oral
+
+-> Photos et article dtos mis en place - tout fonctionne  X
+
+-> Faire les crons - remplacer la logique d'aller chercher chez l'utilisateur
+-> Revoir l'update utilisateur - corriger l'oauth
+-> Nettoyer les fichiers de code
+-> Rajouter prometheus
+-> Rajouter grafana
+-> Corrections sécurité - 10 owasp
+-> Configurer les logs
+-> 

@@ -6,6 +6,8 @@ import { Op } from 'sequelize'
 import { isPhotosTooOld } from '../Helpers/CheckTooOld'
 
 import "../Helpers/configLink";
+import { createPhotosSchema } from '../dtos/Photos'
+import sequelizeDb from '../Config/dbInit'
 const CACHE_TTL = 3600 * 24 * 90
 const MAX_PHOTO_AGE_DAYS = 90
 
@@ -85,33 +87,51 @@ export async function getFromDB(interest: string) {
 }
 
 async function setInCache(cacheKey: string, interest: string, photos: any[]) {
-  await Photo.destroy({ where: { interest } })
 
-  await Promise.all(
-    photos.map(async (photo) => {
-      await Photo.create({
-        unsplashId: photo.id,
-        url: photo.url,
-        thumb: photo.thumb,
-        description: photo.description,
-        photographer: photo.photographer,
-        photographerLink: photo.photographerLink,
-        downloadLink: photo.downloadLink,
-        interest,
-        type: "photo"
-      })
-    })
+
+  if (!photos?.length) {
+    console.warn(`Aucune photo pour ${cacheKey}`);
+    return;
+  }
+
+  const photosArray = photos.map((photo) => 
+      createPhotosSchema.parse({
+            unsplashId: photo.id,
+            url: photo.url,
+            thumb: photo.thumb,
+            description: photo.description,
+            photographer: photo.photographer,
+            photographerLink: photo.photographerLink,
+            downloadLink: photo.downloadLink,
+            interest,
+            type: "photo"
+          })
   )
 
-  try {
-    await redisClient.setEx(
-      cacheKey,
-      CACHE_TTL,
-      JSON.stringify({ interest, totalResults: photos.length, photos })
-    )
-    console.log(`Cache OK — ${cacheKey} (${photos.length} photos)`)
-  } catch (err) {
-    console.warn(`Erreur Redis écriture (${cacheKey}):`, err.message)
+    const t = await sequelizeDb.transaction();
+
+    try {
+      await Photo.destroy({
+      where: { interest },
+      transaction: t
+    });
+    await Photo.bulkCreate(photosArray, {
+      transaction: t
+    });
+      await t.commit();
+  await redisClient.setEx(
+    cacheKey,
+    CACHE_TTL,
+    JSON.stringify({
+      interest,
+      totalResults: photosArray.length,
+      photosArray
+    })
+  );
+  } catch(err) {
+    console.error(" Erreur set in cache ", err, " Rollback...");
+    await t.rollback();
+
   }
 }
 
