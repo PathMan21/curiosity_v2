@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { AuthProvider } from '../../../frontend/src/Context/AuthContext';
+import { AuthentProvider } from '../../../frontend/src/Context/AuthContext';
 import { useAuth } from '../../../frontend/src/Context/AuthContext';
 import '@testing-library/jest-dom'
 import React from 'react';
@@ -30,9 +30,9 @@ describe('AuthContext Tests', () => {
 
   it('should initialize with no user or token', async () => {
     const { container } = render(
-      <AuthProvider>
+      <AuthentProvider>
         <TestComponent />
-      </AuthProvider>
+      </AuthentProvider>
     )
 
     await waitFor(() => {
@@ -54,9 +54,9 @@ describe('AuthContext Tests', () => {
     })
 
     const { container } = render(
-      <AuthProvider>
+      <AuthentProvider>
         <TestComponent />
-      </AuthProvider>
+      </AuthentProvider>
     )
 
     await waitFor(() => {
@@ -75,9 +75,9 @@ describe('AuthContext Tests', () => {
     }
 
     render(
-      <AuthProvider>
+      <AuthentProvider>
         <TestHookComponent />
-      </AuthProvider>
+      </AuthentProvider>
     )
 
     await waitFor(() => {
@@ -95,9 +95,9 @@ describe('AuthContext Tests', () => {
     }
 
     render(
-      <AuthProvider>
+      <AuthentProvider>
         <LogoutButton />
-      </AuthProvider>
+      </AuthentProvider>
     )
 
     const logoutButton = screen.getByText('Logout')

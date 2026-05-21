@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { stringify } from 'querystring'
+import User from '../Models/User'
 
+import "../Helpers/configLink";
 const validateUserOauth = (req, res, next) => {
   const { username, interests, password } = req.body
 
@@ -40,23 +42,38 @@ const validateUser = (req, res, next) => {
 }
 
 const authentificatedUser = async (req, res, next) => {
-  const authHeader = req.headers['authorization']
 
-  const token = authHeader && authHeader.split(' ')[1]
-  if (!token || token == undefined) {
-    return res.status(401).json({ message: 'Token manquant' })
+  // Je vais chercher les headers ( req )
+  // je décrypte le  jwt 
+  // si pas de jwt ou autre je renvoie une erreur
+  // sinon je valide et je renvoie
+
+  const header = req.headers.authorization;
+
+  const token = header.split(" ", 2);
+
+  if (!token) {
+
+    res.status(404).send("Token invalide ou introuvable");
+
+
+  } else {
+
+    const decoded = jwt.verify(
+      token[1],
+      process.env.ACCESS_TOKEN_SECRET
+    )
+    let id = decoded.userId;
+    const user = await User.findByPk(id)
+
+    if (!user) {
+      return res.status(401).send("Utilisateur introuvable")
+    }
+    req.user = user
+    next()
+
+
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
-    if (err) {
-      console.error('jwt verify error:', err.message)
-      return res.status(403).json({ message: 'Erreur', error: err.message })
-    }
-    req.user = payload
-    req.userId = payload?.userId
-    if (!req.userId) {
-    }
-    next()
-  })
 }
 export { validateUser, authentificatedUser, validateUserOauth }

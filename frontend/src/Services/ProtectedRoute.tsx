@@ -1,52 +1,39 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '../Context/AuthContext'
+import { useAuthentification } from '../Context/Auth'
 
-// const PrivateRoutes: React.FC = () => {
+export const ProtectedRoute = () => {
 
-// };
+const { isLoading, isLogged } = useAuthentification();
 
-const NonProtectedRoute: React.FC = () => {
-  const { token, isLoading } = useAuth()
+
+if (isLoading) {
+  return <div>chargement...</div>;
+}
+
+if (!isLogged) {
+  return <Navigate to="/login" replace />
+}
+else {
+  return <Outlet/>
+}
+
+}
+
+export const PublicOnlyRoute = () => {
+
+  const {
+    isLogged,
+    isLoading,
+  } = useAuthentification()
 
   if (isLoading) {
     return <div>Chargement...</div>
   }
 
-  if (token) {
-    return <Navigate to="/Home" replace />
+  if (isLogged) {
+    return <Navigate to="/home" replace />
   }
 
   return <Outlet />
 }
-
-const AdminProtectedRoute: React.FC = () => {
-  // vérifier si il a l'accès verified
-  const { token, isLoading } = useAuth()
-
-  if (isLoading) {
-    return <div>Chargement...</div>
-  }
-
-  if (!token) {
-    return <Navigate to="/login" replace />
-  }
-
-  return <Outlet />
-}
-
-const SimpleProtectedRoute: React.FC = () => {
-  // ne pas vérifier si il a besoin d'être vérifié
-  const { token, isLoading } = useAuth()
-
-  if (isLoading) {
-    return <div>Chargement...</div>
-  }
-
-  if (!token) {
-    return <Navigate to="/login" replace />
-  }
-
-  return <Outlet />
-}
-export { AdminProtectedRoute, SimpleProtectedRoute, NonProtectedRoute }

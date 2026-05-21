@@ -8,6 +8,7 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 
+import "../Helpers/configLink";
 const verifyUser = async (req, res) => {
   try {
     let { userId, uniqueString } = req.params
@@ -81,7 +82,7 @@ const sendVerificationEmail = async ({ id, email }, res) => {
         .json({ status: 'Failed', message: 'ID utilisateur manquant' })
     }
 
-    const currentUrl = `http://localhost:3000/`
+    const currentUrl = process.env.SERVER_URL;
     const uniqueString = uuidv4() + id
 
     const options = {

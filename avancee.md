@@ -674,3 +674,71 @@ comment l'utilisateur récupère tout ça doit aussi changer =>
 **---------------------------------22-04----------------------------------**
 
 Je dois également sécuriser le site - mettre un throttle pour limiter les robots qui s'ajoutent en boucles pour break le mot de passe
+
+**---------------------------------28-04----------------------------------**
+
+Beaucoup trop d'articles sont cherchés - X réglé
+
+
+**---------------------------------01-05----------------------------------**
+
+-> Les dix failles owasp - à vérifier
+  -> Une faille par jour => 
+
+-> Monitoring prometheus
+
+
+<!-- -> Retravailler le front
+  -> Filtre de contenus - news - articles etc...
+  -> faire un effet scroll
+  -> Retravailler le côté hierarchisation des données
+
+
+-> Redis : structurer combien va me couter sur la prod
+  ->   -->
+
+  finalement retravail sur le code de manière générale => beaucoup de petits bugs qui s'accumulaient et qui ne voulait rien dire -> en cours toujours
+
+
+  **---------------------------------03-05----------------------------------**
+
+
+-> Faire une analyse financière de ce que ça va couter
+-> Checker les bugs
+-> Régler au moins un bugs owasp
+-> Bugs sur les crons à régler
+
+-> Refaire l'authorization (exposition au xss) 
+
+Explication de comment ça marche (on revois les bases)
+
+User -> Appel au login avec email - mdp -> serveur
+Le serveur -> cehck l'utilisateur - créer le token avec un secret (bcrypt etc...) -> Access token () et refresh token ()
+
+
+
+Refresh token ( n'envoie jamais en frontend ) => Transmis en http only cookie coté serveur => Génère l'access token coté frontend ( 30 jours )
+L'access token ( frontend ) sert de clé en frontend => Généré par le refresh token ( plutot 15 minutes )
+L'access token va se mettre dans la mémoire vive de react (pas localstorage etc...)
+
+Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisateur est bon
+
+
+**---------------------------------11-05----------------------------------**
+
+-> Axios - pour les intercepteur - on va sécuriser avant d'envoyer une requête plutot que faire une requête avec un middleware au milieu qui check à chaque fois
+-> Faire toutes les autres api  
+
+**---------------------------------16-05----------------------------------**
+
+-> Travail sur le FRONT
+
+    -> Filtre de contenus - news - articles etc...
+    -> faire un effet scroll
+    -> Retravailler le côté hierarchisation des données
+
+
+    
+**---------------------------------17-05----------------------------------**
+
+-> Retravail sur les dtos & zod, on essais de faire la protection entre les deux

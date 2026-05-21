@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginPage from '../frontend/src/Pages/Auth/Login';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from '../frontend/src/Context/AuthContext';
+import { AuthentProvider } from '../frontend/src/Context/AuthContext';
 import '@testing-library/jest-dom'
 
 jest.mock('../frontend/src/Services/apiClient')
@@ -11,9 +11,9 @@ describe("Login Page Tests", () => {
     const renderWithProviders = (component: React.ReactElement) => {
         return render(
             <BrowserRouter>
-                <AuthProvider>
+                <AuthentProvider>
                     {component}
-                </AuthProvider>
+                </AuthentProvider>
             </BrowserRouter>
         );
     };

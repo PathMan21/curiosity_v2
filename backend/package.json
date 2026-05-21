@@ -6,9 +6,10 @@
     "body-parser": "^2.2.1",
     "bootstrap": "^5.3.8",
     "concurrently": "^9.2.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cron": "^4.4.0",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "jest": "^30.2.0",
     "jsonwebtoken": "^9.0.3",
@@ -24,9 +25,13 @@
     "redis-server": "^1.2.2",
     "router": "^2.2.0",
     "sequelize": "^6.37.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui": "^5.32.5",
+    "swagger-ui-express": "^5.0.1",
     "vite": "^5.0.0",
     "ws": "^8.18.3",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "zod": "^4.4.3"
   },
   "scripts": {
     "start": "tsx backend/server.tsx",

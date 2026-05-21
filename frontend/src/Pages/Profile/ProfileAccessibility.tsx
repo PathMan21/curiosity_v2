@@ -21,7 +21,6 @@ function ProfileAccessibility() {
 
   return (
     <div>
-    <NavbarSite></NavbarSite>
     <section
       className="accessibility-form"
       aria-labelledby="accessibility-title"
@@ -98,7 +97,6 @@ function ProfileAccessibility() {
         {confirmationMsg}
       </div>
     </section>
-    <FooterSite></FooterSite>
     </div>
   );
 }

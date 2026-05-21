@@ -1,196 +1,172 @@
-import React, { useState, useEffect } from 'react'
-import Article from './Article'
-import CarouselImg from '../../Components/Carroussels'
+import React, { useEffect, useState } from 'react'
+import FeedPost from '../../Components/FeedPost'
 import Photos from './Photos'
-import FooterSite from '../../Components/FooterSite'
-import NavbarSite from '../../Components/NavbarSite'
-import { useAuth } from '../../Context/AuthContext'
-import { fetchWithAuth } from '../../Services/apiClient'
-import CarouselBooks from '../../Components/CarousselsBooks'
+import { useAuthentification } from '../../Context/Auth'
+import { privateApi } from '../../Context/Interceptor'
 
-function ArticlePage(props) {
-  const [articles, setArticles] = useState([])
-  const [photos, setPhotos] = useState([])
+const topics = ['Tout', 'Science', 'Tech', 'Nature', 'Art', 'Histoire']
+
+function ArticlePage() {
   const [all, setAll] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [books, setBooks] = useState([])
-
-
-
-  const { token } = useAuth()
+  const [activeTopic, setActiveTopic] = useState('Tout')
+  const { isLogged, user } = useAuthentification()
 
   useEffect(() => {
-    fetchAll()
-  }, [token])
+    if (!isLogged) return
+    fetchArticles()
+  }, [isLogged])
 
   const fetchArticles = async () => {
     try {
-      const response = await fetchWithAuth('/data/articles', { method: 'GET' })
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-      const data = await response.json()
-      if (data.articles && Array.isArray(data.articles)) return data.articles
-      throw new Error('Format de réponse invalide')
-    } catch (err) {
-      console.error('Erreur:', err)
-      setError(err.message)
-    }
-  }
-
-  // const fetchBooks = async () => {
-  //   try {
-  //     const response = await fetchWithAuth('/data/books', { method: 'GET' })
-  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-  //     const data = await response.json()
-  //     return data.data
-  //   } catch (err) {
-  //     console.error('Erreur books:', err)
-  //     setError(err.message)
-  //   }
-  // }
-  // const fetchImages = async () => {
-  //   try {
-  //     const response = await fetchWithAuth('/data/images', { method: 'GET' })
-  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-  //     const data = await response.json()
-  //     return data.photos
-  //   } catch (err) {
-  //     console.error('Erreur:', err)
-  //     setError(err.message)
-  //   }
-  // }
-
-  // const fetchNews = async () => {
-  //   try {
-  //     const response = await fetchWithAuth('/data/news', { method: 'GET' })
-  //     if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`)
-
-  //     const data = await response.json()
-  //     return data.articles
-  //   } catch (err) {
-  //     console.error('Erreur:', err)
-  //     setError(err.message)
-  //   }
-  // }
-
-
-
-  const fetchAll = async () => {
-    const [articlesData] = await Promise.all([
-      fetchArticles(),
-      // fetchNews(),
-      // fetchImages(),
-      // fetchBooks(),
-    ])
-
-    if (articlesData) {
-      setLoading(false)
-      // const shuffledBooks = shuffleArray(booksData, 5);
-      // setBooks(shuffledBooks);
-      const shuffled = shuffleArray([ ...articlesData], 20)
+      setLoading(true)
+      const response = await privateApi.get('/articles')
+      const articles = response.data.articles
+      if (!Array.isArray(articles)) throw new Error('Format de réponse invalide')
+      const shuffled = shuffleArray(articles, 20)
       setAll(shuffled)
+    } catch (err: any) {
+      const status = err?.response?.status
+      const msg = err?.response?.data?.message
+      setError(`${status ?? ''} : ${msg ?? 'Erreur inconnue'}`)
+    } finally {
+      setLoading(false)
     }
   }
 
-  function shuffleArray(data, amount) {
-    let shuffled = [...data]
+  const shuffleArray = (data: any[], amount: number) => {
+    const shuffled = [...data]
     for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     return shuffled.slice(0, amount)
   }
 
+  const filtered = activeTopic === 'Tout'
+    ? all
+    : all.filter((item: any) => item.topic?.toLowerCase() === activeTopic.toLowerCase())
+
+  const greeting = () => {
+    const h = new Date().getHours()
+    if (h < 6) return 'Bonne nuit'
+    if (h < 12) return 'Bonjour'
+    if (h < 18) return 'Bon après-midi'
+    return 'Bonsoir'
+  }
+
   return (
-    <>
-      <NavbarSite></NavbarSite>
-      <CarouselImg />
+    <div className="page-with-nav" style={{ minHeight: '100vh' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '1.5rem 1rem' }}>
 
-      <a href="#contenu-principal" className="visually-hidden-focusable">
-        Aller au contenu principal
-      </a>
+        {/* Greeting banner */}
+        <div className="glass-card p-4 mb-4" style={{ background: 'linear-gradient(135deg, rgba(124,92,191,0.08) 0%, rgba(232,121,160,0.06) 100%)' }}>
+          <div className="d-flex align-items-center gap-3">
+            <div style={{
+              width: 52, height: 52,
+              borderRadius: '50%',
+              background: 'var(--gradient-accent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.4rem', color: 'white', fontWeight: 700,
+              fontFamily: 'var(--font-ui)',
+              flexShrink: 0
+            }}>
+              {user?.username ? user.username[0].toUpperCase() : '✦'}
+            </div>
+            <div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)', fontWeight: 500 }}>
+                {greeting()} 👋
+              </div>
+              <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                {user?.username || 'Curieux'} !
+              </div>
+            </div>
+            <div className="ms-auto" style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>Score</div>
+              <div style={{ fontFamily: 'var(--font-ui)', fontWeight: 700, fontSize: '1.1rem', color: 'var(--accent-purple)' }}>
+                {Math.floor(Math.random() * 900 + 100)}
+              </div>
+            </div>
+          </div>
+        </div>
 
+        {/* Topic filter tabs */}
+        <div className="feed-tabs mb-3 flex-wrap" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
+          {topics.map(t => (
+            <button
+              key={t}
+              className={`feed-tab${activeTopic === t ? ' active' : ''}`}
+              onClick={() => setActiveTopic(t)}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
 
-      <main id="contenu-principal" className="container my-5 min-vh-100 overflow-auto">
+        {/* Section title */}
+        <div className="section-title mb-3">Vos articles</div>
 
-        <h1 className="section-title mb-4">Vos articles</h1>
-
+        {/* Error */}
         {error && (
-          <div className="alert alert-warning" role="alert" aria-live="polite">
-            Attention : {error}. Affichage des articles par défaut.
-          </div>
+          <div className="alert alert-warning" role="alert">{error}</div>
         )}
 
+        {/* Loading */}
         {loading && (
-          <div
-            className="spinner-border"
-            role="status"
-            aria-label="Chargement des articles en cours"
-          >
-            <span className="visually-hidden">Chargement…</span>
+          <div className="d-flex flex-column align-items-center py-5 gap-3">
+            <div className="spinner-border" role="status" style={{ width: '2.5rem', height: '2.5rem' }}>
+              <span className="visually-hidden">Chargement…</span>
+            </div>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontFamily: 'var(--font-ui)' }}>
+              Chargement du fil…
+            </span>
           </div>
         )}
-        <div className="d-flex flex-row-reverse w-100">
-          {/* <div className="btn-group btn-group-toggle" data-toggle="buttons">
-            <label className="btn btn-secondary active rounded">
-              <input type="radio" name="options" id="option1" checked/> Pour vous
-            </label>
-            <label className="btn btn-secondary rounded">
-              <input type="radio" name="options" id="option2"/> Les plus appréciés
-            </label>
-          </div> */}
-        </div>
-        <div className="container my-5 max-vh-100">
-          <div className="col-12">
-            <CarouselBooks books={books} />
 
-            <ul className="list-unstyled row" aria-label="Liste des articles et photos">
-              {all.map((item, idx) => {
-                switch (item.type) {
-                  case 'article':
-                  case 'news':
-                    return (
-                      <li key={`article-${idx}`} className="col-12 col-md-6">
-                        
-                        <Article
-                          id={item.id}
-                          title={item.title}
-                          date={item.published || item.date || item.publishedAt}
-                          concepts={item.concepts || item.category}
-                          excerpt={item.summary || item.excerpt || item.description}
-                          author={item.authors?.[0] || item.author || item.source}
-                          type={item.type}
-                          url={item.link || item.url}
-                        />
-                      </li>
-                    )
-
-                  case 'photo':
-                    return (
-                      <li key={`photo-${idx}`} className="col-12 col-md-6">
-                        <Photos
-                          id={item.id}
-                          title={item.title}
-                          date={item.published}
-                          url={item.url}
-                          description={item.description}
-                          photographer={item.photographer}
-                          photographerUrl={item.photographerLink}
-                        />
-                      </li>
-                    )
-
-                  default:
-                    return null
-                }
-              })}
-            </ul>
+        {/* Feed */}
+        {!loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {filtered.length === 0 && !error && (
+              <div className="glass-card p-4 text-center" style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>
+                Aucun article pour ce thème pour l'instant.
+              </div>
+            )}
+            {filtered.map((item: any, idx: number) => {
+              if (item.type === 'article' || item.type === 'news') {
+                return (
+                  <FeedPost
+                    key={`article-${idx}`}
+                    id={item.id}
+                    title={item.title}
+                    topic={item.topic}
+                    date={item.published || item.date || item.publishedAt}
+                    excerpt={item.summary || item.excerpt || item.description}
+                    author={item.authors?.[0] || item.author || item.source}
+                    url={item.link || item.url}
+                  />
+                )
+              }
+              if (item.type === 'photo') {
+                return (
+                  <Photos
+                    key={`photo-${idx}`}
+                    id={item.id}
+                    title={item.title}
+                    date={item.published}
+                    url={item.url}
+                    description={item.description}
+                    photographer={item.photographer}
+                    photographerUrl={item.photographerLink}
+                  />
+                )
+              }
+              return null
+            })}
           </div>
-        </div>
-      </main>
-      <FooterSite></FooterSite>
-
-    </>
+        )}
+      </div>
+    </div>
   )
 }
 

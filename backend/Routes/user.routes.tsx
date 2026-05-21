@@ -9,7 +9,8 @@ import bodyParser from 'body-parser'
 import {
   createUser,
   loginUser,
-  refreshTokenHandler,
+  logoutUser,
+  refresh,
   updatedProfile,
   getCurrentUser,
 } from '../Controllers/user.controllers'
@@ -18,10 +19,11 @@ const router = Router()
 
 router.post('/', bodyParser.json(), validateUser, validateByMail, createUser)
 router.post('/login', bodyParser.json(), loginUser)
-router.post('/refresh-token', bodyParser.json(), refreshTokenHandler)
+router.post('/logout', bodyParser.json(), logoutUser)
+router.post('/refresh-token', refresh)
 router.get('/verify/:userId/:uniqueString', verifyUser)
 router.get('/verified', verifiedPage)
-router.get('/me', authentificatedUser, getCurrentUser)
+router.get('/me', bodyParser.json(), authentificatedUser, getCurrentUser)
 
 router.post(
   '/updated-profile',

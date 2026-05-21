@@ -5,6 +5,7 @@ import { Op } from 'sequelize'
 
 import { isPhotosTooOld } from '../Helpers/CheckTooOld'
 
+import "../Helpers/configLink";
 const CACHE_TTL = 3600 * 24 * 90
 const MAX_PHOTO_AGE_DAYS = 90
 
@@ -42,10 +43,22 @@ function mapInterestsToQueries(interests: string[]) {
 async function getFromCache(cacheKey: string) {
   try {
     const raw = await redisClient.get(cacheKey)
-    if (!raw?.trim()) return null
+    if (!raw) return null
 
-    const parsed = JSON.parse(raw)
-    return parsed?.photos?.length > 0 ? parsed.photos : null
+    const rawString = raw.toString();
+    if (!rawString.trim()) return null
+
+    const parsed = JSON.parse(rawString);
+
+    
+    if (!parsed?.photos?.length) return null
+
+    if (isPhotosTooOld(parsed.photos)) {
+      console.log(`Photos trop vieilles dans cache pour "${cacheKey}"`)
+      return null
+    }
+
+    return parsed.photos
   } catch (err) {
     console.warn(`Erreur Redis lecture (${cacheKey}):`, err.message)
     return null

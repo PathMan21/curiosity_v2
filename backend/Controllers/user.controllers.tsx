@@ -1,94 +1,61 @@
 import User from '../Models/User'
-import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
-import UserVerifications from '../Models/UserVerifications'
-import { transport } from '../Config/emailConfig'
-import { v4 as uuidv4 } from 'uuid'
-import { sendVerificationEmail } from '../Services/mail.services'
 import jwt from 'jsonwebtoken'
-import { error } from 'console'
+import "../Helpers/configLink"
+import { createUserSchema } from '../dtos/User'
 
-const generateTokens = (userId: number) => {
-  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '15m',
-  })
+const generateTokens = (userId: number) => ({
+  accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' }),
+  refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' }),
+})
 
-  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '7d',
-  })
-
-  return { accessToken, refreshToken }
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict' as const,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 }
 
-const updatedProfile = async (req, res) => {
+const setRefreshCookie = (res, token) =>
+  res.cookie('refreshToken', token, COOKIE_OPTIONS)
+
+const formatUser = (user) => ({
+  id: user.id,
+  email: user.email,
+  username: user.username,
+  verified: user.verified,
+  interests: user.interests,
+  picture: user.picture,
+})
+
+
+
+
+export const createUser = async (req, res) => {
   try {
-    const { username, email, interests, picture } = req.body
-    const userId = req.user.userId
+    const result = createUserSchema.safeParse(req.body)
 
-    const user = await User.findByPk(userId)
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: 'Failed', message: 'Utilisateur non trouvé' })
-    }
-
-    const updateData: any = {}
-    if (typeof username !== 'undefined') updateData.username = username
-    if (typeof email !== 'undefined') updateData.email = email
-    if (typeof picture !== 'undefined') updateData.picture = picture
-    if (typeof interests !== 'undefined')
-      updateData.interests = JSON.stringify(interests)
-
-    await user.update(updateData)
-
-    const { accessToken, refreshToken } = generateTokens(user.id)
-    await user.update({ refreshToken })
-
-    let returnedInterests: any = []
-    try {
-      returnedInterests = user.interests ? JSON.parse(user.interests) : []
-    } catch (e) {
-      returnedInterests = []
-    }
-
-    res.json({
-      status: 'Success',
-      message: 'Profil mis à jour avec succès',
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        verified: user.verified,
-        interests: returnedInterests,
-        picture: user.picture,
-      },
-    })
-  } catch (err) {
-    console.error("Erreur d'update utilisateur :", err)
-    res
-      .status(500)
-      .json({
+    if (!result.success) {
+      return res.status(400).json({
         status: 'Failed',
-        message: 'Erreur lors de la mise à jour du profil',
+        errors: result.error,
       })
-  }
-}
+    }
 
-const createUser = async (req, res) => {
-  try {
-    const { username, password, email, interests } = req.body
+    const { username, password, email, interests } = result.data
 
-    const user = await User.findOne({ where: { email } })
-    if (user) {
+    const existingUser = await User.findOne({
+      where: { email },
+    })
+
+    if (existingUser) {
       return res.status(400).json({
         status: 'Failed',
         message: 'Cet email existe déjà',
       })
     }
 
-    const newUser = await User.create({
+    const user = await User.create({
       username,
       email,
       password,
@@ -96,196 +63,154 @@ const createUser = async (req, res) => {
       verified: false,
     })
 
-    let createdId: number | null
-    createdId =
-      newUser.get?.('id') ?? newUser.id ?? newUser.get?.('userId') ?? null
-
-    if (!createdId) {
-      console.error(
-        "createUser: id utilisateur manquant pour l'enregistrement:",
-        newUser.toJSON()
-      )
-      return res.status(500).json({
-        status: 'Failed',
-        message:
-          "Erreur interne: impossible de récupérer l'ID de l'utilisateur",
-      })
-    }
-
-    await sendVerificationEmail(
-      { id: createdId, email: newUser.get('email') },
-      res
-    )
-
-    const { accessToken, refreshToken } = generateTokens(createdId)
-
-    await newUser.update({ refreshToken })
-
-    res.cookie('jwt', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-    })
-
-    return res.status(201).json({
-      status: 'Success',
-      message: 'Utilisateur créé avec succès',
-      accessToken,
-      refreshToken,
-    })
-  } catch (err) {
-    console.error('Erreur création utilisateur:', err)
-    res.status(500).json({
-      status: 'Failed',
-      message: "Erreur lors de la création de l'utilisateur",
-    })
-  }
-}
-
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body
-
-    if (!email || !password) {
-      return res.status(400).json({
-        status: 'Failed',
-        message: 'Email et mot de passe requis',
-      })
-    }
-
-    const user = await User.findOne({ where: { email } })
-
-    const plainPassword = user.getDataValue('password')
-
-    if (!user) {
-      return res.status(401).json({
-        status: 'Failed',
-        message: 'Email incorrect',
-      })
-    }
-
-
-    const passwordMatch = await bcrypt.compare(password, plainPassword)
-    bcrypt.compare(password, user.password, function (err, result) {
-    })
-    if (!passwordMatch) {
-      return res.status(401).json({
-        status: 'Failed',
-        message: 'mot de passe incorrect',
-      })
-    }
-
     const { accessToken, refreshToken } = generateTokens(user.id)
 
     await user.update({ refreshToken })
 
-    res.json({
+    setRefreshCookie(res, refreshToken)
+
+    return res.status(201).json({
       status: 'Success',
       accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        verified: user.verified,
-        interests: user.interests,
-        picture: user.picture,
-      },
+      user: formatUser(user),
     })
-  } catch (err) {
-    console.error('Erreur login utilisateur:', err)
-    res.status(500).json({
+
+  } catch (error) {
+    return res.status(500).json({
       status: 'Failed',
-      message: 'Erreur lors de la connexion',
+      message: 'Erreur création utilisateur',
     })
   }
 }
 
-const refreshTokenHandler = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
-    const { refreshToken } = req.body
+    const { email, password } = req.body
 
-    if (!refreshToken) {
-      return res.status(401).json({
-        status: 'Failed',
-        message: 'Refresh token manquant',
-      })
+    if (!email || !password)
+      return res.status(400).json({ status: 'Failed', message: 'Email et mot de passe requis' })
+
+    const user = await User.findOne({ where: { email } })
+    if (!user || !(await bcrypt.compare(password, user.password)))
+      return res.status(401).json({ status: 'Failed', message: 'Identifiants incorrects' })
+
+    const { accessToken, refreshToken } = generateTokens(user.id)
+    await user.update({ refreshToken })
+    setRefreshCookie(res, refreshToken)
+
+    return res.json({ status: 'Success', accessToken, user: formatUser(user) })
+  } catch {
+    return res.status(500).json({ status: 'Failed', message: 'Erreur login' })
+  }
+}
+
+export const logoutUser = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken
+    if (token) {
+      const user = await User.findOne({ where: { refreshToken: token } })
+      await user?.update({ refreshToken: null })
     }
+
+    res.clearCookie('refreshToken', COOKIE_OPTIONS)
+    return res.json({ status: 'Success', message: 'Déconnecté' })
+  } catch {
+    return res.status(500).json({ status: 'Failed', message: 'Erreur logout' })
+  }
+}
+
+export async function refresh(req, res) {
+
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return res.status(401).json({
+    message: 'Pas de refresh token'
+    })
+  }
+
+  try {
 
     const decoded = jwt.verify(
-      refreshToken,
+      token,
       process.env.REFRESH_TOKEN_SECRET
-    ) as any
-
-    const user = await User.findByPk(decoded.userId)
-
-    if (!user || user.refreshToken !== refreshToken) {
-      return res.status(401).json({
-        status: 'Failed',
-        message: 'Refresh token invalide',
-      })
-    }
-
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(
-      user.id
     )
 
-    await user.update({ refreshToken: newRefreshToken })
+    const accessToken = jwt.sign(
+      { userId: decoded.userId },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: '15m',
+      }
+    )
+      const user = await User.findByPk(decoded.userId)
 
-    res.json({
+      if (user.refreshToken !== token) {
+        return res.status(401)
+      }
+
+    return res.status(200).json({
       status: 'Success',
-      accessToken,
-      refreshToken: newRefreshToken,
+      token: accessToken,
     })
-  } catch (err) {
-    console.error('Erreur refresh token:', err)
-    res.status(401).json({
-      status: 'Failed',
-      message: 'Refresh token invalide ou expiré',
-    })
+
+  } catch (error) {
+
+    return res.status(401).json({status: 'failed', message: error})
+
   }
 }
 
-const getCurrentUser = async (req, res) => {
+
+
+export const getCurrentUser = async (req, res) => {
   try {
-    const userId = req.user.userId
-    const user = await User.findByPk(userId, {
-      attributes: [
-        'id',
-        'username',
-        'email',
-        'verified',
-        'interests',
-        'picture',
-        'isTemporary',
-      ],
+    const user = await User.findByPk(req.user.id, {
+      attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary'],
     })
 
-    if (!user) {
-      return res.status(404).json({
+    if (!user) return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
+
+    return res.json({ status: 'Success', user: user.get({ plain: true }) })
+  } catch {
+    return res.status(401).json({ status: 'Failed', message: 'Erreur récupération profil' })
+  }
+}
+
+export const updatedProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id)
+    if (!user){
+      return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
+    } 
+
+    const { username, email, interests, picture } = req.body
+    const result = createUserSchema.safeParse(req.body)
+
+    if (!result.success) {
+      console.log(result.error)
+      return res.status(400).json({
         status: 'Failed',
-        message: 'Utilisateur non trouvé',
+        errors: result.error,
       })
     }
-    const plainUser = user.get({ plain: true })
 
-    res.json({
-      status: 'Success',
-      user: plainUser,
-    })
-  } catch (err) {
-    console.error('Erreur récupération profil:', err)
-    res.status(500).json({
-      status: 'Failed',
-      message: 'Erreur lors de la récupération du profil',
-    })
+
+      const updateData = {}
+      updateData.username = username
+      updateData.email = email
+      updateData.picture = picture
+      updateData.interests = JSON.stringify(interests)
+
+    await user.update(updateData)
+
+    const { accessToken, refreshToken } = generateTokens(user.id)
+
+    await user.update({ refreshToken })
+    setRefreshCookie(res, refreshToken)
+
+    return res.json({ status: 'Success', accessToken, user: formatUser(user) })
+  } catch {
+    return res.status(500).json({ status: 'Failed', message: 'Erreur mise à jour profil' })
   }
-}
-
-export {
-  createUser,
-  loginUser,
-  refreshTokenHandler,
-  updatedProfile,
-  getCurrentUser,
 }

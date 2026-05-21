@@ -1,8 +1,9 @@
-import { configDotenv } from 'dotenv'
+
 import path from 'path'
 import { Sequelize } from 'sequelize'
+import "../Helpers/configLink";
 
-configDotenv({ path: path.resolve(process.cwd(), 'Config/.env') })
+
 
 const sequelizeDb = new Sequelize(
   process.env.DB_NAME,
@@ -27,7 +28,7 @@ const sequelizeDb = new Sequelize(
 
 if (!process.env.DB_NAME || !process.env.DB_USER) {
   console.warn(
-    "⚠️ Variables DB non chargées — vérifie le chemin vers Config/.env et les noms d'environnement"
+    "Variables DB non chargées — vérifie le chemin vers Config/.env et les noms d'environnement"
   )
 }
 
