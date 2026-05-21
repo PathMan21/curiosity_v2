@@ -60,6 +60,7 @@ function mapInterestsToSubfields(interestIds) {
 
 
 async function getFromCache(cacheKey) {
+  try{
     const raw = await redisClient.get(cacheKey)
     if (!raw) {
       return null
@@ -71,19 +72,19 @@ async function getFromCache(cacheKey) {
 
 
     const parsed = JSON.parse(rawString);
-    const totalResults = Object.keys(parsed.articles);
+    const totalResults = Object.keys(parsed.validatedArticles);
     if (!parsed || totalResults.length < 1) {
       return null
     } 
 
 
     if (isArticlesTooOld(parsed.articles)) {
-      console.log(`Articles trop vieux dans cache pour "${cacheKey}"`)
       return null
     }
 
-    return parsed.articles
-
+    return parsed.validatedArticles
+} catch(err) {
+}
 }
 
 async function getFromDB(subfield) {
@@ -97,7 +98,7 @@ async function getFromDB(subfield) {
     )
 
     if (isArticlesTooOld(mapped)) {
-      console.log(`Articles OpenAlex trop vieux pour "${subfield}", réhydratation...`)
+
       return null
     }
 
@@ -117,7 +118,7 @@ try {
 
   const validatedArticles = articles.map((article) =>
     createArticleSchema.parse({
-      openAlexId: article.id,
+      openAlexId: article.openAlexUrl,
       title: article.title,
       authors: article.authors,
       published: article.published,
@@ -157,9 +158,7 @@ try {
       validatedArticles
     })
   );
-  console.log(`Cache OK => ${cacheKey}`);
-} catch (err) {
-  console.error("Transaction : ajouts d'articles dans la bdd et cache echoué -> ", err);
+  } catch (err) {
 }
 }
 
@@ -286,7 +285,7 @@ async function resolveSubfields(subfieldItems) {
 
       const cached = await getFromCache(cacheKey)
       if (cached) {
-        console.log(`Cache hit - handle-open-alex-${subfield}`)
+
         allResults.push(...cached)
         return
       }
@@ -295,7 +294,7 @@ async function resolveSubfields(subfieldItems) {
 
       const fromDB = await getFromDB(subfield)
       if (fromDB) {
-        console.log(`BDD hit - ${subfield}`)
+
         allResults.push(...fromDB)
         await redisClient.setEx(
           cacheKey,
@@ -308,7 +307,8 @@ async function resolveSubfields(subfieldItems) {
       // 3. API
       
       console.log(`Fetch API - ${subfield} non trouvé `)
-      toFetch.push(subfield)
+      toFetch.push(subfield);
+      console.log("toFetch.length => ", toFetch.length)
     })
   )
     if (toFetch.length > 0) {

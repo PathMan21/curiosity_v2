@@ -157,7 +157,6 @@ export const AuthentProvider = ({ children }) => {
                 }
             })
     }
-    // apply token permet avant d'attendre que le axios récupère avec setAccessToken la validation-> il va chercher un header default
     const applyToken = (token) => {
         if (!token) {
             setAccessToken(null);

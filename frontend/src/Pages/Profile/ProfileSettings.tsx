@@ -63,7 +63,7 @@ function ProfileSettings() {
             })
 
             if (response.data.status !== "Success") {
-                setError("Erreur lors de la mise à jour du profil")
+                console.log("Erreur lors de la mise à jour du profil", response.data.errors)
                 return
             }
 

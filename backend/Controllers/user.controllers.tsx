@@ -2,6 +2,7 @@ import User from '../Models/User'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import "../Helpers/configLink"
+import { createUserSchema } from '../dtos/User'
 
 const generateTokens = (userId: number) => ({
   accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' }),
@@ -28,22 +29,57 @@ const formatUser = (user) => ({
 })
 
 
+
+
 export const createUser = async (req, res) => {
   try {
-    const { username, password, email, interests } = req.body
+    const result = createUserSchema.safeParse(req.body)
 
-    if (await User.findOne({ where: { email } }))
-      return res.status(400).json({ status: 'Failed', message: 'Cet email existe déjà' })
+    if (!result.success) {
+      return res.status(400).json({
+        status: 'Failed',
+        errors: result.error,
+      })
+    }
 
-    const user = await User.create({ username, email, password, interests, verified: false })
+    const { username, password, email, interests } = result.data
+
+    const existingUser = await User.findOne({
+      where: { email },
+    })
+
+    if (existingUser) {
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Cet email existe déjà',
+      })
+    }
+
+    const user = await User.create({
+      username,
+      email,
+      password,
+      interests,
+      verified: false,
+    })
+
     const { accessToken, refreshToken } = generateTokens(user.id)
+
     await user.update({ refreshToken })
 
     setRefreshCookie(res, refreshToken)
 
-    return res.status(201).json({ status: 'Success', accessToken, user: formatUser(user) })
-  } catch {
-    return res.status(500).json({ status: 'Failed', message: 'Erreur création utilisateur' })
+    return res.status(201).json({
+      status: 'Success',
+      accessToken,
+      user: formatUser(user),
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      status: 'Failed',
+      message: 'Erreur création utilisateur',
+    })
   }
 }
 
@@ -149,6 +185,16 @@ export const updatedProfile = async (req, res) => {
     } 
 
     const { username, email, interests, picture } = req.body
+    const result = createUserSchema.safeParse(req.body)
+
+    if (!result.success) {
+      console.log(result.error)
+      return res.status(400).json({
+        status: 'Failed',
+        errors: result.error,
+      })
+    }
+
 
       const updateData = {}
       updateData.username = username

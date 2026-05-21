@@ -1,6 +1,8 @@
 
 
 
+ 
+
 interface RefreshResponse {
   status: string
   accessToken: string
@@ -59,7 +61,7 @@ const refreshAccessToken = async (
 //   options: RequestInit = {}
 // ): Promise<T> => {
 //   const response = await fetchWithAuth(endpoint, options)
-
+//
 //   if (!response.ok) {
 //     const error: ApiError = new Error(
 //       `Erreur API: ${response.status}`
@@ -67,6 +69,6 @@ const refreshAccessToken = async (
 //     error.status = response.status
 //     throw error
 //   }
-
+//
 //   return response.json()
 // }
