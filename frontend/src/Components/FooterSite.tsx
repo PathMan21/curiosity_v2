@@ -1,55 +1,20 @@
 function FooterSite() {
   return (
-    <>
-      <div className="footer w-100 bottom fw-bold mt-auto">
-        {' '}
-        <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-          {' '}
-          <div className="col-md-4 d-flex align-items-center">
-            {' '}
-            <a
-              href="/"
-              className="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
-              aria-label="Bootstrap"
-            >
-              {' '}
-              <svg 
-                aria-labelledby="titre-svg"
-                className="bi"
-                width="30"
-                height="24"
-                aria-hidden="true"
-              ></svg>{' '}
-            </a>{' '}
-            <span className="mb-3 mb-md-0 text-body-primary">
-              © 2025 Company, Inc
-            </span>{' '}
-          </div>{' '}
-          <ul className="nav col-md-4 justify-content-end list-unstyled d-flex">
-            {' '}
-            <li className="ms-3">
-              <a
-                className="text-body-secondary"
-                href="#"
-                aria-label="Instagram"
-              >
-                <svg
-                  className="bi"
-                  width="24"
-                  height="24"
-                  aria-hidden="true"
-                ></svg>
-              </a>
-            </li>{' '}
-            <li className="ms-3">
-              <a className="text-body-secondary" href="#" aria-label="Facebook">
-                <svg className="bi" width="24" height="24"></svg>
-              </a>
-            </li>{' '}
-          </ul>{' '}
-        </footer>{' '}
-      </div>
-    </>
+    <footer style={{
+      padding: '1.5rem 2rem',
+      textAlign: 'center',
+      fontFamily: 'var(--font-ui)',
+      fontSize: '0.78rem',
+      color: 'var(--text-muted)',
+      borderTop: '1px solid var(--border-soft)',
+      background: 'transparent',
+    }}>
+      <span>✦ Curiosity — © {new Date().getFullYear()}</span>
+      <span style={{ margin: '0 0.75rem', opacity: 0.4 }}>·</span>
+      <a href="#" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Confidentialité</a>
+      <span style={{ margin: '0 0.75rem', opacity: 0.4 }}>·</span>
+      <a href="#" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>CGU</a>
+    </footer>
   )
 }
 
