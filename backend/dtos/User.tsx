@@ -40,3 +40,28 @@ export const createUserSchema = z.object({
     .nullable()
     .optional(),
 })
+
+export const updateUserSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username trop court')
+    .max(50, 'Username trop long')
+    .optional(),
+
+  email: z
+    .string()
+    .email('Email invalide')
+    .optional(),
+
+  picture: z
+    .string()
+    .url('URL invalide')
+    .nullable()
+    .optional(),
+
+  interests: z
+    .array(z.string())
+    .max(10, "Trop d'intérêts") 
+    .nullable()
+    .optional(),
+})

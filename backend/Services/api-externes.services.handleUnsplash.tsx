@@ -1,156 +1,122 @@
 import User from '../Models/User'
 import Photo from '../Models/Photo'
 import redisClient from '../Config/redis.conf'
-import { Op } from 'sequelize'
+import sequelizeDb from '../Config/dbInit'
 
 import { isPhotosTooOld } from '../Helpers/CheckTooOld'
-
-import "../Helpers/configLink";
 import { createPhotosSchema } from '../dtos/Photos'
-import sequelizeDb from '../Config/dbInit'
-const CACHE_TTL = 3600 * 24 * 90
-const MAX_PHOTO_AGE_DAYS = 90
 
-const INTEREST_TO_QUERY = {
-  'ai-ml':            'artificial intelligence technology',
+/* ---------------- CONFIG ---------------- */
+
+const CACHE_TTL = 3600 * 24 * 90
+
+/* ---------------- INTERESTS (SOURCE UNIQUE) ---------------- */
+
+const INTEREST_TO_QUERY: Record<string, string> = {
+  'ai-ml': 'artificial intelligence technology',
   'computer-science': 'programming code screen',
-  cybersecurity:      'cybersecurity digital lock',
-  robotics:           'robot automation',
-  engineering:        'engineering blueprint',
-  mathematics:        'mathematics equations',
-  physics:            'physics laboratory',
-  chemistry:          'chemistry lab beaker',
-  biology:            'biology microscope cells',
-  medicine:           'medical research hospital',
-  neuroscience:       'brain scan neuroscience',
-  ecology:            'nature forest biodiversity',
-  climate:            'climate earth atmosphere',
-  energy:             'solar panels renewable energy',
-  economics:          'economics graph chart',
-  finance:            'stock market trading',
-  psychology:         'psychology therapy mind',
-  sociology:          'people community society',
-  business:           'business meeting office',
-  space:              'space galaxy stars',
-  art:                'art museum painting',
-  sport:              'sports athlete training',
+  cybersecurity: 'cybersecurity digital lock',
+  robotics: 'robot automation',
+  engineering: 'engineering blueprint',
+}
+
+/* ---------------- HELPERS ---------------- */
+
+export function getAllUnsplashQueries(): string[] {
+  return Object.values(INTEREST_TO_QUERY)
 }
 
 function mapInterestsToQueries(interests: string[]) {
-  return interests.map((i) => INTEREST_TO_QUERY[i]).filter(Boolean)
+  return interests.map(i => INTEREST_TO_QUERY[i]).filter(Boolean)
 }
 
-
+/* ---------------- CACHE ---------------- */
 
 async function getFromCache(cacheKey: string) {
+  const raw = await redisClient.get(cacheKey)
+  if (!raw) return null
+
   try {
-    const raw = await redisClient.get(cacheKey)
-    if (!raw) return null
+    const parsed = JSON.parse(typeof raw === 'string' ? raw : raw.toString())
+    if (!parsed?.photosArray?.length) return null
 
-    const rawString = raw.toString();
-    if (!rawString.trim()) return null
-
-    const parsed = JSON.parse(rawString);
-
-    
-    if (!parsed?.photos?.length) return null
-
-    if (isPhotosTooOld(parsed.photos)) {
-      console.log(`Photos trop vieilles dans cache pour "${cacheKey}"`)
-      return null
-    }
-
-    return parsed.photos
-  } catch (err) {
-    console.warn(`Erreur Redis lecture (${cacheKey}):`, err.message)
+    return parsed.photosArray
+  } catch {
     return null
   }
 }
 
-export async function getFromDB(interest: string) {
-  try {
-    const photos = await Photo.findAll({ where: { interest } })
-    if (photos.length === 0) return null
+/* ---------------- DB ---------------- */
 
-    const mapped = photos.map((p) => p.toJSON())
+async function getFromDB(interest: string) {
+  const photos = await Photo.findAll({ where: { interest } })
+  if (!photos.length) return null
 
-    if (isPhotosTooOld(mapped)) {
-      console.log(`🗑️ Photos trop vieilles pour "${interest}", réhydratation...`)
-      return null
-    }
+  const mapped = photos.map(p => p.toJSON())
+  if (isPhotosTooOld(mapped)) return null
 
-    return mapped
-  } catch (err) {
-    console.warn(` Erreur BDD Unsplash (${interest}):`, err.message)
-    return null
-  }
+  return mapped
 }
 
-async function setInCache(cacheKey: string, interest: string, photos: any[]) {
+/* ---------------- WRITE SYNC ---------------- */
 
+async function setInCache(
+  cacheKey: string,
+  interest: string,
+  photos: any[]
+) {
+  if (!photos?.length) return
 
-  if (!photos?.length) {
-    console.warn(`Aucune photo pour ${cacheKey}`);
-    return;
-  }
-
-  const photosArray = photos.map((photo) => 
-      createPhotosSchema.parse({
-            unsplashId: photo.id,
-            url: photo.url,
-            thumb: photo.thumb,
-            description: photo.description,
-            photographer: photo.photographer,
-            photographerLink: photo.photographerLink,
-            downloadLink: photo.downloadLink,
-            interest,
-            type: "photo"
-          })
+  const photosArray = photos.map(photo =>
+    createPhotosSchema.parse({
+      unsplashId: photo.id,
+      url: photo.url,
+      thumb: photo.thumb,
+      description: photo.description,
+      photographer: photo.photographer,
+      photographerLink: photo.photographerLink,
+      downloadLink: photo.downloadLink,
+      interest,
+      type: 'photo',
+    })
   )
 
-    const t = await sequelizeDb.transaction();
+  const t = await sequelizeDb.transaction()
 
-    try {
-      await Photo.destroy({
-      where: { interest },
-      transaction: t
-    });
-    await Photo.bulkCreate(photosArray, {
-      transaction: t
-    });
-      await t.commit();
-  await redisClient.setEx(
-    cacheKey,
-    CACHE_TTL,
-    JSON.stringify({
-      interest,
-      totalResults: photosArray.length,
-      photosArray
-    })
-  );
-  } catch(err) {
-    console.error(" Erreur set in cache ", err, " Rollback...");
-    await t.rollback();
+  try {
+    await Photo.destroy({ where: { interest }, transaction: t })
+    await Photo.bulkCreate(photosArray, { transaction: t })
 
+    await t.commit()
+
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify({ photosArray })
+    )
+  } catch (err) {
+    await t.rollback()
+    console.error('Cache write error:', err)
   }
 }
 
-async function fetchPhotosFromAPI(interest: string, baseUrl: string, clientId: string) {
-  const url = `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}&count=100&client_id=${clientId}`
+/* ---------------- UNSPLASH API ---------------- */
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-  })
+async function fetchPhotosFromAPI(
+  interest: string,
+  baseUrl: string,
+  clientId: string
+) {
+  const url =
+    `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}` +
+    `&per_page=30&client_id=${clientId}`
 
-  if (!response.ok) {
-    console.warn(`Unsplash non OK (${interest}): ${response.status}`)
-    return []
-  }
+  const res = await fetch(url)
+  if (!res.ok) return []
 
-  const data = await response.json()
+  const data = await res.json()
 
-  return data.results.map((photo) => ({
+  return data.results.map((photo: any) => ({
     id: photo.id,
     url: photo.urls.regular,
     thumb: photo.urls.thumb,
@@ -158,118 +124,97 @@ async function fetchPhotosFromAPI(interest: string, baseUrl: string, clientId: s
     photographer: photo.user.name,
     photographerLink: photo.user.links.html,
     downloadLink: photo.links.download,
-    type: 'photo',
   }))
 }
 
-async function resolveQueries(queries: string[], baseUrl: string, clientId: string) {
-  const allPhotos = []
-  const toFetch = []
+/* ---------------- USER FLOW ---------------- */
 
-  await Promise.all(
-    queries.map(async (interest) => {
-      const cacheKey = `handle-unsplash-${interest}`
+async function resolveQueriesForUser(queries: string[]) {
+  const results = await Promise.all(
+    queries.map(async interest => {
+      const cacheKey = `unsplash:${interest}`
 
-      // 1. Cache Redis
-      const cached = await getFromCache(cacheKey)
-      if (cached) {
-        console.log(`Cache hit — ${cacheKey}`)
-        allPhotos.push(...cached)
-        return
-      }
-
-      // 2. BDD
-      const fromDB = await getFromDB(interest)
-      if (fromDB) {
-        console.log(`BDD hit — ${interest}`)
-        allPhotos.push(...fromDB)
-        await redisClient.setEx(
-          cacheKey,
-          CACHE_TTL,
-          JSON.stringify({ interest, totalResults: fromDB.length, photos: fromDB })
-        )
-        return
-      }
-
-      // 3. API
-      console.log(`Fetch API — Unsplash "${interest}"`)
-      toFetch.push(interest)
+      return (
+        (await getFromCache(cacheKey)) ||
+        (await getFromDB(interest)) ||
+        []
+      )
     })
   )
 
-  if (toFetch.length > 0) {
-    await Promise.all(
-      toFetch.map(async (interest) => {
-        const cacheKey = `handle-unsplash-${interest}`
-        const photos = await fetchPhotosFromAPI(interest, baseUrl, clientId)
-
-        allPhotos.push(...photos)
-        await setInCache(cacheKey, interest, photos)
-      })
-    )
-  }
-
-  return allPhotos
+  return results.flat()
 }
 
-async function handleUnsplash(req, res) {
-  try {
-    const baseUrl = process.env.BASE_URL_UNSPLASH || 'https://api.unsplash.com'
-    const clientId = process.env.API_KEY_UNSPLASH
-    const userId = req.user?.id || req.user?.userId
+/* ---------------- CONTROLLER ---------------- */
 
-    if (!userId) {
-      return res.status(401).json({ status: 'Failed', message: 'Utilisateur non authentifié' })
-    }
+async function handleUnsplash(req: any, res: any) {
+  try {
+    const userId = req.user?.id || req.user?.userId
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' })
 
     const user = await User.findByPk(userId)
-    if (!user) {
-      return res.status(404).json({ status: 'Failed', message: 'Utilisateur inconnu' })
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' })
 
-    let interests = []
-    try {
-      interests = JSON.parse(user.interests || '[]')
-    } catch (e) {
-      console.warn('Impossible de parser les intérêts :', e)
-    }
-
-    if (!interests.length) {
-      return res.json({ status: 'Success', photos: [] })
-    }
+    const interests = JSON.parse(user.interests || '[]')
+    if (!interests.length) return res.json({ photos: [] })
 
     const queries = mapInterestsToQueries(interests)
-    const photos = await resolveQueries(queries, baseUrl, clientId)
+    const photos = await resolveQueriesForUser(queries)
 
-    return res.json({ status: 'Success', photos })
+    return res.json({ photos })
   } catch (err) {
-    console.error('Erreur handleUnsplash:', err)
-    return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
+    console.error(err)
+    return res.status(500).json({ message: 'Server error' })
   }
 }
 
-// CRON
-export async function getAllUnsplashQueries() {
-  const allInterestIds = []
-  const interestsData_local = require('../Assets/interests.json')
-  interestsData_local.interests.forEach(interest => {
-    if (interest.id) allInterestIds.push(interest.id)
-  })
-  return mapInterestsToQueries(allInterestIds)
-}
+/* ---------------- CRON ---------------- */
 
 export async function checkPhotos(queries) {
-  try {
-    console.log('mise à jour via cron => unsplash ', queries?.length)
-    const baseUrl = process.env.BASE_URL_UNSPLASH || 'https://api.unsplash.com'
+  console.log('CRON UNSPLASH START')
+
+  const baseUrl =
+    process.env.BASE_URL_UNSPLASH || 'https://api.unsplash.com'
     const clientId = process.env.API_KEY_UNSPLASH
-    const photos = await resolveQueries(queries, baseUrl, clientId)
-    console.log('Photos => ', photos.length)
-    return photos
-  } catch (error) {
-    console.error('Erreur Unsplash :', error.message)
-    throw error
+
+
+  for (const interest of queries) {
+    try {
+      const cacheKey = `unsplash:${interest}`
+
+      const cached = await getFromCache(cacheKey)
+      console.log("cached => ", cached);
+      if (cached?.length && !isPhotosTooOld(cached)) {
+        console.log(`skip ${interest} (cache fresh)`)
+        continue
+      } 
+      
+
+      const dbPhotos = await getFromDB(interest)
+      console.log("dbPhotos => ", dbPhotos);
+      if (dbPhotos && !isPhotosTooOld(dbPhotos)) {
+        console.log(`skip ${interest} (DB fresh)`)
+        continue
+      }
+
+      const photos = await fetchPhotosFromAPI(
+        interest,
+        baseUrl,
+        clientId
+      )
+
+      if (!photos.length) {
+      continue
+
+      } 
+      await setInCache(cacheKey, interest, photos)
+
+    } catch (err) {
+      console.error(`cron error ${interest}`, err)
+    }
   }
+
+  console.log('CRON UNSPLASH DONE')
 }
 
 export default handleUnsplash

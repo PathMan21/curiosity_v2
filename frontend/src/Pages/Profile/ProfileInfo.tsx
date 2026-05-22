@@ -56,36 +56,8 @@ function ProfileInfo(props: {
                 ⚙️ Paramètres
               </a>
             </div>
-
-            {/* Stats */}
-            <div className="d-flex gap-3 mt-3 flex-wrap">
-              <div className="stat-pill">
-                <span className="stat-num">{Math.floor(Math.random() * 200 + 50)}</span>
-                <span className="stat-label">Articles lus</span>
-              </div>
-              <div className="stat-pill">
-                <span className="stat-num">{interestArray.length}</span>
-                <span className="stat-label">Intérêts</span>
-              </div>
-              <div className="stat-pill">
-                <span className="stat-num">{Math.floor(Math.random() * 500 + 100)}</span>
-                <span className="stat-label">Score</span>
-              </div>
-            </div>
           </div>
         </div>
-
-        {/* Interests */}
-        {interestArray.length > 0 && (
-          <div className="glass-card p-4 mb-4">
-            <div className="section-title mb-3">Centres d'intérêt</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {interestArray.map((interest: string, i: number) => (
-                <span key={i} className="interest-tag">{interest}</span>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Quick actions */}
         <div className="glass-card p-4">

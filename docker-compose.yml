@@ -55,6 +55,9 @@ services:
           - action: sync
             path: ./backend/src
             target: /app/src
+            ignore:
+              - Helpers/cron.schedules.Photos.ts
+              - Helpers/cron.schedules.Articles.ts
           - action: rebuild
             path: ./backend/package.json
 

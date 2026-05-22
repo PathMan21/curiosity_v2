@@ -23,6 +23,7 @@ export const createPhotosSchema = z.object({
 
   interest: z.string(),
 
-  downloadLink: z.string().optional,
+  downloadLink: z.string().url().nullable().optional(),
+
 })
 

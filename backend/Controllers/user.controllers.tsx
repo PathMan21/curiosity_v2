@@ -2,7 +2,7 @@ import User from '../Models/User'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import "../Helpers/configLink"
-import { createUserSchema } from '../dtos/User'
+import { createUserSchema, updateUserSchema } from '../dtos/User'
 
 const generateTokens = (userId: number) => ({
   accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' }),
@@ -184,8 +184,7 @@ export const updatedProfile = async (req, res) => {
       return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
     } 
 
-    const { username, email, interests, picture } = req.body
-    const result = createUserSchema.safeParse(req.body)
+    const result = updateUserSchema.safeParse(req.body)
 
     if (!result.success) {
       console.log(result.error)
@@ -195,12 +194,26 @@ export const updatedProfile = async (req, res) => {
       })
     }
 
+    const { username, email, interests, picture } = result.data
 
-      const updateData = {}
-      updateData.username = username
-      updateData.email = email
-      updateData.picture = picture
-      updateData.interests = JSON.stringify(interests)
+    // Check if email is already used by another user
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({
+        where: { email },
+      })
+      if (existingUser) {
+        return res.status(400).json({
+          status: 'Failed',
+          message: 'Cet email existe déjà',
+        })
+      }
+    }
+
+    const updateData = {}
+    if (username !== undefined) updateData.username = username
+    if (email !== undefined) updateData.email = email
+    if (picture !== undefined) updateData.picture = picture
+    if (interests !== undefined) updateData.interests = JSON.stringify(interests)
 
     await user.update(updateData)
 

@@ -35,8 +35,8 @@
   },
   "scripts": {
     "start": "tsx backend/server.tsx",
-    "dev:backend": "tsx watch backend/server.ts",
-    "dev": "tsx watch server.tsx",
+    "dev:backend": "tsx watch --ignore ./src/Helpers server.tsxs",
+    "dev": "tsx watch --ignore ./src/Helpers server.tsx",
     "frontend:dev": "vite --host"
   },
   "devDependencies": {

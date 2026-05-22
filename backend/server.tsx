@@ -7,7 +7,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 
 import "./Helpers/configLink";
 
-import './Helpers/cron.schedules'
+
 import connectDB from './Config/connexion'
 import userRoutes from './Routes/user.routes'
 import authRoutes from './Routes/auth.routes'
@@ -26,6 +26,7 @@ const server = createServer(app)
 
 ;(async () => {
     await connectDB();
+    await import('./Helpers/cron.schedules.Photos')
     app.use(cookieParser())
     app.use(cors({
         origin: 'http://localhost:5173',
@@ -36,7 +37,6 @@ const server = createServer(app)
     app.use('/api/', authRoutes);
     app.use('/api/', apiroutes);
     app.use('/api/', likesRoutes);
-
       const PORT = process.env.PORT
     server.listen(PORT, () => {
         console.log(`Serveur lancé sur le port ${PORT}`);
