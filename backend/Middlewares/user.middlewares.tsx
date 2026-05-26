@@ -43,11 +43,6 @@ const validateUser = (req, res, next) => {
 
 const authentificatedUser = async (req, res, next) => {
 
-  // Je vais chercher les headers ( req )
-  // je décrypte le  jwt 
-  // si pas de jwt ou autre je renvoie une erreur
-  // sinon je valide et je renvoie
-  console.log("test")
   const header = req.headers.authorization;
 
   const token = header.split(" ", 2);

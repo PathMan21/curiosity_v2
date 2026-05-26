@@ -46,10 +46,10 @@ function Register() {
     return (
       <div className="auth-page">
         <div className="auth-card text-center">
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
+          <div className="register-celebration">🎉</div>
           <div className="auth-logo">✦ Curiosity</div>
-          <h2 style={{ fontFamily: 'var(--font-ui)', marginTop: '0.5rem' }}>Compte créé !</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+          <h2 className="register-success-heading">Compte créé !</h2>
+          <p className="register-success-text">
             Votre compte a bien été créé. Vous pouvez maintenant vous connecter.
           </p>
           <a href="/login" className="btn btn-primary w-100">Se connecter →</a>
@@ -125,8 +125,7 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary w-100 mb-3"
-            style={{ padding: '0.75rem', fontSize: '0.95rem' }}
+            className="btn btn-primary w-100 mb-3 login-submit-btn"
           >
             {loading ? (
               <span className="d-flex align-items-center justify-content-center gap-2">
@@ -136,10 +135,10 @@ function Register() {
             ) : "Créer mon compte"}
           </button>
 
-          <div className="d-flex align-items-center gap-3 mb-3">
-            <div style={{ flex: 1, height: '1px', background: 'var(--border-soft)' }} />
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>ou</span>
-            <div style={{ flex: 1, height: '1px', background: 'var(--border-soft)' }} />
+          <div className="register-divider-container">
+            <div className="register-divider-line" />
+            <span className="register-divider-text">ou</span>
+            <div className="register-divider-line" />
           </div>
 
           <button

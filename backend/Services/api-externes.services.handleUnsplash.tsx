@@ -12,7 +12,7 @@ const CACHE_TTL = 3600 * 24 * 90
 
 /* ---------------- INTERESTS (SOURCE UNIQUE) ---------------- */
 
-const INTEREST_TO_QUERY: Record<string, string> = {
+const INTEREST_TO_SENTENCE: Record<string, string> = {
   'ai-ml': 'artificial intelligence technology',
   'computer-science': 'programming code screen',
   cybersecurity: 'cybersecurity digital lock',
@@ -22,12 +22,12 @@ const INTEREST_TO_QUERY: Record<string, string> = {
 
 /* ---------------- HELPERS ---------------- */
 
-export function getAllUnsplashQueries(): string[] {
-  return Object.values(INTEREST_TO_QUERY)
+export function getAllUnsplashQueries(){
+  return Object.values(INTEREST_TO_SENTENCE)
 }
 
-function mapInterestsToQueries(interests: string[]) {
-  return interests.map(i => INTEREST_TO_QUERY[i]).filter(Boolean)
+function mapInterestsToSentences(interests) {
+  return interests.map(int => INTEREST_TO_SENTENCE[int]).filter(Boolean)
 }
 
 /* ---------------- CACHE ---------------- */
@@ -48,25 +48,29 @@ async function getFromCache(cacheKey: string) {
 
 /* ---------------- DB ---------------- */
 
-async function getFromDB(interest: string) {
+async function getFromDB(interest) {
   const photos = await Photo.findAll({ where: { interest } })
-  if (!photos.length) return null
-
+  if (!photos.length) {
+    return null
+  }
   const mapped = photos.map(p => p.toJSON())
-  if (isPhotosTooOld(mapped)) return null
-
+  if (isPhotosTooOld(mapped)) {
+    return null
+  }
   return mapped
 }
 
 /* ---------------- WRITE SYNC ---------------- */
 
-async function setInCache(
-  cacheKey: string,
-  interest: string,
-  photos: any[]
+async function setCache(
+  cacheKey,
+  interest,
+  photos
 ) {
-  if (!photos?.length) return
+  if (!photos?.length) {
+    return
 
+  }
   const photosArray = photos.map(photo =>
     createPhotosSchema.parse({
       unsplashId: photo.id,
@@ -96,43 +100,53 @@ async function setInCache(
     )
   } catch (err) {
     await t.rollback()
-    console.error('Cache write error:', err)
+    console.error('[CRON] Unsplash cache write failed:', err instanceof Error ? err.message : err)
   }
 }
 
 /* ---------------- UNSPLASH API ---------------- */
 
 async function fetchPhotosFromAPI(
-  interest: string,
-  baseUrl: string,
-  clientId: string
+  interest, clientId
 ) {
+  const baseUrl = 'https://api.unsplash.com'
+
   const url =
     `${baseUrl}/search/photos?query=${encodeURIComponent(interest)}` +
     `&per_page=30&client_id=${clientId}`
 
-  const res = await fetch(url)
-  if (!res.ok) return []
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 8000)
 
-  const data = await res.json()
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    if (!res.ok) {
+      return []
 
-  return data.results.map((photo: any) => ({
-    id: photo.id,
-    url: photo.urls.regular,
-    thumb: photo.urls.thumb,
-    description: photo.alt_description,
-    photographer: photo.user.name,
-    photographerLink: photo.user.links.html,
-    downloadLink: photo.links.download,
-  }))
+    }
+    const data = await res.json()
+
+    return data.results.map((photo: any) => ({
+      id: photo.id,
+      url: photo.urls.regular,
+      thumb: photo.urls.thumb,
+      description: photo.alt_description,
+      photographer: photo.user.name,
+      photographerLink: photo.user.links.html,
+      downloadLink: photo.links.download,
+    }))
+  } catch (error) {
+    console.error('error => ', error)
+    return []
+  }
 }
 
 /* ---------------- USER FLOW ---------------- */
 
-async function resolveQueriesForUser(queries: string[]) {
+async function fetchGlobal(sent) {
   const results = await Promise.all(
-    queries.map(async interest => {
-      const cacheKey = `unsplash:${interest}`
+    sent.map(async interest => {
+      const cacheKey = `unsplash-${interest}`
 
       return (
         (await getFromCache(cacheKey)) ||
@@ -147,74 +161,69 @@ async function resolveQueriesForUser(queries: string[]) {
 
 /* ---------------- CONTROLLER ---------------- */
 
-async function handleUnsplash(req: any, res: any) {
+async function handleUnsplash(req, res) {
   try {
-    const userId = req.user?.id || req.user?.userId
-    if (!userId) return res.status(401).json({ message: 'Unauthorized' })
-
+    const userId = req.user?.id;
     const user = await User.findByPk(userId)
-    if (!user) return res.status(404).json({ message: 'User not found' })
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' })
 
-    const interests = JSON.parse(user.interests || '[]')
-    if (!interests.length) return res.json({ photos: [] })
+    }
+    const interests = JSON.parse(user.interests)
+    if (!interests.length) {
+      console.error("Intérets non trouvé");
+      return null;
 
-    const queries = mapInterestsToQueries(interests)
-    const photos = await resolveQueriesForUser(queries)
+    }
+    const sent = mapInterestsToSentences(interests)
+    const photos = await fetchGlobal(sent)
 
     return res.json({ photos })
   } catch (err) {
     console.error(err)
-    return res.status(500).json({ message: 'Server error' })
+    return res.status(500).json({ message: `Problèmes serveur => ${err}` })
   }
 }
 
 /* ---------------- CRON ---------------- */
 
 export async function checkPhotos(queries) {
-  console.log('CRON UNSPLASH START')
+  const clientId = process.env.API_KEY_UNSPLASH
 
-  const baseUrl =
-    process.env.BASE_URL_UNSPLASH || 'https://api.unsplash.com'
-    const clientId = process.env.API_KEY_UNSPLASH
-
+  const resultsInfo = { synced: 0, cached: 0, db: 0, errors: 0 }
 
   for (const interest of queries) {
     try {
-      const cacheKey = `unsplash:${interest}`
+      const cacheKey = `unsplash-${interest}`
 
       const cached = await getFromCache(cacheKey)
-      console.log("cached => ", cached);
       if (cached?.length && !isPhotosTooOld(cached)) {
-        console.log(`skip ${interest} (cache fresh)`)
-        continue
-      } 
-      
-
-      const dbPhotos = await getFromDB(interest)
-      console.log("dbPhotos => ", dbPhotos);
-      if (dbPhotos && !isPhotosTooOld(dbPhotos)) {
-        console.log(`skip ${interest} (DB fresh)`)
+        resultsInfo.cached++
         continue
       }
 
-      const photos = await fetchPhotosFromAPI(
-        interest,
-        baseUrl,
-        clientId
-      )
+      const dbPhotos = await getFromDB(interest)
+      if (dbPhotos && !isPhotosTooOld(dbPhotos)) {
+        resultsInfo.db++
+        continue
+      }
+
+      const photos = await fetchPhotosFromAPI(interest, clientId)
 
       if (!photos.length) {
-      continue
+        continue
+      }
 
-      } 
-      await setInCache(cacheKey, interest, photos)
+      await setCache(cacheKey, interest, photos)
+      resultsInfo.synced++
 
     } catch (err) {
-      console.error(`cron error ${interest}`, err)
+      resultsInfo.errors++
+      console.error(`[CRON] Unsplash error for "${interest}":`, err instanceof Error ? err.message : err)
     }
   }
 
-  console.log('CRON UNSPLASH DONE')
+  console.log(`[CRON] Unsplash: cached=${resultsInfo.cached}, db=${resultsInfo.db}, synced=${resultsInfo.synced}, errors=${resultsInfo.errors}`)
 }
 
 export default handleUnsplash

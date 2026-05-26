@@ -827,3 +827,435 @@ footer {
 }
 
 .blur-bg { backdrop-filter: blur(16px); }
+
+/* ═══════════════════════════════════════ */
+/* ────  REFACTORED INLINE STYLES  ─────── */
+/* ═══════════════════════════════════════ */
+
+/* ── FeedPost Author Header ── */
+.feed-post-author {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.feed-post-username {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-left: 0.4rem;
+}
+
+.feed-post-date {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-left: 0.3rem;
+}
+
+/* ── FeedPost Title ── */
+.feed-post-title {
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── FeedPost Excerpt - Text Clamp ── */
+.feed-post-excerpt {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+/* ── FeedPost Action Buttons ── */
+.feed-post-bookmark-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.feed-post-bookmark-btn.bookmarked {
+  color: var(--accent-purple);
+}
+
+.feed-post-read-link {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-purple);
+  padding: 0.25rem 0.8rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid rgba(124, 92, 191, 0.25);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.feed-post-read-link:hover {
+  background: rgba(124, 92, 191, 0.08);
+}
+
+/* ── Photos Component ── */
+.photos-image-container {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.photos-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.photos-image:hover {
+  transform: scale(1.03);
+}
+
+.photos-content {
+  padding: 1.1rem 1.3rem;
+}
+
+.photos-badge {
+  margin-bottom: 0.6rem;
+  display: inline-flex;
+}
+
+.photos-title {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.35;
+  margin-bottom: 0.3rem;
+}
+
+.photos-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.photos-meta a {
+  color: var(--accent-purple);
+}
+
+.photos-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+}
+
+/* ── ProfileInfo Container ── */
+.profile-info-container {
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+}
+
+.profile-info-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-banner {
+  height: 120px;
+  background: var(--gradient-hero);
+  position: relative;
+}
+
+.profile-avatar-wrapper {
+  position: absolute;
+  bottom: -44px;
+  left: 1.5rem;
+}
+
+.profile-info-section {
+  padding: 3rem 1.5rem 1.5rem;
+}
+
+.profile-info-header {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 0.15rem;
+}
+
+.profile-info-email {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.profile-quick-action-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  font-weight: 500;
+  border: 1.5px solid var(--border-soft);
+  transition: all 0.2s;
+  background: transparent;
+}
+
+.profile-quick-action-link:hover {
+  background: rgba(124, 92, 191, 0.06);
+  color: var(--accent-purple);
+}
+
+.profile-action-icon {
+  font-size: 1.1rem;
+}
+
+.profile-action-arrow {
+  margin-left: auto;
+  opacity: 0.5;
+}
+
+/* ── CarouselImg ── */
+.carousel-image {
+  height: 300px;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* ── Login Page ── */
+.login-submit-btn {
+  padding: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.login-register-prompt {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.login-register-link {
+  font-weight: 600;
+  color: var(--accent-purple);
+}
+
+/* ── Footer Site ── */
+.footer-site {
+  padding: 1.5rem 2rem;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-soft);
+  background: transparent;
+}
+
+.footer-separator {
+  margin: 0 0.75rem;
+  opacity: 0.4;
+}
+
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--text-secondary);
+}
+
+/* ── NotFound Page ── */
+.not-found-container {
+  padding: 2rem;
+  text-align: center;
+}
+
+/* ── Register Page ── */
+.register-celebration {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.register-success-heading {
+  font-family: var(--font-ui);
+  margin-top: 0.5rem;
+}
+
+.register-success-text {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.register-divider-container {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.register-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-soft);
+}
+
+.register-divider-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ── Bootstrap Overrides for Custom Organization ── */
+.text-center-custom { text-align: center; }
+.min-h-screen { min-height: 100vh; }
+.p-card { padding: 1.1rem 1.3rem; }
+.p-large { padding: 1.5rem; }
+
+/* ── Utility Classes for Common Patterns ── */
+.opacity-disabled { opacity: 0.5; }
+.cursor-none { cursor: none; }
+.no-border { border: none; }
+.no-bg { background: none; }
+.inline-flex { display: inline-flex; }
+
+/* ── ArticlePage Styles ── */
+.article-page-container {
+  min-height: 100vh;
+}
+
+.article-page-content {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.article-header-card {
+  background: linear-gradient(135deg, rgba(124,92,191,0.08) 0%, rgba(232,121,160,0.06) 100%);
+}
+
+.article-user-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--gradient-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.article-greeting-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.article-username-text {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.article-score-section {
+  text-align: right;
+}
+
+.article-score-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.article-score-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.article-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.article-loading-text {
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════ */
+/* ────  BOOTSTRAP UTILITIES REFERENCE  ──── */
+/* ═══════════════════════════════════════ */
+/*
+  This project uses Bootstrap's utility-first approach. Below is a reference
+  of commonly used utilities organized by category.
+
+  ── Layout & Positioning ──
+  • d-flex : display: flex
+  • d-flex-column : flex-direction: column
+  • align-items-center : align-items: center
+  • align-items-start : align-items: flex-start
+  • justify-content-between : justify-content: space-between
+  • justify-content-center : justify-content: center
+  • gap-2, gap-3 : gap spacing
+  • flex-fill : flex: 1 1 auto
+  • flex-shrink-0 : flex-shrink: 0
+  • min-w-0 : min-width: 0 (for text truncation)
+  
+  ── Spacing ──
+  • p-3, p-4 : padding
+  • m-0, m-3, m-4 : margin
+  • mb-1, mb-2, mb-3, mb-4 : margin-bottom
+  • mt-1, mt-2, mt-3, mt-4 : margin-top
+  • ms-auto : margin-left: auto (push to right)
+  • px-2, py-3 : padding horizontal/vertical
+  
+  ── Typography ──
+  • text-center : text-align: center
+  • text-muted : color: var(--text-muted)
+  • text-secondary : color: var(--text-secondary)
+  • text-decoration-none : remove underline
+  
+  ── Forms ──
+  • form-control : input styling
+  • form-select : select styling
+  • form-label : label styling
+  • form-check-input : checkbox/radio styling
+  • form-check-label : checkbox/radio label
+  
+  ── Buttons ──
+  • btn : base button styles
+  • btn-primary : primary button
+  • btn-outline-primary : outlined button
+  • btn-sm : small button
+  • w-100 : width: 100%
+  
+  ── Components ──
+  • alert : alert component
+  • alert-danger : danger alert variant
+  • alert-warning : warning alert variant
+  • spinner-border : loading spinner
+  • spinner-border-sm : small spinner
+  • badge : badge component
+  • navbar : navigation bar
+  • nav-link : navigation link
+  • nav-item : navigation item
+  
+  ── Visibility ──
+  • visually-hidden : screen reader only
+  • d-none : display: none
+  • overflow-hidden : overflow: hidden
+  • overflow-auto : overflow: auto
+  
+  ── Responsive ──
+  • @media (max-width: 768px) : mobile breakpoint
+  • @media (max-width: 1200px) : tablet breakpoint
+*/

@@ -174,53 +174,33 @@ function ArticlePage() {
   }
 
   return (
-    <div className="page-with-nav" style={{ minHeight: '100vh' }}>
+    <div className="page-with-nav article-page-container">
 
-      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '1.5rem 1rem' }}>
+      <div className="article-page-content">
 
         {/* HEADER */}
-        <div
-          className="glass-card p-4 mb-4"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(124,92,191,0.08) 0%, rgba(232,121,160,0.06) 100%)'
-          }}
-        >
+        <div className="glass-card p-4 mb-4 article-header-card">
           <div className="d-flex align-items-center gap-3">
 
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: '50%',
-                background: 'var(--gradient-accent)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.4rem',
-                color: 'white',
-                fontWeight: 700,
-                flexShrink: 0
-              }}
-            >
+            <div className="article-user-avatar">
               {user?.username ? user.username[0].toUpperCase() : '✦'}
             </div>
 
             <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              <div className="article-greeting-text">
                 {greeting()}
               </div>
 
-              <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>
+              <div className="article-username-text">
                 {user?.username || 'Curieux'} !
               </div>
             </div>
 
-            <div className="ms-auto" style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+            <div className="ms-auto article-score-section">
+              <div className="article-score-label">
                 Score
               </div>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>
+              <div className="article-score-value">
                 {Math.floor(Math.random() * 900 + 100)}
               </div>
             </div>
@@ -258,13 +238,13 @@ function ArticlePage() {
 
             <div className="spinner-border" role="status" />
 
-            <span style={{ color: 'var(--text-muted)' }}>
+            <span className="article-loading-text">
               Chargement du fil…
             </span>
 
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div className="article-items-container">
 
             {filtered.length === 0 && !error && (
               <div className="glass-card p-4 text-center">

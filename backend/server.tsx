@@ -26,7 +26,6 @@ const server = createServer(app)
 
 ;(async () => {
     await connectDB();
-    await import('./Helpers/cron.schedules.Photos')
     app.use(cookieParser())
     app.use(cors({
         origin: 'http://localhost:5173',
@@ -38,7 +37,9 @@ const server = createServer(app)
     app.use('/api/', apiroutes);
     app.use('/api/', likesRoutes);
       const PORT = process.env.PORT
-    server.listen(PORT, () => {
-        console.log(`Serveur lancé sur le port ${PORT}`);
-    });
+   server.listen(PORT, async () => {
+    console.log(`Serveur lancé sur le port ${PORT}`)
+    await import('./Helpers/cron.schedules.Photos') 
+    await import('./Helpers/cron.schedules.Articles') 
+  })
 })();

@@ -14,7 +14,6 @@ function isArticlesTooOld(articles): Boolean {
 
   const limitDate = new Date()
   limitDate.setDate(limitDate.getDate() - MAX_ARTICLE_AGE_DAYS)
-
   const tooOldCount = articles.filter((article) => {
     const publishedAt = new Date(article.publishedAt)
     return publishedAt < limitDate

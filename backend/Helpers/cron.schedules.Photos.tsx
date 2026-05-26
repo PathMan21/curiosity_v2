@@ -1,17 +1,29 @@
 import cron from 'node-cron'
 import { checkPhotos, getAllUnsplashQueries } from "../Services/api-externes.services.handleUnsplash"
 
+let isCronRunning = false
+
 const task = async () => {
-  const start = Date.now()
-  console.log('Cron start:', new Date().toISOString())
+  if (isCronRunning) {
+    console.warn('CRON PHOTO => TOUJOURS EN EXECUTION')
+    return
+  }
+
+  isCronRunning = true
+  const startTime = Date.now()
+
   try {
+    console.log('CRON PHOTO => COMMENCEMENT')
     const queries = await getAllUnsplashQueries()
-    console.log('Queries done in', Date.now() - start, 'ms')
     await checkPhotos(queries)
-    console.log('checkPhotos done in', Date.now() - start, 'ms')
+    const duration = Date.now() - startTime
+    console.log(`CRON PHOTO FINIS => Photo sync en ${duration}ms`)
   } catch (error) {
-    console.error('Cron Photo Error:', error)
+    const duration = Date.now() - startTime
+    console.error(`CRON PHOTO ERREUR : échoué en '${duration}ms' parce que => '${error}'`)
+  } finally {
+    isCronRunning = false
   }
 }
-cron.schedule('* * * * *', task)
-console.log('Unsplash cron started')
+
+cron.schedule('0 */6 * * *', task)

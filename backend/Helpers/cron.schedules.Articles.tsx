@@ -1,17 +1,27 @@
-// cron/openalex.cron.ts
-
-import { getAllSubfields } from '../Services/api-externes.services.handleOpenAlex'
-import { cronOpenAlex } from '../Services/api-externes.services.handleOpenAlex'
-
+import { checkArticles, getAllOpenAlexQueries } from "../Services/api-externes.services.handleOpenAlex"
 import cron from 'node-cron'
 
-// const task = async () => {
-//   console.log("open alex cron - ", Date.now())
-//   const subfields = getAllSubfields()
-//   await cronOpenAlex(subfields)
+let isCronRunning = false
 
-//   console.log("fin open alex cron - ", Date.now())
-// }
+const task = async () => {
+  if (isCronRunning) {
+    console.warn('CRON => TOUJOURS EN EXECUTION')
+    return
+  }
 
+  isCronRunning = true
+  const startTime = Date.now()
 
-// cron.schedule('*/5 * * * *', task)
+  try {
+    console.log('CRON ARTICLES => COMMENCEMENT')
+    const queries = getAllOpenAlexQueries()
+    await checkArticles(queries)
+    console.log(`CRON FINIS => Articles sync en ${Date.now() - startTime}ms`)
+  } catch (error) {
+    console.error(`CRON ERREUR : échoué en '${Date.now() - startTime}ms' parce que => '${error}'`)
+  } finally {
+    isCronRunning = false
+  }
+}
+
+cron.schedule('*/3 * * * *', task)

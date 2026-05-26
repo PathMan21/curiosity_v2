@@ -26,7 +26,7 @@ export const createArticleSchema = z.object({
 
   type: z.string(),
 
-  link: z.string().url(),
+  link: z.string().url().nullable().optional(),
 
   mainTopic: z.string(),
 

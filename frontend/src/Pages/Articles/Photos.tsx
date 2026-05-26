@@ -16,39 +16,36 @@ function Photos({ id, title, date, url, description, photographer, photographerU
     <article className="feed-post p-0 overflow-hidden">
       {/* Image */}
       {url && (
-        <div style={{ width: '100%', height: '220px', overflow: 'hidden', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }}>
+        <div className="photos-image-container">
           <img
             src={url}
             alt={title ? `Photo : ${title}` : 'Photo'}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
-            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+            className="photos-image"
           />
         </div>
       )}
 
-      <div style={{ padding: '1.1rem 1.3rem' }}>
+      <div className="photos-content">
         {/* Badge */}
-        <span className="badge-science" style={{ marginBottom: '0.6rem', display: 'inline-flex' }}>
+        <span className="badge-science photos-badge">
           📷 Photo
         </span>
 
         {/* Title */}
         {title && (
-          <h5 style={{ fontWeight: 600, fontSize: '1rem', lineHeight: 1.35, marginBottom: '0.3rem' }}>
+          <h5 className="photos-title">
             {title}
           </h5>
         )}
 
         {/* Meta */}
-        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.6rem' }}>
+        <div className="photos-meta">
           {date && <time dateTime={date}>{formatDate(date)}</time>}
           {photographer && (
             <span>
               {' · '}
               {photographerUrl ? (
-                <a href={photographerUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ color: 'var(--accent-purple)' }}>
+                <a href={photographerUrl} target="_blank" rel="noopener noreferrer">
                   {photographer}
                 </a>
               ) : photographer}
@@ -58,7 +55,7 @@ function Photos({ id, title, date, url, description, photographer, photographerU
 
         {/* Description */}
         {description && (
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '0.8rem' }}>
+          <p className="photos-description">
             {truncate(description)}
           </p>
         )}

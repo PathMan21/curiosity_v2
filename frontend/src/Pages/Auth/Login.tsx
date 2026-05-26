@@ -71,8 +71,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary w-100 mb-3"
-            style={{ padding: '0.75rem', fontSize: '0.95rem' }}
+            className="btn btn-primary w-100 mb-3 login-submit-btn"
           >
             {loading ? (
               <span className="d-flex align-items-center justify-content-center gap-2">
@@ -83,9 +82,9 @@ function Login() {
           </button>
         </form>
 
-        <div className="text-center" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        <div className="login-register-prompt">
           Pas encore de compte ?{' '}
-          <a href="/register" style={{ fontWeight: 600, color: 'var(--accent-purple)' }}>
+          <a href="/register" className="login-register-link">
             Créer un compte
           </a>
         </div>

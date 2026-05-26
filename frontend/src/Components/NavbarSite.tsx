@@ -56,7 +56,6 @@ function NavbarSite() {
               <button
                 onClick={handleLogout}
                 className="btn btn-outline-primary btn-sm"
-                style={{ borderRadius: 'var(--radius-full)' }}
               >
                 Déconnexion
               </button>

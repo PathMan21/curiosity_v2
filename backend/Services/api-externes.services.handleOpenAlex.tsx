@@ -1,6 +1,9 @@
 import redisClient from '../Config/redis.conf'
 import interestsValues from '../Assets/interests.json'
 import { isArticlesTooOld } from '../Helpers/CheckTooOld'
+import Article from '../Models/Article'
+import { createArticleSchema } from '../dtos/Article'
+import sequelizeDb from '../Config/dbInit'
 
 /* ---------------- CONFIG ---------------- */
 
@@ -17,7 +20,7 @@ const OPENALEX_HEADERS = {
 
 /* ---------------- INTERESTS (5 UNIQUEMENT) ---------------- */
 
-const SUBFIELD_MAPPING: Record<string, string> = {
+const INTERESTS_MAP: Record<string, string> = {
   'ai-ml': '1702',
   'computer-science': '1705',
   'cybersecurity': '1712',
@@ -25,137 +28,202 @@ const SUBFIELD_MAPPING: Record<string, string> = {
   'robotics': '2207',
 }
 export function getAllSubfields(): string[] {
-  return Object.values(SUBFIELD_MAPPING)
+  return Object.values(INTERESTS_MAP)
 }
 /* ---------------- UTILS ---------------- */
 
-function mapInterestsToSubfields(interests: string[]): string[] {
+function mapInterestsToSubfields(interests) {
   return interests
-    .map(i => SUBFIELD_MAPPING[i])
+    .map(i => INTERESTS_MAP[i])
     .filter(Boolean)
 }
 
 /* ---------------- CACHE ---------------- */
 
-async function getFromCache(key: string) {
+async function getFromCache(key) {
   const raw = await redisClient.get(key)
-  if (!raw) return null
+  if (!raw) {
+    return null
+  }
 
   try {
-    const parsed = JSON.parse(typeof raw === 'string' ? raw : raw.toString())
-    return parsed?.articles || null
+    const parsed = JSON.parse(raw.toString())
+    if (parsed?.articles) {
+      return parsed;
+    } else {
+      return null;
+    }
   } catch {
     return null
   }
 }
+async function setCache(
+  cacheKey,
+  interest,
+  articles
+) {
+  if (!articles?.length) {
+    return
+  }
 
-async function setCache(key: string, articles: any[]) {
-  if (!articles?.length) return
+  // Extract the most relevant topic
+  const articlesArray = articles.map(art => {
+    const topTopic = art.topics?.find(t => 
+      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+    ) || art.topics?.[0]
 
-  await redisClient.setEx(
-    key,
-    CACHE_TTL,
-    JSON.stringify({ articles })
-  )
+    return createArticleSchema.parse({
+      openAlexId: art.id?.split('/').pop() || art.id,
+      title: art.title,
+      authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
+      published: art.publication_date,
+      summary: art.abstract,
+      doi: art.doi,
+      pdfUrl: art.open_access?.oa_url,
+      isOpenAccess: art.open_access?.is_oa || false,
+      publicationYear: art.publication_year,
+      type: 'article',
+      link: art.canonical_url,
+      mainTopic: topTopic?.display_name || 'Unknown',
+      topicScore: Number(topTopic?.score) || 0,
+      concepts: art.concepts?.map(c => c.display_name).filter(Boolean),
+      subfield: interest,
+    })
+  })
+
+  const t = await sequelizeDb.transaction()
+
+  try {
+    await Article.destroy({ where: { subfield: interest }, transaction: t })
+    await Article.bulkCreate(articlesArray, { transaction: t })
+
+    await t.commit()
+
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify({ articlesArray })
+    )
+  } catch (err) {
+    await t.rollback()
+    console.error('[CRON] OpenAlex cache write failed:', err instanceof Error ? err.message : err)
+  }
 }
+
 
 /* ---------------- OPENALEX API ---------------- */
 
-export async function fetchSubfieldFromAPI(subfieldId: string) {
+export async function fetchInterestFromAPI(interestID) {
+
   const currentYear = new Date().getFullYear()
-  const all: any[] = []
+  const all = []
 
   for (let page = 1; page <= MAX_PAGES; page++) {
     const url =
       `https://api.openalex.org/works` +
-      `?filter=topics.subfield.id:${subfieldId},is_oa:true,language:en` +
+      `?filter=topics.subfield.id:${interestID},is_oa:true,language:en` +
       `,publication_year:${currentYear - 1}-${currentYear}` +
       `&per_page=${PER_PAGE}&page=${page}`
 
-    const res = await fetch(url, { headers: OPENALEX_HEADERS })
-    if (!res.ok) break
+    const res = await fetch(url,
+      {
+        headers: OPENALEX_HEADERS
+      })
+    if (!res.ok) {
+      break
+    }
 
     const data = await res.json()
-    if (!data.results?.length) break
+    if (!data.results?.length) {
+      break
+    }
 
     all.push(...data.results)
 
-    if (data.results.length < PER_PAGE) break
   }
 
   return all.filter(work =>
-    work?.topics?.some(t =>
+    work.topics.some(t =>
       Number(t?.score) >= TOPIC_SCORE_THRESHOLD
     )
   )
 }
 
-/* ---------------- RESOLVE (CACHE + API) ---------------- */
+/* ---------------- CHECK - COMBINE API ET DB---------------- */
 
-async function resolveSubfields(subfields: string[]) {
-  const results: any[] = []
-
-  for (const subfield of subfields) {
-    const key = `openalex-${subfield}`
-
-    const cached = await getFromCache(key)
-    if (cached) {
-      results.push(...cached)
-      continue
-    }
-
-    const api = await fetchSubfieldFromAPI(subfield)
-
-    if (api?.length) {
-      await setCache(key, api)
-      results.push(...api)
-    }
-  }
-
-  return results
+export function getAllOpenAlexQueries() {
+  return Object.values(INTERESTS_MAP)
 }
 
-/* ---------------- CRON ---------------- */
+export async function checkArticles(queries) {
+  const resultsInfo = { reussis: 0, cache: 0, db: 0, errors: 0 }
+  const results = [] 
 
-export async function cronOpenAlex(interests: string[]) {
-  const subfields = mapInterestsToSubfields(interests)
-
-  for (const subfield of subfields) {
+  for (const interest of queries) {
     try {
-      console.log('fetch subfield =>', subfield)
+      const cacheKey = `openalex-${interest}`
 
+      const cached = await getFromCache(cacheKey)
+      if (cached && !isArticlesTooOld(cached)) {
+        resultsInfo.cache++
+        results.push(...cached.articlesArray)
+        continue
+      }
 
-      const raw = await fetchSubfieldFromAPI(subfield)
+      const dbArticles = await getFromDB(interest)
+      if (dbArticles && !isArticlesTooOld(dbArticles)) {
+        resultsInfo.db++
+        results.push(...dbArticles)
+        continue
+      }
 
-      console.log('results =>', raw.length)
-          await setCache(`openalex-${subfield}`, raw)
+      const articles = await fetchInterestFromAPI(interest)
+      if (!articles.length) {
+        continue
+      }
 
+      await setCache(cacheKey, interest, articles)
+      results.push(...articles) 
+      resultsInfo.reussis++
 
     } catch (err) {
-      console.error('cron error:', subfield, err)
+      resultsInfo.errors++
+      console.error(`[CRON] OpenAlex error for "${interest}":`, err instanceof Error ? err.message : err)
     }
   }
 
-  console.log('CRON DONE')
+  console.log(`[CRON] OpenAlex: cached=${resultsInfo.cache}, db=${resultsInfo.db}, synced=${resultsInfo.reussis}, errors=${resultsInfo.errors}`)
+  return results 
+}
+
+async function getFromDB(interest) {
+  const articles = await Article.findAll({ where: { subfield: interest } })
+  if (!articles.length) {
+    return null
+  }
+  const mapped = articles.map(article => article.toJSON())
+ 
+  return mapped
 }
 
 /* ---------------- CONTROLLER ---------------- */
 
-async function handleOpenAlex(req: any, res: any) {
+async function handleOpenAlex(req, res) {
   try {
     const user = req.user
+
     if (!user) {
-      return res.status(404).json({ message: 'User not found' })
+      return res.status(404).json({ message: 'Utilisateur non trouvé' })
     }
 
-    const interests = JSON.parse(user.interests || '[]')
-    const subfields = mapInterestsToSubfields(interests)
+    const interestsRaw = JSON.parse(user.interests)
+    const interests = mapInterestsToSubfields(interestsRaw)
 
-    if (!subfields.length) {
-      return res.status(400).json({ message: 'No valid interests' })
+    if (!interests.length) {
+      return res.status(400).json({ message: 'Aucun interet utilisateur' })
     }
 
-    const data = await resolveSubfields(subfields)
+      const data = await checkArticles(interests)
 
     const unique = Array.from(
       new Map(data.map(a => [a.id, a])).values()
@@ -172,7 +240,7 @@ async function handleOpenAlex(req: any, res: any) {
 
   } catch (err) {
     console.error(err)
-    return res.status(500).json({ message: 'Server error' })
+    return res.status(500).json({ message: `Erreur serveur => ${err}` })
   }
 }
 
