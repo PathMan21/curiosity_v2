@@ -5,20 +5,18 @@ import { useAuthentification } from '../../Context/Auth'
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const { isError } = useAuthentification()
   const [loading, setLoading] = useState(false)
   const { login } = useAuthentification()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
     try {
       await login(email, password)
       navigate('/Home')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur de connexion')
+ 
     } finally {
       setLoading(false)
     }
@@ -33,9 +31,9 @@ function Login() {
           <div className="auth-subline">Connectez-vous pour explorer l'actualité</div>
         </div>
 
-        {error && (
+        {isError && (
           <div className="alert alert-danger mb-3" role="alert" aria-live="assertive">
-            {error}
+            {isError}
           </div>
         )}
 

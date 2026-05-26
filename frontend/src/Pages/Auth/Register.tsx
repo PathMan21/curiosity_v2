@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuthentification } from '../../Context/Auth';
 
 const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 
@@ -16,13 +17,12 @@ function Register() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
+  const { isError } = useAuthentification()
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleForm = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
     try {
       const response = await fetch(`${API_URL}/api/users`, {
@@ -31,12 +31,12 @@ function Register() {
         body: JSON.stringify({ username, email, password }),
       })
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}))
-        throw new Error(data?.message || "Erreur lors de l'inscription")
+        const data = await response.json();
+        throw new Error(data?.message);
       }
       setSuccess(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'inscription")
+      
     } finally {
       setLoading(false)
     }
@@ -67,9 +67,9 @@ function Register() {
           <div className="auth-subline">Créez votre espace de curiosité</div>
         </div>
 
-        {error && (
+        {isError && (
           <div className="alert alert-danger mb-3" role="alert" aria-live="assertive">
-            {error}
+            {isError}
           </div>
         )}
 

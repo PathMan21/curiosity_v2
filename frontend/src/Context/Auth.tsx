@@ -12,6 +12,7 @@ type authType = {
     login: (email: string, password: string) => void;
     logout: () => void;
     fetchUserProfile: () => void;
+    isError: string | null;
 }
 
 
@@ -31,6 +32,7 @@ export const AuthentProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(null);
     const [isLogged, setIsLogged] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState('');
     const [user, setUser] = useState(null);
     useLayoutEffect(() => {
         setIsLoading(true);
@@ -61,19 +63,13 @@ export const AuthentProvider = ({ children }) => {
                 return true;
 
 
-            } else {
-
-
-                applyToken(null)
-                setIsLogged(false)
-                return false;
-
-            }
+            } 
 
         } catch (err) {
 
             const status = err.response?.status
-            const msg = err.response?.data?.message
+            const msg = err.response?.data?.message;
+            setIsError(msg)
 
             console.error(status, msg)
 
@@ -96,7 +92,7 @@ export const AuthentProvider = ({ children }) => {
             }
 
         } catch (err) {
-
+            setIsError(err.response?.data?.message)
             console.error(
                 `${err.response?.status} : ${err.response?.data?.message}`
             )
@@ -144,6 +140,7 @@ export const AuthentProvider = ({ children }) => {
                     setIsLoading(false);
 
                     console.log(`Erreur : ${res}`);
+                    setIsError(response?.data?.message)
 
                     applyToken(null)
 
@@ -162,6 +159,7 @@ export const AuthentProvider = ({ children }) => {
             setAccessToken(null);
             setTokenStore(null);
             delete privateApi.defaults.headers.common.Authorization;
+                    setIsError("Utilisateur non trouvé");
 
             return "non trouvé";
         }
@@ -185,6 +183,7 @@ export const AuthentProvider = ({ children }) => {
                 accessToken,
                 isLogged,
                 isLoading,
+                isError,
                 login,
                 logout,
             }}

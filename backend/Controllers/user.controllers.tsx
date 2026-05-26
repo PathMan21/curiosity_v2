@@ -125,7 +125,7 @@ export async function refresh(req, res) {
 
   if (!token) {
     return res.status(401).json({
-    message: 'Pas de refresh token'
+      message: 'Pas de refresh token'
     })
   }
 
@@ -143,11 +143,15 @@ export async function refresh(req, res) {
         expiresIn: '15m',
       }
     )
-      const user = await User.findByPk(decoded.userId)
+    const user = await User.findByPk(decoded.userId)
 
-      if (user.refreshToken !== token) {
-        return res.status(401)
-      }
+    if (!user) {
+      throw new Error('User non existant')
+    }
+    if (user.refreshToken !== token) {
+      throw new Error('Refresh token non existant')
+    }
+
 
     return res.status(200).json({
       status: 'Success',
@@ -156,7 +160,7 @@ export async function refresh(req, res) {
 
   } catch (error) {
 
-    return res.status(401).json({status: 'failed', message: error})
+        return res.status(401).json({ status: 'failed', message: error.message })
 
   }
 }
@@ -180,9 +184,9 @@ export const getCurrentUser = async (req, res) => {
 export const updatedProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id)
-    if (!user){
+    if (!user) {
       return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
-    } 
+    }
 
     const result = updateUserSchema.safeParse(req.body)
 

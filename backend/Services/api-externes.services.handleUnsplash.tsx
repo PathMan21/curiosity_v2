@@ -13,11 +13,17 @@ const CACHE_TTL = 3600 * 24 * 90
 /* ---------------- INTERESTS (SOURCE UNIQUE) ---------------- */
 
 const INTEREST_TO_SENTENCE: Record<string, string> = {
-  'ai-ml': 'artificial intelligence technology',
-  'computer-science': 'programming code screen',
-  cybersecurity: 'cybersecurity digital lock',
-  robotics: 'robot automation',
-  engineering: 'engineering blueprint',
+  'ai-ml':               'artificial intelligence technology',
+  'computer-vision':     'computer vision camera lens',
+  'nlp':                 'natural language text processing',
+  'cybersecurity':       'cybersecurity digital lock',
+  'robotics':            'robot automation machine',
+  'data-science':        'data visualization analytics dashboard',
+  'computer-networks':   'network server cables infrastructure',
+  'software-engineering':'software developer code screen',
+  'databases':           'database storage server',
+  'distributed-systems': 'cloud computing infrastructure',
+  'quantum-computing':   'quantum physics laboratory',
 }
 
 /* ---------------- HELPERS ---------------- */
@@ -219,11 +225,11 @@ export async function checkPhotos(queries) {
 
     } catch (err) {
       resultsInfo.errors++
-      console.error(`[CRON] Unsplash error for "${interest}":`, err instanceof Error ? err.message : err)
+      console.error(`CRON UNSPLASH erreur => "${interest}" : `, err)
     }
   }
 
-  console.log(`[CRON] Unsplash: cached=${resultsInfo.cached}, db=${resultsInfo.db}, synced=${resultsInfo.synced}, errors=${resultsInfo.errors}`)
+  console.log(`CRON UNSPLASH : caché ${resultsInfo.cached}, db ${resultsInfo.db}, réussis ${resultsInfo.synced}, errors ${resultsInfo.errors}`)
 }
 
 export default handleUnsplash

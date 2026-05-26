@@ -19,13 +19,20 @@ const OPENALEX_HEADERS = {
 }
 
 /* ---------------- INTERESTS (5 UNIQUEMENT) ---------------- */
-
-const INTERESTS_MAP: Record<string, string> = {
-  'ai-ml': '1702',
-  'computer-science': '1705',
-  'cybersecurity': '1712',
-  'data-science': '2613',
-  'robotics': '2207',
+const INTERESTS_MAP = {
+  'ai-ml':              '1702',
+  'computer-science':   '1705',
+  'cybersecurity':      '1712',
+  'data-science':       '2613',
+  'robotics':           '2207',
+  'computer-vision':    '1703',
+  'nlp':                '1704',
+  'computer-networks':  '1708',
+  'software-engineering':'1710',
+  'databases':          '1706',
+  'distributed-systems':'1709',
+  'quantum-computing':  '3107',
+  'bioinformatics':     '1101',
 }
 export function getAllSubfields(): string[] {
   return Object.values(INTERESTS_MAP)
@@ -66,14 +73,14 @@ async function setCache(
     return
   }
 
-  // Extract the most relevant topic
   const articlesArray = articles.map(art => {
-    const topTopic = art.topics?.find(t => 
+    const topTopic = art.topics?.find(t => {
       Number(t?.score) >= TOPIC_SCORE_THRESHOLD
-    ) || art.topics?.[0]
+    
+    }) || art.topics?.[0]
 
     return createArticleSchema.parse({
-      openAlexId: art.id?.split('/').pop() || art.id,
+      openAlexId: art.id,
       title: art.title,
       authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
       published: art.publication_date,
@@ -106,7 +113,7 @@ async function setCache(
     )
   } catch (err) {
     await t.rollback()
-    console.error('[CRON] OpenAlex cache write failed:', err instanceof Error ? err.message : err)
+    console.error('CRON openalex error => ', err)
   }
 }
 
@@ -188,11 +195,11 @@ export async function checkArticles(queries) {
 
     } catch (err) {
       resultsInfo.errors++
-      console.error(`[CRON] OpenAlex error for "${interest}":`, err instanceof Error ? err.message : err)
+      console.error(`CRON OpenAlex error pour "${interest}" => `, err )
     }
   }
 
-  console.log(`[CRON] OpenAlex: cached=${resultsInfo.cache}, db=${resultsInfo.db}, synced=${resultsInfo.reussis}, errors=${resultsInfo.errors}`)
+  console.log(`CRON OpenAlex: caché ${resultsInfo.cache}, db ${resultsInfo.db}, réussis ${resultsInfo.reussis}, errors ${resultsInfo.errors}`)
   return results 
 }
 

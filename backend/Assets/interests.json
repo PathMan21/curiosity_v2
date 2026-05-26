@@ -39,9 +39,65 @@
       "description": "Automatisation, robots, systèmes autonomes",
       "openalex_field_id": "22",
       "open_library": "robotics"
+    },
+    {
+      "id": "computer-vision",
+      "label": "Vision par Ordinateur",
+      "category": "informatique",
+      "description": "Traitement d'images, reconnaissance visuelle, détection d'objets",
+      "openalex_field_id": "17",
+      "open_library": "computer_vision"
+    },
+    {
+      "id": "nlp",
+      "label": "Traitement du Langage Naturel",
+      "category": "informatique",
+      "description": "NLP, LLMs, traduction automatique, analyse de texte",
+      "openalex_field_id": "17",
+      "open_library": "natural_language_processing"
+    },
+    {
+      "id": "computer-networks",
+      "label": "Réseaux & Télécommunications",
+      "category": "informatique",
+      "description": "Protocoles réseau, Internet, communications distribuées",
+      "openalex_field_id": "17",
+      "open_library": "computer_networks"
+    },
+    {
+      "id": "software-engineering",
+      "label": "Génie Logiciel",
+      "category": "informatique",
+      "description": "Architecture logicielle, DevOps, bonnes pratiques de développement",
+      "openalex_field_id": "17",
+      "open_library": "software_engineering"
+    },
+    {
+      "id": "databases",
+      "label": "Bases de Données",
+      "category": "informatique",
+      "description": "SQL, NoSQL, systèmes de gestion de données",
+      "openalex_field_id": "17",
+      "open_library": "databases"
+    },
+    {
+      "id": "distributed-systems",
+      "label": "Systèmes Distribués & Cloud",
+      "category": "informatique",
+      "description": "Cloud computing, microservices, architecture distribuée",
+      "openalex_field_id": "17",
+      "open_library": "distributed_computing"
+    },
+    {
+      "id": "quantum-computing",
+      "label": "Informatique Quantique",
+      "category": "informatique",
+      "description": "Algorithmes quantiques, qubits, cryptographie quantique",
+      "openalex_field_id": "17",
+      "open_library": "quantum_computing"
     }
   ],
-   "categories": [
+  "categories": [
     {
       "id": "informatique",
       "label": "Informatique & Intelligence Artificielle",
