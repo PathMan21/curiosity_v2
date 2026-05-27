@@ -9,10 +9,11 @@ const generateTokens = (userId: number) => ({
   refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' }),
 })
 
+// 7 jours -> N'autorise que le site 
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: true,
-  sameSite: 'strict' as const,
+  sameSite: 'strict',
   maxAge: 7 * 24 * 60 * 60 * 1000,
 }
 
@@ -49,10 +50,7 @@ export const createUser = async (req, res) => {
     })
 
     if (existingUser) {
-      return res.status(400).json({
-        status: 'Failed',
-        message: 'Cet email existe déjà',
-      })
+      throw new Error('Cet email existe déjà')
     }
 
     const user = await User.create({
@@ -63,22 +61,13 @@ export const createUser = async (req, res) => {
       verified: false,
     })
 
-    const { accessToken, refreshToken } = generateTokens(user.id)
-
-    await user.update({ refreshToken })
-
-    setRefreshCookie(res, refreshToken)
-
-    return res.status(201).json({
-      status: 'Success',
-      accessToken,
-      user: formatUser(user),
-    })
+    const { sendVerificationEmail } = await import('../Services/mail.services')
+    return sendVerificationEmail({ id: user.id, email: user.email }, res)
 
   } catch (error) {
     return res.status(500).json({
       status: 'Failed',
-      message: 'Erreur création utilisateur',
+      message: error.message,
     })
   }
 }
@@ -87,20 +76,33 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body
 
-    if (!email || !password)
-      return res.status(400).json({ status: 'Failed', message: 'Email et mot de passe requis' })
-
+    if (!email || !password) {
+      throw new Error('Email ou mot de passe incorrect')
+    }
     const user = await User.findOne({ where: { email } })
-    if (!user || !(await bcrypt.compare(password, user.password)))
-      return res.status(401).json({ status: 'Failed', message: 'Identifiants incorrects' })
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new Error('Utilisateur non valide')
+    }
+
+    if (!user.verified) {
+      throw new Error('Utilisateur non vérifié')
+    }
 
     const { accessToken, refreshToken } = generateTokens(user.id)
     await user.update({ refreshToken })
     setRefreshCookie(res, refreshToken)
 
-    return res.json({ status: 'Success', accessToken, user: formatUser(user) })
-  } catch {
-    return res.status(500).json({ status: 'Failed', message: 'Erreur login' })
+    return res.json({ 
+      status: 'Success', 
+      accessToken,
+      user: formatUser(user) 
+    })
+  } catch (error) {
+    return res.status(500).json({
+      status: 'Failed',
+      message: error.message,
+    })
   }
 }
 
@@ -123,13 +125,11 @@ export async function refresh(req, res) {
 
   const token = req.cookies.refreshToken;
 
-  if (!token) {
-    return res.status(401).json({
-      message: 'Pas de refresh token'
-    })
-  }
-
   try {
+
+  if (!token) {
+      throw new Error('Pas de token')
+  }
 
     const decoded = jwt.verify(
       token,
@@ -160,7 +160,7 @@ export async function refresh(req, res) {
 
   } catch (error) {
 
-        return res.status(401).json({ status: 'failed', message: error.message })
+    return res.status(401).json({ status: 'failed', message: error.message })
 
   }
 }
@@ -173,11 +173,12 @@ export const getCurrentUser = async (req, res) => {
       attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary'],
     })
 
-    if (!user) return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
-
+    if (!user)  {
+      throw new Error('Utilisateur non reconnu')
+    }
     return res.json({ status: 'Success', user: user.get({ plain: true }) })
-  } catch {
-    return res.status(401).json({ status: 'Failed', message: 'Erreur récupération profil' })
+  } catch(err) {
+    return res.status(401).json({ status: 'Failed', message: err.message })
   }
 }
 
@@ -185,37 +186,21 @@ export const updatedProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id)
     if (!user) {
-      return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
+      throw new Error('Utilisateur non reconnu')
     }
 
     const result = updateUserSchema.safeParse(req.body)
 
     if (!result.success) {
-      console.log(result.error)
-      return res.status(400).json({
-        status: 'Failed',
-        errors: result.error,
-      })
+      throw new Error('update échoué')
     }
 
-    const { username, email, interests, picture } = result.data
+    const { username, interests, picture } = result.data
 
-    // Check if email is already used by another user
-    if (email && email !== user.email) {
-      const existingUser = await User.findOne({
-        where: { email },
-      })
-      if (existingUser) {
-        return res.status(400).json({
-          status: 'Failed',
-          message: 'Cet email existe déjà',
-        })
-      }
-    }
+
 
     const updateData = {}
     if (username !== undefined) updateData.username = username
-    if (email !== undefined) updateData.email = email
     if (picture !== undefined) updateData.picture = picture
     if (interests !== undefined) updateData.interests = JSON.stringify(interests)
 
@@ -227,7 +212,7 @@ export const updatedProfile = async (req, res) => {
     setRefreshCookie(res, refreshToken)
 
     return res.json({ status: 'Success', accessToken, user: formatUser(user) })
-  } catch {
-    return res.status(500).json({ status: 'Failed', message: 'Erreur mise à jour profil' })
+  } catch(error) {
+    return res.status(500).json({ status: 'Failed', message: error.message })
   }
 }

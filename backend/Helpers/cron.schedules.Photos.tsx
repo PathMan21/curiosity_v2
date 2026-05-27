@@ -26,4 +26,4 @@ const task = async () => {
   }
 }
 
-cron.schedule('0 */6 * * *', task)
+cron.schedule('* * * * *', task)

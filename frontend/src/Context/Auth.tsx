@@ -13,6 +13,7 @@ type authType = {
     logout: () => void;
     fetchUserProfile: () => void;
     isError: string | null;
+    bootstrapAuth: () => void;
 }
 
 
@@ -34,19 +35,15 @@ export const AuthentProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState('');
     const [user, setUser] = useState(null);
-    useLayoutEffect(() => {
-        setIsLoading(true);
-        const init = async () => {
-            let sessionOk = await refreshSession();
-            if (sessionOk) {
 
-                await fetchUserProfile();
-            }
-            setIsLoading(false);
-        };
+    const bootstrapAuth = async () => {
+        setIsLoading(true)
 
-        init();
-    }, []);
+        const ok = await refreshSession()
+        if (ok) await fetchUserProfile()
+
+        setIsLoading(false)
+    }
     const refreshSession = async () => {
 
         try {
@@ -93,6 +90,8 @@ export const AuthentProvider = ({ children }) => {
 
         } catch (err) {
             setIsError(err.response?.data?.message)
+            
+            setIsLoading(false)
             console.error(
                 `${err.response?.status} : ${err.response?.data?.message}`
             )
@@ -127,7 +126,7 @@ export const AuthentProvider = ({ children }) => {
 
     }
 
-    function login(email: string, password: string) {
+    function login(email, password) {
         setIsLoading(true);
         privateApi.post(`/user/login`,
             {
@@ -138,6 +137,7 @@ export const AuthentProvider = ({ children }) => {
                 if (response.data.status !== 'Success') {
                     let res = response.data.status;
                     setIsLoading(false);
+                    setIsLogged(false);
 
                     console.log(`Erreur : ${res}`);
                     setIsError(response?.data?.message)
@@ -181,6 +181,7 @@ export const AuthentProvider = ({ children }) => {
                 user,
                 fetchUserProfile,
                 accessToken,
+                bootstrapAuth,
                 isLogged,
                 isLoading,
                 isError,

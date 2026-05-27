@@ -5,6 +5,7 @@ import {
   authentificatedUser,
 } from '../Middlewares/user.middlewares'
 import validateByMail from '../Middlewares/mail.middlewares'
+import createRateLimiter from '../Middlewares/rateLimiter'
 import bodyParser from 'body-parser'
 import {
   createUser,
@@ -17,8 +18,11 @@ import {
 import { verifiedPage, verifyUser } from '../Services/mail.services'
 const router = Router()
 
-router.post('/', bodyParser.json(), validateUser, validateByMail, createUser)
-router.post('/login', bodyParser.json(), loginUser)
+const signupLimiter = createRateLimiter((req) => req.ip || 'unknown', 3, 15 * 60 * 1000) 
+const loginLimiter = createRateLimiter((req) => req.body.email || req.ip || 'unknown', 5, 15 * 60 * 1000) 
+
+router.post('/create', bodyParser.json(), signupLimiter, validateUser, validateByMail, createUser)
+router.post('/login', bodyParser.json(), loginLimiter, loginUser)
 router.post('/logout', bodyParser.json(), logoutUser)
 router.post('/refresh-token', refresh)
 router.get('/verify/:userId/:uniqueString', verifyUser)
@@ -33,3 +37,4 @@ router.post(
 )
 
 export default router
+

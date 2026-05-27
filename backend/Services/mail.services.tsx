@@ -9,19 +9,23 @@ import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 
 import "../Helpers/configLink";
+
+const generateTokens = (userId: number) => ({
+  accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' }),
+  refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' }),
+})
+
 const verifyUser = async (req, res) => {
   try {
-    let { userId, uniqueString } = req.params
+    let { userId, uniqueString } = req.params;
+    console.log("raq => ", req.params);
 
     const result = await UserVerifications.findOne({
       where: { userId: userId },
     })
 
     if (!result) {
-      return res.status(404).json({
-        message:
-          "L'account n'existe pas ou le lien de vérification est invalide",
-      })
+      throw new Error("L'account n'existe pas ou le lien de vérification est invalide")
     }
 
     if (result.get('expiresAt') < new Date()) {
@@ -37,31 +41,46 @@ const verifyUser = async (req, res) => {
     )
 
     if (!isValid) {
+      console.error('❌ Bcrypt compare échoué pour userId:', userId)
       return res.status(400).json({
         message: 'Lien de vérification invalide',
       })
     }
+    console.log('Lien valide')
 
     const user = await User.findByPk(userId)
+    if (!user) {
+      console.error('❌ Utilisateur non trouvé en DB pour userId:', userId)
+      return res.status(404).json({
+        message: 'Utilisateur non trouvé',
+      })
+    }
+    console.log('✅ Utilisateur trouvé:', user.email)
 
     await User.update({ verified: true }, { where: { id: userId } })
 
     await UserVerifications.destroy({ where: { userId: userId } })
 
-    // Générer un JWT token pour la redirection
-    const jwtToken = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '1h' }
-    )
+    const { refreshToken } = generateTokens(user.id)
 
-    return res.redirect(`/api/users/verified?token=${jwtToken}`)
+    await user.update({ refreshToken })
+
+    // ✅ Seul refreshToken en httpOnly cookie (accessToken reste en mémoire)
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // ✅ false en dev, true en prod
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+
+    return res.redirect(`/api/user/verified`)
   } catch (error) {
     console.error('Erreur vérification:', error)
     return res.status(500).json({
       message: "Erreur lors de la vérification de l'email",
     })
   }
+ 
 }
 
 const verifiedPage = async (req, res) => {
@@ -71,7 +90,6 @@ const verifiedPage = async (req, res) => {
 
 const sendVerificationEmail = async ({ id, email }, res) => {
   try {
-    // Vérifier la présence de l'id utilisateur
     if (!id) {
       console.error('sendVerificationEmail: id utilisateur manquant', {
         id,
@@ -91,13 +109,13 @@ const sendVerificationEmail = async ({ id, email }, res) => {
       subject: 'Vérifiez votre email',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
-          <h2>Bienvenue ! 🎉</h2>
-          <p>Merci de vous être inscrit. Veuillez vérifier votre email pour activer votre compte.</p>
-          <p><b>⏰ Ce lien expire dans 10 minutes</b></p>
+          <h2>Bienvenue !</h2>
+          <p>Merci de vous être inscrit ! Veuillez cliquez sur le lien pour vous inscrire.</p>
+          <p><b>Ce lien expire dans 10 minutes !</b></p>
           <br>
-          <a href="${currentUrl}api/users/verify/${id}/${uniqueString}" 
+          <a href="${currentUrl}/api/user/verify/${id}/${uniqueString}" 
              style="background-color: #4CAF50; color: white; padding: 12px 24px; 
-                    text-decoration: none; border-radius: 4px; display: inline-block;">
+                    text-decoration: none; border-radius: 18px; display: inline-block;">
             Vérifier mon email
           </a>
           <br><br>

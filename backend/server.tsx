@@ -4,6 +4,7 @@ import cors from 'cors'
 import cookieParser from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
+import session from 'express-session'
 
 import "./Helpers/configLink";
 
@@ -27,6 +28,18 @@ const server = createServer(app)
 ;(async () => {
     await connectDB();
     app.use(cookieParser())
+    
+    app.use(session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+        cookie: { 
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+            sameSite: 'strict'
+        }
+    }))
+    
     app.use(cors({
         origin: 'http://localhost:5173',
         credentials: true

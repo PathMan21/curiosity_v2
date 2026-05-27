@@ -5,20 +5,29 @@ import { useAuthentification } from '../../Context/Auth'
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { isError } = useAuthentification()
-  const [loading, setLoading] = useState(false)
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuthentification()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setIsLoading(true);
+    setIsError(false);
     try {
       await login(email, password)
-      navigate('/Home')
- 
+      setIsLoading(false);
+      setIsError(false);
+
+
+    } catch (err) {
+
+      setIsError(true);
+
     } finally {
-      setLoading(false)
+      setIsLoading(false);
+      setIsError(false);
+
     }
   }
 
@@ -68,10 +77,10 @@ function Login() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isLoading}
             className="btn btn-primary w-100 mb-3 login-submit-btn"
           >
-            {loading ? (
+            {isLoading ? (
               <span className="d-flex align-items-center justify-content-center gap-2">
                 <span className="spinner-border spinner-border-sm" />
                 Connexion…

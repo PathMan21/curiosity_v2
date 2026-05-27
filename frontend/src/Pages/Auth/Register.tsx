@@ -17,27 +17,34 @@ function Register() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
-  const { isError } = useAuthentification()
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const [isError, setIsError] = useState('');
+
+  const [isErrorBool, setIsErrorBool] = useState(false);
   const handleForm = async (e: React.FormEvent) => {
+    
     e.preventDefault()
     setLoading(true)
     try {
-      const response = await fetch(`${API_URL}/api/users`, {
+      const response = await fetch(`${API_URL}/api/user/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
       })
+      const data = await response.json()
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data?.message);
+        throw new Error(data?.message || 'Erreur lors de l\'inscription');
       }
       setSuccess(true)
     } catch (err) {
-      
+      setIsError(err)
+      setIsErrorBool(true)
+      console.error('Erreur inscription:', err)
     } finally {
+      setIsErrorBool(false)
+      setIsError('')
       setLoading(false)
     }
   }
@@ -67,7 +74,7 @@ function Register() {
           <div className="auth-subline">Créez votre espace de curiosité</div>
         </div>
 
-        {isError && (
+        {isErrorBool && (
           <div className="alert alert-danger mb-3" role="alert" aria-live="assertive">
             {isError}
           </div>
