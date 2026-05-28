@@ -16,10 +16,11 @@ const Article = sequelizeDb.define('Article', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  authors: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
+    authors: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+
   published: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -61,10 +62,10 @@ const Article = sequelizeDb.define('Article', {
     type: DataTypes.FLOAT,
     allowNull: true,
   },
-  concepts: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
+    concepts: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
   subfield: {
     type: DataTypes.STRING,
     allowNull: false,

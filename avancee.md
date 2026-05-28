@@ -764,3 +764,9 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 
 
 -> Faire les crons regarder si les tests fonctionnent
+
+**---------------------------------28-05----------------------------------**
+
+
+-> Regarder si il va chercher toutes les id des articles
+-> Faire la séparation entre set cache et set db, pour si il y a plus de cache cherche en db, et recréer le cache

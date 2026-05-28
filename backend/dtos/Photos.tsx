@@ -9,7 +9,7 @@ const stringOrArray = z.union([
 export const createPhotosSchema = z.object({
   unsplashId: z.string(),
 
-  url: z.string().min(1),
+  url: z.string().min(1).nullable().optional(),
 
   photographer: stringOrArray,
 

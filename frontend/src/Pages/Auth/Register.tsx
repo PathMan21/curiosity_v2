@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuthentification } from '../../Context/Auth';
-
+import interestsValues from "../../Assets/interests.json"
 const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
 
 const handleOAuthRegister = async () => {
@@ -19,10 +19,17 @@ function Register() {
   const [email, setEmail] = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const [selectedInterests, setSelectedInterests] = useState([])
   const [isError, setIsError] = useState('');
 
   const [isErrorBool, setIsErrorBool] = useState(false);
+
+  function handleInterests(value: string) {
+    setSelectedInterests((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    )
+  }
+
   const handleForm = async (e: React.FormEvent) => {
     
     e.preventDefault()
@@ -129,6 +136,34 @@ function Register() {
             />
           </div>
 
+                <fieldset className="mb-3">
+                  <legend className="form-label">Vos centres d'intérêt</legend>
+                  <div className="row">
+                    {interestsValues.interests.map((value, index) => {
+                      const valueCleaned = value.id.split('_').join(' ')
+                      return (
+                        <div key={index} className="col-md-6 mb-2">
+                          <div className="form-check">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              id={`interest-${index}`}
+                              checked={selectedInterests.includes(value.id)}
+                              onChange={() => handleInterests(value.id)}
+                              value={value.id}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor={`interest-${index}`}
+                            >
+                              {valueCleaned}
+                            </label>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </fieldset>
           <button
             type="submit"
             disabled={loading}

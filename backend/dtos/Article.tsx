@@ -32,7 +32,7 @@ export const createArticleSchema = z.object({
 
   topicScore: z.number(),
 
-  concepts: stringOrArray,
+  concepts: z.array(z.string()).optional().nullable(),
 
   subfield: z.string(),
 })

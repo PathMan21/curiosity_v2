@@ -3,25 +3,38 @@ import cron from 'node-cron'
 
 let isCronRunning = false
 
-const task = async () => {
-  if (isCronRunning) {
-    console.warn('CRON => TOUJOURS EN EXECUTION')
-    return
-  }
+  const task = async () => {
+  
+  
+  if (isCronRunning) return
 
   isCronRunning = true
   const startTime = Date.now()
 
   try {
-    console.log('CRON ARTICLES => COMMENCEMENT')
-    const queries = getAllOpenAlexQueries()
-    await checkArticles(queries)
-    console.log(`CRON FINIS => Articles sync en ${Date.now() - startTime}ms`)
+    console.log('CRON START')
+
+    const queries = await getAllOpenAlexQueries()
+
+    for (const query of queries) {
+      console.log("valeur de l'intéret open alex cron => ", query)
+      await checkArticles(query)
+      await new Promise(resolve =>
+        setTimeout(resolve, 200)
+      )
+    }
+
+    console.log(
+      `CRON DONE => ${Date.now() - startTime}ms`
+    )
   } catch (error) {
-    console.error(`CRON ERREUR : échoué en '${Date.now() - startTime}ms' parce que => '${error}'`)
+    console.error('CRON ERROR =>', error)
   } finally {
     isCronRunning = false
   }
 }
 
-cron.schedule('*/3 * * * *', task)
+
+const scheduledTask = cron.schedule('* * * * *', task)
+
+export default scheduledTask

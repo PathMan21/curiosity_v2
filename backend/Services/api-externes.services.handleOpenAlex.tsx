@@ -20,22 +20,24 @@ const OPENALEX_HEADERS = {
 
 /* ---------------- INTERESTS (5 UNIQUEMENT) ---------------- */
 const INTERESTS_MAP = {
-  'ai-ml':              '1702',
-  'computer-science':   '1705',
-  'cybersecurity':      '1712',
-  'data-science':       '2613',
-  'robotics':           '2207',
-  'computer-vision':    '1703',
-  'nlp':                '1704',
-  'computer-networks':  '1708',
-  'software-engineering':'1710',
-  'databases':          '1706',
-  'distributed-systems':'1709',
-  'quantum-computing':  '3107',
-  'bioinformatics':     '1101',
+  'ai-ml': '1702',
+  'computer-science': '1705',
+  'cybersecurity': '1712',
+  'data-science': '2613',
+  'robotics': '2207',
+  'computer-vision': '1703',
+  'nlp': '1704',
+  'computer-networks': '1708',
+  'software-engineering': '1710',
+  'databases': '1706',
+  'distributed-systems': '1709',
+  'quantum-computing': '3107',
+  'bioinformatics': '1101',
 }
 export function getAllSubfields(): string[] {
-  return Object.values(INTERESTS_MAP)
+  let subfield = Object.values(INTERESTS_MAP)
+  console.log("subfield ", subfield)
+  return subfield
 }
 /* ---------------- UTILS ---------------- */
 
@@ -54,7 +56,7 @@ async function getFromCache(key) {
   }
 
   try {
-    const parsed = JSON.parse(raw.toString())
+    const parsed = JSON.parse(raw)
     if (parsed?.articles) {
       return parsed;
     } else {
@@ -76,7 +78,7 @@ async function setCache(
   const articlesArray = articles.map(art => {
     const topTopic = art.topics?.find(t => {
       Number(t?.score) >= TOPIC_SCORE_THRESHOLD
-    
+
     }) || art.topics?.[0]
 
     return createArticleSchema.parse({
@@ -102,14 +104,18 @@ async function setCache(
 
   try {
     await Article.destroy({ where: { subfield: interest }, transaction: t })
-    await Article.bulkCreate(articlesArray, { transaction: t })
+    await Article.bulkCreate(articlesArray, {
+      transaction: t,
+      ignoreDuplicates: true,
+      logging: false
+    })
 
     await t.commit()
 
     await redisClient.setEx(
       cacheKey,
       CACHE_TTL,
-      JSON.stringify({ articlesArray })
+      JSON.stringify(articlesArray)
     )
   } catch (err) {
     await t.rollback()
@@ -141,9 +147,6 @@ export async function fetchInterestFromAPI(interestID) {
     }
 
     const data = await res.json()
-    if (!data.results?.length) {
-      break
-    }
 
     all.push(...data.results)
 
@@ -162,45 +165,46 @@ export function getAllOpenAlexQueries() {
   return Object.values(INTERESTS_MAP)
 }
 
-export async function checkArticles(queries) {
+export async function checkArticles(int) {
   const resultsInfo = { reussis: 0, cache: 0, db: 0, errors: 0 }
-  const results = [] 
+  const results = []
 
-  for (const interest of queries) {
-    try {
-      const cacheKey = `openalex-${interest}`
+  try {
+    const cacheKey = `openalex-${int}`
 
-      const cached = await getFromCache(cacheKey)
-      if (cached && !isArticlesTooOld(cached)) {
-        resultsInfo.cache++
-        results.push(...cached.articlesArray)
-        continue
-      }
-
-      const dbArticles = await getFromDB(interest)
-      if (dbArticles && !isArticlesTooOld(dbArticles)) {
-        resultsInfo.db++
-        results.push(...dbArticles)
-        continue
-      }
-
-      const articles = await fetchInterestFromAPI(interest)
-      if (!articles.length) {
-        continue
-      }
-
-      await setCache(cacheKey, interest, articles)
-      results.push(...articles) 
-      resultsInfo.reussis++
-
-    } catch (err) {
-      resultsInfo.errors++
-      console.error(`CRON OpenAlex error pour "${interest}" => `, err )
+    const cached = await getFromCache(cacheKey)
+    if (cached && !isArticlesTooOld(cached)) {
+      resultsInfo.cache++
+      results.push(...cached) 
+      return results
     }
+
+    const dbArticles = await getFromDB(int)
+    if (dbArticles && !isArticlesTooOld(dbArticles)) {
+      resultsInfo.db++
+      results.push(...dbArticles)
+      return results
+    }
+
+    const articles = await fetchInterestFromAPI(int)
+    if (!articles.length) {
+      return results
+    }
+
+    await setCache(cacheKey, int, articles)
+    results.push(...articles)
+    resultsInfo.reussis++
+
+  } catch (err) {
+    resultsInfo.errors++
+    console.error(`CRON OpenAlex error pour "${int}" =>`, err)
   }
 
-  console.log(`CRON OpenAlex: caché ${resultsInfo.cache}, db ${resultsInfo.db}, réussis ${resultsInfo.reussis}, errors ${resultsInfo.errors}`)
-  return results 
+  console.log(
+    `CRON OpenAlex: caché ${resultsInfo.cache}, db ${resultsInfo.db}, réussis ${resultsInfo.reussis}, errors ${resultsInfo.errors}`
+  )
+
+  return results
 }
 
 async function getFromDB(interest) {
@@ -209,7 +213,7 @@ async function getFromDB(interest) {
     return null
   }
   const mapped = articles.map(article => article.toJSON())
- 
+
   return mapped
 }
 
@@ -219,35 +223,43 @@ async function handleOpenAlex(req, res) {
   try {
     const user = req.user
 
-    if (!user) {
-      return res.status(404).json({ message: 'Utilisateur non trouvé' })
-    }
-
     const interestsRaw = JSON.parse(user.interests)
     const interests = mapInterestsToSubfields(interestsRaw)
 
-    if (!interests.length) {
-      return res.status(400).json({ message: 'Aucun interet utilisateur' })
+    let results = []
+
+    for (const interest of interests) {
+      const cacheKey = `openalex-${interest}`
+
+      const cached = await getFromCache(cacheKey)
+
+      if (cached) {
+        results.push(...cached)
+        continue
+      }
+
+      const dbArticles = await getFromDB(interest)
+
+      if (dbArticles) {
+        results.push(...dbArticles)
+      }
     }
 
-      const data = await checkArticles(interests)
-
     const unique = Array.from(
-      new Map(data.map(a => [a.id, a])).values()
+      new Map(results.map(a => [a.openAlexId, a])).values()
     )
 
-    const final = unique
-      .sort(() => Math.random() - 0.5)
-      .slice(0, MAX_FINAL_RESULTS)
-
     return res.json({
-      totalResults: data.length,
-      articles: final,
+      totalResults: unique.length,
+      articles: unique
+        .sort(() => Math.random() - 0.5)
+        .slice(0, MAX_FINAL_RESULTS)
     })
 
   } catch (err) {
-    console.error(err)
-    return res.status(500).json({ message: `Erreur serveur => ${err}` })
+    return res.status(500).json({
+      message: 'Erreur serveur'
+    })
   }
 }
 

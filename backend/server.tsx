@@ -52,7 +52,12 @@ const server = createServer(app)
       const PORT = process.env.PORT
    server.listen(PORT, async () => {
     console.log(`Serveur lancé sur le port ${PORT}`)
-    await import('./Helpers/cron.schedules.Photos') 
-    await import('./Helpers/cron.schedules.Articles') 
+    try {
+      await import('./Helpers/cron.schedules.Photos')
+      await import('./Helpers/cron.schedules.Articles')
+      console.log('✅ Tous les crons ont démarré avec succès')
+    } catch (error) {
+      console.error('❌ Erreur lors du démarrage des crons:', error)
+    }
   })
 })();

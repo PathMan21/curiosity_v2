@@ -65,10 +65,9 @@ const verifyUser = async (req, res) => {
 
     await user.update({ refreshToken })
 
-    // ✅ Seul refreshToken en httpOnly cookie (accessToken reste en mémoire)
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // ✅ false en dev, true en prod
+      secure: process.env.NODE_ENV === 'production', 
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
