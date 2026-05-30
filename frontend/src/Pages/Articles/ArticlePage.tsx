@@ -6,7 +6,7 @@ import Photos from './Photos'
 import { useAuthentification } from '../../Context/Auth'
 import { privateApi } from '../../Context/Interceptor'
 
-const topics = ['Tout', 'Science', 'Tech', 'Nature', 'Art', 'Histoire']
+// const topics = ['Tout', 'Science', 'Tech', 'Nature', 'Art', 'Histoire']
 
 type FeedItem =
   | {
@@ -196,29 +196,8 @@ function ArticlePage() {
               </div>
             </div>
 
-            <div className="ms-auto article-score-section">
-              <div className="article-score-label">
-                Score
-              </div>
-              <div className="article-score-value">
-                {Math.floor(Math.random() * 900 + 100)}
-              </div>
-            </div>
 
           </div>
-        </div>
-
-        {/* TOPICS */}
-        <div className="feed-tabs mb-3 flex-wrap">
-          {topics.map(t => (
-            <button
-              key={t}
-              className={`feed-tab ${activeTopic === t ? 'active' : ''}`}
-              onClick={() => setActiveTopic(t)}
-            >
-              {t}
-            </button>
-          ))}
         </div>
 
         <div className="section-title mb-3">

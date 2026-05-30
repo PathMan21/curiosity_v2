@@ -12,7 +12,7 @@ export const createArticleSchema = z.object({
 
   authors: stringOrArray,
 
-  published: z.string(),
+  published: z.string().optional(),
 
   summary: z.string().nullable().optional(),
 
@@ -22,7 +22,7 @@ export const createArticleSchema = z.object({
 
   isOpenAccess: z.boolean(),
 
-  publicationYear: z.number(),
+  publicationYear: z.number().optional(),
 
   type: z.string(),
 

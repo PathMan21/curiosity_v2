@@ -100,6 +100,54 @@ async function setCache(
     })
   })
 
+
+  try {
+
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify(articlesArray)
+    )
+  } catch (err) {
+    console.error('CRON openalex error => ', err)
+  }
+}
+
+
+async function setDbAndCache(
+  cacheKey,
+  interest,
+  articles
+) {
+  if (!articles?.length) {
+    return
+  }
+  console.log("set db and cache")
+  const articlesArray = articles.map(art => {
+    const topTopic = art.topics?.find(t => {
+      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+
+    }) || art.topics?.[0]
+
+    return createArticleSchema.parse({
+      openAlexId: art.id,
+      title: art.title,
+      authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
+      published: art.publication_date,
+      summary: art.abstract,
+      doi: art.doi,
+      pdfUrl: art.open_access?.oa_url,
+      isOpenAccess: art.open_access?.is_oa || false,
+      publicationYear: art.publication_year,
+      type: 'article',
+      link: art.canonical_url,
+      mainTopic: topTopic?.display_name || 'Unknown',
+      topicScore: Number(topTopic?.score) || 0,
+      concepts: art.concepts?.map(c => c.display_name).filter(Boolean),
+      subfield: interest,
+    })
+  })
+
   const t = await sequelizeDb.transaction()
 
   try {
@@ -122,7 +170,6 @@ async function setCache(
     console.error('CRON openalex error => ', err)
   }
 }
-
 
 /* ---------------- OPENALEX API ---------------- */
 
@@ -183,6 +230,7 @@ export async function checkArticles(int) {
     if (dbArticles && !isArticlesTooOld(dbArticles)) {
       resultsInfo.db++
       results.push(...dbArticles)
+      await setCache(cacheKey, int, dbArticles)
       return results
     }
 
@@ -191,13 +239,13 @@ export async function checkArticles(int) {
       return results
     }
 
-    await setCache(cacheKey, int, articles)
+    await setDbAndCache(cacheKey, int, articles)
     results.push(...articles)
     resultsInfo.reussis++
 
   } catch (err) {
     resultsInfo.errors++
-    console.error(`CRON OpenAlex error pour "${int}" =>`, err)
+    console.error(`CRON OpenAlex error pour "${int}" =>`, "error => ", err)
   }
 
   console.log(

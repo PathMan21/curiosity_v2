@@ -91,10 +91,47 @@ async function setCache(
     })
   )
 
+ 
+
+  try {
+
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify({ photosArray })
+    )
+  } catch (err) {
+    console.error('[CRON] Unsplash cache write failed:', err instanceof Error ? err.message : err)
+  }
+}
+async function setDbAndCache(
+  cacheKey,
+  interest,
+  photos
+) {
+  console.log("set db and cache")
+  if (!photos?.length) {
+    return
+
+  }
+  const photosArray = photos.map(photo =>
+    createPhotosSchema.parse({
+      unsplashId: photo.id,
+      url: photo.url,
+      thumb: photo.thumb,
+      description: photo.description,
+      photographer: photo.photographer,
+      photographerLink: photo.photographerLink,
+      downloadLink: photo.downloadLink,
+      interest,
+      type: 'photo',
+    })
+  )
+
   const t = await sequelizeDb.transaction()
 
   try {
-    await Photo.destroy({ where: { interest }, transaction: t })
+    await Photo.destroy({ where: {interest: interest }, transaction: t })
     await Photo.bulkCreate(photosArray, { transaction: t })
 
     await t.commit()
@@ -106,7 +143,7 @@ async function setCache(
     )
   } catch (err) {
     await t.rollback()
-    console.error('[CRON] Unsplash cache write failed:', err instanceof Error ? err.message : err)
+    console.error('[CRON] Unsplash cache write failed:', err )
   }
 }
 
@@ -210,6 +247,7 @@ export async function checkPhotos(queries) {
 
       const dbPhotos = await getFromDB(interest)
       if (dbPhotos && !isPhotosTooOld(dbPhotos)) {
+        setCache(cacheKey, interest, dbPhotos)
         resultsInfo.db++
         continue
       }
@@ -219,8 +257,7 @@ export async function checkPhotos(queries) {
       if (!photos.length) {
         continue
       }
-
-      await setCache(cacheKey, interest, photos)
+      await setDbAndCache(cacheKey, interest, photos)
       resultsInfo.synced++
 
     } catch (err) {
