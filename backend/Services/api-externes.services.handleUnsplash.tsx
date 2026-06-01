@@ -109,11 +109,12 @@ async function setDbAndCache(
   interest,
   photos
 ) {
-  console.log("set db and cache")
+  console.log("set db and cache - interest:", interest, "photos count:", photos?.length)
   if (!photos?.length) {
+    console.warn(`No photos to save for interest: ${interest}`)
     return
-
   }
+
   const photosArray = photos.map(photo =>
     createPhotosSchema.parse({
       unsplashId: photo.id,
@@ -131,19 +132,30 @@ async function setDbAndCache(
   const t = await sequelizeDb.transaction()
 
   try {
-    await Photo.destroy({ where: {interest: interest }, transaction: t })
-    await Photo.bulkCreate(photosArray, { transaction: t })
+    // First try to create new photos
+    await Photo.bulkCreate(photosArray, { 
+      transaction: t,
+      ignoreDuplicates: true,  // Skip duplicates instead of failing
+      logging: false 
+    })
 
     await t.commit()
+    console.log(`✅ Successfully saved ${photosArray.length} photos for interest: ${interest}`)
 
-    await redisClient.setEx(
-      cacheKey,
-      CACHE_TTL,
-      JSON.stringify({ photosArray })
-    )
+    // Then save to cache
+    try {
+      await redisClient.setEx(
+        cacheKey,
+        CACHE_TTL,
+        JSON.stringify(photosArray)
+      )
+      console.log(`✅ Cache set for: ${cacheKey}`)
+    } catch (cacheErr) {
+      console.warn('Redis cache write failed (non-critical):', cacheErr)
+    }
   } catch (err) {
     await t.rollback()
-    console.error('[CRON] Unsplash cache write failed:', err )
+    console.error('[CRON] Unsplash DB write failed for interest:', interest, 'Error:', err)
   }
 }
 
@@ -210,14 +222,26 @@ async function handleUnsplash(req, res) {
     const user = await User.findByPk(userId)
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' })
-
     }
-    const interests = JSON.parse(user.interests)
+    
+    // Handle null or empty interests
+    if (!user.interests) {
+      return res.status(400).json({ message: 'Aucun intérêt défini' })
+    }
+
+    let interests
+    try {
+      interests = typeof user.interests === 'string' ? JSON.parse(user.interests) : user.interests
+    } catch (e) {
+      console.error("Erreur parsing intérêts:", e)
+      return res.status(400).json({ message: 'Format des intérêts invalide' })
+    }
+
     if (!interests.length) {
-      console.error("Intérets non trouvé");
-      return null;
-
+      console.error("Intérets vide");
+      return res.status(400).json({ message: 'Aucun intérêt défini' })
     }
+
     const sent = mapInterestsToSentences(interests)
     const photos = await fetchGlobal(sent)
 

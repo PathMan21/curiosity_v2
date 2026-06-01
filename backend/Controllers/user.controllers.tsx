@@ -57,7 +57,7 @@ export const createUser = async (req, res) => {
       username,
       email,
       password,
-      interests,
+      interests: interests ? JSON.stringify(interests) : null,
       verified: false,
     })
 
@@ -93,10 +93,20 @@ export const loginUser = async (req, res) => {
     await user.update({ refreshToken })
     setRefreshCookie(res, refreshToken)
 
+    const userData = formatUser(user)
+    // Parse interests if they are a JSON string
+    if (userData.interests && typeof userData.interests === 'string') {
+      try {
+        userData.interests = JSON.parse(userData.interests)
+      } catch (e) {
+        userData.interests = []
+      }
+    }
+
     return res.json({ 
       status: 'Success', 
       accessToken,
-      user: formatUser(user) 
+      user: userData
     })
   } catch (error) {
     return res.status(500).json({
@@ -176,7 +186,19 @@ export const getCurrentUser = async (req, res) => {
     if (!user)  {
       throw new Error('Utilisateur non reconnu')
     }
-    return res.json({ status: 'Success', user: user.get({ plain: true }) })
+    
+    const userData = user.get({ plain: true })
+    
+    // Parse interests if they are a JSON string
+    if (userData.interests && typeof userData.interests === 'string') {
+      try {
+        userData.interests = JSON.parse(userData.interests)
+      } catch (e) {
+        userData.interests = []
+      }
+    }
+    
+    return res.json({ status: 'Success', user: userData })
   } catch(err) {
     return res.status(401).json({ status: 'Failed', message: err.message })
   }
@@ -197,8 +219,6 @@ export const updatedProfile = async (req, res) => {
 
     const { username, interests, picture } = result.data
 
-
-
     const updateData = {}
     if (username !== undefined) updateData.username = username
     if (picture !== undefined) updateData.picture = picture
@@ -206,12 +226,25 @@ export const updatedProfile = async (req, res) => {
 
     await user.update(updateData)
 
+    // Reload user from DB to get updated values
+    await user.reload()
+
     const { accessToken, refreshToken } = generateTokens(user.id)
 
     await user.update({ refreshToken })
     setRefreshCookie(res, refreshToken)
 
-    return res.json({ status: 'Success', accessToken, user: formatUser(user) })
+    // Format user with interests as array
+    const userData = formatUser(user)
+    if (userData.interests && typeof userData.interests === 'string') {
+      try {
+        userData.interests = JSON.parse(userData.interests)
+      } catch (e) {
+        userData.interests = []
+      }
+    }
+
+    return res.json({ status: 'Success', accessToken, user: userData })
   } catch(error) {
     return res.status(500).json({ status: 'Failed', message: error.message })
   }

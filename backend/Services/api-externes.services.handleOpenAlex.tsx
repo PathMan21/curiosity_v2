@@ -100,16 +100,14 @@ async function setCache(
     })
   })
 
-
   try {
-
     await redisClient.setEx(
       cacheKey,
       CACHE_TTL,
       JSON.stringify(articlesArray)
     )
   } catch (err) {
-    console.error('CRON openalex error => ', err)
+    console.error('CRON openalex cache error => ', err)
   }
 }
 
@@ -178,12 +176,20 @@ export async function fetchInterestFromAPI(interestID) {
   const currentYear = new Date().getFullYear()
   const all = []
 
+  // Validate interestID to prevent injection
+  if (!/^\d+$/.test(interestID)) {
+    console.error('Invalid interest ID format:', interestID)
+    return []
+  }
+
   for (let page = 1; page <= MAX_PAGES; page++) {
-    const url =
-      `https://api.openalex.org/works` +
-      `?filter=topics.subfield.id:${interestID},is_oa:true,language:en` +
-      `,publication_year:${currentYear - 1}-${currentYear}` +
-      `&per_page=${PER_PAGE}&page=${page}`
+    const params = new URLSearchParams({
+      filter: `topics.subfield.id:${interestID},is_oa:true,language:en,publication_year:${currentYear - 1}-${currentYear}`,
+      per_page: String(PER_PAGE),
+      page: String(page),
+    })
+    
+    const url = `https://api.openalex.org/works?${params.toString()}`
 
     const res = await fetch(url,
       {
@@ -271,8 +277,27 @@ async function handleOpenAlex(req, res) {
   try {
     const user = req.user
 
-    const interestsRaw = JSON.parse(user.interests)
+    let interestsRaw = user.interests
+    
+    // Handle interests if it's a string (from DB) or array (from response)
+    if (typeof interestsRaw === 'string') {
+      try {
+        interestsRaw = JSON.parse(interestsRaw)
+      } catch (e) {
+        console.error('Error parsing interests:', e)
+        return res.status(400).json({ message: 'Format des intérêts invalide' })
+      }
+    }
+    
+    if (!Array.isArray(interestsRaw) || interestsRaw.length === 0) {
+      return res.status(400).json({ message: 'Aucun intérêt défini' })
+    }
+
     const interests = mapInterestsToSubfields(interestsRaw)
+    
+    if (interests.length === 0) {
+      return res.status(400).json({ message: 'Intérêts non valides' })
+    }
 
     let results = []
 
@@ -305,6 +330,7 @@ async function handleOpenAlex(req, res) {
     })
 
   } catch (err) {
+    console.error('handleOpenAlex error:', err)
     return res.status(500).json({
       message: 'Erreur serveur'
     })

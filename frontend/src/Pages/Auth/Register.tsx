@@ -38,7 +38,7 @@ function Register() {
       const response = await fetch(`${API_URL}/api/user/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, interests: selectedInterests }),
       })
       const data = await response.json()
       if (!response.ok) {

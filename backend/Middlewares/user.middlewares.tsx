@@ -16,6 +16,9 @@ const validateUserOauth = (req, res, next) => {
   if (!username || usernameValidate.test(username) == false) {
     return res.status(400).json({ message: 'username invalide' })
   }
+  if (interests && (!Array.isArray(interests) || interests.length === 0 || interests.length > 10)) {
+    return res.status(400).json({ message: 'intérêts invalides: doit être un tableau de 1-10 éléments' })
+  }
 
   next()
 }
