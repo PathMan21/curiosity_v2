@@ -8,6 +8,7 @@ import session from 'express-session'
 
 import "./Helpers/configLink";
 
+import client from 'prom-client';
 
 import connectDB from './Config/connexion'
 import userRoutes from './Routes/user.routes'
@@ -39,7 +40,14 @@ const server = createServer(app)
             sameSite: 'strict'
         }
     }))
-    
+
+    client.collectDefaultMetrics();
+
+    app.get('/metrics', async (req, res) => {
+      res.set('Content-Type', client.register.contentType);
+      res.end(await client.register.metrics());
+    });
+
     app.use(cors({
         origin: 'http://localhost:5173',
         credentials: true

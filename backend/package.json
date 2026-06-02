@@ -19,6 +19,7 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.11",
     "oauth": "^0.10.2",
+    "prom-client": "^15.1.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.9.6",
