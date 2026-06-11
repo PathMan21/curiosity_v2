@@ -770,3 +770,14 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 
 -> Regarder si il va chercher toutes les id des articles
 -> Faire la séparation entre set cache et set db, pour si il y a plus de cache cherche en db, et recréer le cache
+
+
+
+**---------------------------------11/06----------------------------------**
+
+
+-> Prometheus à configurer sur le vps, a mettre de coté 
+-> Faire une page d'accueil accessible avt que je me connecte
+
+
+-> Starlight - docuzorus 
