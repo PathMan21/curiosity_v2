@@ -9,7 +9,7 @@ on:
 
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   test:
@@ -39,3 +39,9 @@ jobs:
           path: coverage/
           retention-days: 30
       
+      - name: Create Git tag
+        if: startsWith(github.event.head_commit.message, 'release:')
+        run: |
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'v\d+\.\d+\.\d+')
+          git tag $VERSION
+          git push origin $VERSION
