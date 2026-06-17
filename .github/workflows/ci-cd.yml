@@ -11,58 +11,60 @@ on:
 permissions:
   contents: write
 
-# jobs:
-#   test:
-#     runs-on: ubuntu-24.04
-#     timeout-minutes: 15 
-#     steps:
-#       - uses: actions/checkout@v4
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15 
+    steps:
+      - uses: actions/checkout@v4
 
-#       - name: Setup node js
-#         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
-#         with:
-#           node-version: '20'
-#           cache: 'npm'
+      - name: Setup node js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '20'
+          cache: 'npm'
           
 
-#       - name: Install Dependencies
-#         run: npm ci --ignore-scripts
+      - name: Install Dependencies
+        run: npm ci --ignore-scripts
 
-#       - name: Run tests
-#         run: npm run test:ci
+      - name: Run tests
+        run: npm run test:ci
 
-#       - name: Upload coverage reports
-#         if: always()
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: coverage-report
-#           path: coverage/
-#           retention-days: 30
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
       
-#       - name: Create Git tag
-#         if: startsWith(github.event.head_commit.message, 'release:')
-#         run: |
-#           VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'v\d+\.\d+\.\d+')
-#           git tag $VERSION
-#           git push origin $VERSION
-#   deploy:
-#       needs: test
-#       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-#       runs-on: ubuntu-24.04
-#       timeout-minutes: 10
-#       steps:
-#         - name: Deploy to VPS
-#           uses: appleboy/ssh-action@v1
-#           with:
-#             host: ${{ secrets.VPS_HOST }}
-#             username: ${{ secrets.VPS_USER }}
-#             key: ${{ secrets.VPS_SSH_KEY }}
-#             script: |
-#               cd /var/www/[ton_app]
-#               git pull origin main
-#               npm ci --omit=dev
-#               npm run build --if-present
-#               pm2 restart [nom_de_ton_app] || pm2 start [point_d_entrée] --name [nom_de_ton_app]
+      - name: Create Git tag
+        if: startsWith(github.event.head_commit.message, 'release:')
+        run: |
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'v\d+\.\d+\.\d+')
+          git tag $VERSION
+          git push origin $VERSION
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.USER_VPS }}
+          key: ${{ secrets.SSH_KEY_VPS }}
+          script: |
+            cd /var/www/be-curious/curiosity_v2
+
+            git fetch origin
+            git reset --hard origin/main
+
+            docker compose down
+            docker compose up -d --build
+
+            docker image prune -f
 
 
 
