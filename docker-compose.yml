@@ -29,7 +29,7 @@ services:
       - appnet
 
     ports:
-      - "127.0.0.1:3306:3306"
+      - "127.0.0.1:3307:3306"
 
   backend:
     build: ./backend
@@ -71,7 +71,7 @@ services:
       - /app/node_modules
     environment:
       - VITE_DEV_SERVER=true
-      - VITE_SERVER_URL=https://be-curious:3000
+      - VITE_SERVER_URL=https://be-curious.fr
     depends_on:
       - backend
     networks:
