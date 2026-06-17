@@ -45,3 +45,24 @@ jobs:
           VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'v\d+\.\d+\.\d+')
           git tag $VERSION
           git push origin $VERSION
+  deploy:
+      needs: test
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      runs-on: ubuntu-24.04
+      timeout-minutes: 10
+      steps:
+        - name: Deploy to VPS
+          uses: appleboy/ssh-action@v1
+          with:
+            host: ${{ secrets.VPS_HOST }}
+            username: ${{ secrets.VPS_USER }}
+            key: ${{ secrets.VPS_SSH_KEY }}
+            script: |
+              cd /var/www/[ton_app]
+              git pull origin main
+              npm ci --omit=dev
+              npm run build --if-present
+              pm2 restart [nom_de_ton_app] || pm2 start [point_d_entrée] --name [nom_de_ton_app]
+
+
+

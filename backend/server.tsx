@@ -55,7 +55,7 @@ const server = createServer(app)
 
     app.use('/api/user/', userRoutes);
     app.use('/api/', authRoutes);
-    app.use('/', apiroutes);
+    app.use('/api/', apiroutes);
     app.use('/api/', likesRoutes);
 
     // PROM
