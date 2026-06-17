@@ -5,7 +5,7 @@ import sequelizeDb from './dbInit'
 const connectDB = async () => {
   try {
     await sequelizeDb.authenticate()
-    await sequelizeDb.sync({ force: true })
+    await sequelizeDb.sync({ })
   } catch (err) {
     console.error('Erreur connection/sync :', err)
     throw err
