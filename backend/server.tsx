@@ -52,6 +52,7 @@ const server = createServer(app)
         origin: process.env.FRONTEND_URL || 'https://be-curious.fr',
         credentials: true
     }));
+    // test
 
     app.use('/api/user/', userRoutes);
     app.use('/api/', authRoutes);
