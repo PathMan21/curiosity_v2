@@ -6,7 +6,6 @@ import { useAuthentification } from '../../Context/Auth'
 
 function Profile() {
   const { user, isLoading } = useAuthentification()
-  console.log(user);
   if (isLoading) {
     return (
       <>

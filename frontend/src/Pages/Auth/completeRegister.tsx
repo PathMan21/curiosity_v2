@@ -9,18 +9,12 @@ function CompleteInscription() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { token, setToken, fetchUserProfile } = useAuthentification()
+  const { accessToken, fetchUserProfile } = useAuthentification()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
 
   const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
-  useEffect(() => {
-    const urlToken = searchParams.get('token')
-    if (urlToken) {
-      setToken(urlToken)
-    }
-  }, [searchParams, setToken])
 
   function handleInterests(value: string) {
     setSelectedInterests((prev) =>
@@ -33,10 +27,7 @@ function CompleteInscription() {
     setError('')
     setLoading(true)
 
-    const activeToken =
-      searchParams.get('token') || token || localStorage.getItem('authToken')
-
-    if (!activeToken) {
+    if (!accessToken) {
       setError('Vous devez être authentifié pour continuer')
       setLoading(false)
       navigate('/login')
@@ -51,8 +42,9 @@ function CompleteInscription() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${activeToken}`,
+            Authorization: `Bearer ${accessToken}`,
           },
+          credentials: 'include', 
           body: JSON.stringify({ username, password, interests }),
         }
       )
@@ -65,10 +57,8 @@ function CompleteInscription() {
       }
 
       const data = await response.json().catch(() => ({}))
-      if (data.accessToken && data.refreshToken) {
-        setToken(data.accessToken, data.refreshToken)
-        await fetchUserProfile()
-      }
+      
+      await fetchUserProfile()
 
       navigate('/Home')
     } catch (err) {
@@ -81,17 +71,14 @@ function CompleteInscription() {
   }
 
   return (
-    // ✅ RGAA 9.2 — landmark <main>
     <main id="contenu-principal" className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className="card shadow">
             <div className="card-body p-5">
 
-              {/* ✅ RGAA 9.1 — h1 présent */}
               <h1 className="text-center mb-4">Finalisez votre inscription</h1>
 
-              {/* ✅ RGAA 11.3 — erreur avec role="alert" */}
               {error && (
                 <div
                   className="alert alert-danger"
@@ -106,7 +93,6 @@ function CompleteInscription() {
               <form onSubmit={handleSubmit} noValidate>
 
                 <div className="mb-3">
-                  {/* ✅ RGAA 11.1 — label lié */}
                   <label htmlFor="complete-username" className="form-label">
                     Nom d'utilisateur{' '}
                     <span aria-hidden="true">*</span>
@@ -125,7 +111,6 @@ function CompleteInscription() {
                   />
                 </div>
 
-                {/* ✅ RGAA 11.5 — fieldset + legend pour les cases à cocher groupées */}
                 <fieldset className="mb-3">
                   <legend className="form-label">Vos centres d'intérêt</legend>
                   <div className="row">
@@ -142,7 +127,6 @@ function CompleteInscription() {
                               onChange={() => handleInterests(value.id)}
                               value={value.id}
                             />
-                            {/* ✅ RGAA 11.1 — label associé à chaque checkbox */}
                             <label
                               className="form-check-label"
                               htmlFor={`interest-${index}`}

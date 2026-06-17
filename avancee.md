@@ -742,3 +742,42 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 **---------------------------------17-05----------------------------------**
 
 -> Retravail sur les dtos & zod, on essais de faire la protection entre les deux
+
+
+
+**---------------------------------21-05----------------------------------**
+
+-> J'active les images mais c'est tout, le but est d'avoir une appli pour l'oral
+
+-> Photos et article dtos mis en place - tout fonctionne  X
+
+-> Faire les crons - remplacer la logique d'aller chercher chez l'utilisateur
+-> Revoir l'update utilisateur - corriger l'oauth
+-> Nettoyer les fichiers de code
+-> Rajouter prometheus
+-> Rajouter grafana
+-> Corrections sécurité - 10 owasp
+-> Configurer les logs
+-> 
+
+**---------------------------------22-05----------------------------------**
+
+
+-> Faire les crons regarder si les tests fonctionnent
+
+**---------------------------------28-05----------------------------------**
+
+
+-> Regarder si il va chercher toutes les id des articles
+-> Faire la séparation entre set cache et set db, pour si il y a plus de cache cherche en db, et recréer le cache
+
+
+
+**---------------------------------11/06----------------------------------**
+
+
+-> Prometheus à configurer sur le vps, a mettre de coté 
+-> Faire une page d'accueil accessible avt que je me connecte
+
+
+-> Starlight - docuzorus 

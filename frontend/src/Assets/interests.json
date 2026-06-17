@@ -4,9 +4,9 @@
       "id": "ai-ml",
       "label": "Intelligence Artificielle & Machine Learning",
       "category": "informatique",
-      "description": "IA, apprentissage automatique, deep learning, réseaux de neurones",
+      "description": "IA, machine learning, deep learning, réseaux de neurones",
       "openalex_field_id": "17",
-      "newsmech_category": "technology"
+      "open_library": "artificial_intelligence"
     },
     {
       "id": "computer-science",
@@ -14,309 +14,97 @@
       "category": "informatique",
       "description": "Algorithmes, structures de données, développement logiciel",
       "openalex_field_id": "17",
-      "newsmech_category": "technology"
+      "open_library": "computer"
     },
     {
       "id": "cybersecurity",
       "label": "Cybersécurité",
       "category": "informatique",
-      "description": "Sécurité informatique, cryptographie, protection des données",
+      "description": "Sécurité des systèmes, cryptographie, protection des données",
       "openalex_field_id": "17",
-      "newsmech_category": "technology"
+      "open_library": "cybersecurity"
+    },
+    {
+      "id": "data-science",
+      "label": "Data Science",
+      "category": "informatique",
+      "description": "Analyse de données, statistiques, IA appliquée",
+      "openalex_field_id": "17",
+      "open_library": "data_science"
     },
     {
       "id": "robotics",
       "label": "Robotique",
-      "category": "ingenierie",
-      "description": "Robots, automatisation, systèmes autonomes",
+      "category": "informatique",
+      "description": "Automatisation, robots, systèmes autonomes",
       "openalex_field_id": "22",
-      "newsmech_category": "technology"
+      "open_library": "robotics"
     },
     {
-      "id": "mathematics",
-      "label": "Mathématiques",
-      "category": "sciences-exactes",
-      "description": "Algèbre, analyse, géométrie, théorie des nombres",
-      "openalex_field_id": "26",
-      "newsmech_category": "science"
+      "id": "computer-vision",
+      "label": "Vision par Ordinateur",
+      "category": "informatique",
+      "description": "Traitement d'images, reconnaissance visuelle, détection d'objets",
+      "openalex_field_id": "17",
+      "open_library": "computer_vision"
     },
     {
-      "id": "physics",
-      "label": "Physique",
-      "category": "sciences-exactes",
-      "description": "Physique fondamentale, mécanique quantique, physique des particules",
-      "openalex_field_id": "31",
-      "newsmech_category": "science"
+      "id": "nlp",
+      "label": "Traitement du Langage Naturel",
+      "category": "informatique",
+      "description": "NLP, LLMs, traduction automatique, analyse de texte",
+      "openalex_field_id": "17",
+      "open_library": "natural_language_processing"
     },
     {
-      "id": "chemistry",
-      "label": "Chimie",
-      "category": "sciences-exactes",
-      "description": "Chimie organique, inorganique, biochimie",
-      "openalex_field_id": "16",
-      "newsmech_category": "science"
+      "id": "computer-networks",
+      "label": "Réseaux & Télécommunications",
+      "category": "informatique",
+      "description": "Protocoles réseau, Internet, communications distribuées",
+      "openalex_field_id": "17",
+      "open_library": "computer_networks"
     },
     {
-      "id": "biology",
-      "label": "Biologie",
-      "category": "sciences-vie",
-      "description": "Biologie moléculaire, génétique, écologie",
-      "openalex_field_id": "13",
-      "newsmech_category": "science"
+      "id": "software-engineering",
+      "label": "Génie Logiciel",
+      "category": "informatique",
+      "description": "Architecture logicielle, DevOps, bonnes pratiques de développement",
+      "openalex_field_id": "17",
+      "open_library": "software_engineering"
     },
     {
-      "id": "medicine",
-      "label": "Médecine & Santé",
-      "category": "sciences-vie",
-      "description": "Médecine, santé publique, recherche médicale",
-      "openalex_field_id": "27",
-      "newsmech_category": "health"
+      "id": "databases",
+      "label": "Bases de Données",
+      "category": "informatique",
+      "description": "SQL, NoSQL, systèmes de gestion de données",
+      "openalex_field_id": "17",
+      "open_library": "databases"
     },
     {
-      "id": "neuroscience",
-      "label": "Neurosciences",
-      "category": "sciences-vie",
-      "description": "Cerveau, cognition, psychologie cognitive",
-      "openalex_field_id": "28",
-      "newsmech_category": "science"
+      "id": "distributed-systems",
+      "label": "Systèmes Distribués & Cloud",
+      "category": "informatique",
+      "description": "Cloud computing, microservices, architecture distribuée",
+      "openalex_field_id": "17",
+      "open_library": "distributed_computing"
     },
     {
-      "id": "ecology",
-      "label": "Écologie & Environnement",
-      "category": "environnement",
-      "description": "Biodiversité, conservation, écosystèmes",
-      "openalex_field_id": "23",
-      "newsmech_category": "environment"
-    },
-    {
-      "id": "climate",
-      "label": "Climat & Sciences de la Terre",
-      "category": "environnement",
-      "description": "Changement climatique, météo, géologie, océanographie",
-      "openalex_field_id": "19",
-      "newsmech_category": "environment"
-    },
-    {
-      "id": "energy",
-      "label": "Énergie & Durabilité",
-      "category": "environnement",
-      "description": "Énergies renouvelables, efficacité énergétique, développement durable",
-      "openalex_field_id": "21",
-      "newsmech_category": "environment"
-    },
-    {
-      "id": "economics",
-      "label": "Économie",
-      "category": "sciences-sociales",
-      "description": "Économie, marchés, politiques économiques",
-      "openalex_field_id": "20",
-      "newsmech_category": "business"
-    },
-    {
-      "id": "finance",
-      "label": "Finance & Investissement",
-      "category": "sciences-sociales",
-      "description": "Marchés financiers, investissement, fintech",
-      "openalex_field_id": "20",
-      "newsmech_category": "business"
-    },
-    {
-      "id": "psychology",
-      "label": "Psychologie",
-      "category": "sciences-sociales",
-      "description": "Comportement humain, psychologie sociale, développement",
-      "openalex_field_id": "33",
-      "newsmech_category": "lifestyle"
-    },
-    {
-      "id": "sociology",
-      "label": "Sociologie",
-      "category": "sciences-sociales",
-      "description": "Société, culture, interactions sociales",
-      "openalex_field_id": "33",
-      "newsmech_category": "world"
-    },
-    {
-      "id": "engineering",
-      "label": "Ingénierie",
-      "category": "ingenierie",
-      "description": "Génie civil, mécanique, électrique, matériaux",
-      "openalex_field_id": "22",
-      "newsmech_category": "technology"
-    },
-    {
-      "id": "space",
-      "label": "Espace & Astronomie",
-      "category": "espace",
-      "description": "Astronomie, astrophysique, exploration spatiale",
-      "openalex_field_id": "31",
-      "newsmech_category": "science"
-    },
-    {
-      "id": "art",
-      "label": "Arts & Humanités",
-      "category": "arts-culture",
-      "description": "Histoire de l'art, littérature, philosophie, études culturelles",
-      "openalex_field_id": "12",
-      "newsmech_category": "entertainment"
-    },
-    {
-      "id": "sport",
-      "label": "Sport & Sciences du Mouvement",
-      "category": "sante-sport",
-      "description": "Sciences du sport, physiologie de l'exercice, performance athlétique",
-      "openalex_field_id": "29",
-      "newsmech_category": "sports"
-    },
-    {
-      "id": "business",
-      "label": "Business & Management",
-      "category": "sciences-sociales",
-      "description": "Gestion, entrepreneuriat, stratégie d'entreprise",
-      "openalex_field_id": "14",
-      "newsmech_category": "business"
+      "id": "quantum-computing",
+      "label": "Informatique Quantique",
+      "category": "informatique",
+      "description": "Algorithmes quantiques, qubits, cryptographie quantique",
+      "openalex_field_id": "17",
+      "open_library": "quantum_computing"
     }
   ],
-
-  "fields": [
-    {
-      "id": "12",
-      "name": "Arts and Humanities",
-      "domain": "Social Sciences"
-    },
-    {
-      "id": "13",
-      "name": "Biochemistry, Genetics and Molecular Biology",
-      "domain": "Life Sciences"
-    },
-    {
-      "id": "14",
-      "name": "Business, Management and Accounting",
-      "domain": "Social Sciences"
-    },
-    {
-      "id": "16",
-      "name": "Chemistry",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "17",
-      "name": "Computer Science",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "19",
-      "name": "Earth and Planetary Sciences",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "20",
-      "name": "Economics, Econometrics and Finance",
-      "domain": "Social Sciences"
-    },
-    {
-      "id": "21",
-      "name": "Energy",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "22",
-      "name": "Engineering",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "23",
-      "name": "Environmental Science",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "26",
-      "name": "Mathematics",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "27",
-      "name": "Medicine",
-      "domain": "Health Sciences"
-    },
-    {
-      "id": "28",
-      "name": "Neuroscience",
-      "domain": "Life Sciences"
-    },
-    {
-      "id": "29",
-      "name": "Health Professions (includes Sports Science)",
-      "domain": "Health Sciences"
-    },
-    {
-      "id": "31",
-      "name": "Physics and Astronomy",
-      "domain": "Physical Sciences"
-    },
-    {
-      "id": "33",
-      "name": "Social Sciences",
-      "domain": "Social Sciences"
-    }
-  ],
-
   "categories": [
     {
       "id": "informatique",
-      "label": "Informatique & Technologies",
+      "label": "Informatique & Intelligence Artificielle",
+      "icon": "💻",
       "color": "#3B82F6",
-      "fields": ["17"]
-    },
-    {
-      "id": "sciences-exactes",
-      "label": "Sciences Exactes",
-      "color": "#8B5CF6",
-      "fields": ["16", "26", "31"]
-    },
-    {
-      "id": "sciences-vie",
-      "label": "Sciences de la Vie & Santé",
-      "icon": "🧬",
-      "color": "#10B981",
-      "fields": ["13", "27", "28"]
-    },
-    {
-      "id": "environnement",
-      "label": "Environnement & Climat",
-      "color": "#059669",
-      "fields": ["19", "21", "23"]
-    },
-    {
-      "id": "sciences-sociales",
-      "label": "Sciences Sociales & Économie",
-      "color": "#F59E0B",
-      "fields": ["20", "33", "14"]
-    },
-    {
-      "id": "ingenierie",
-      "label": "Ingénierie",
-      "color": "#EF4444",
-      "fields": ["22"]
-    },
-    {
-      "id": "espace",
-      "label": "Espace & Astronomie",
-      "color": "#6366F1",
-      "fields": ["31"]
-    },
-    {
-      "id": "arts-culture",
-      "label": "Arts & Culture",
-      "icon": "🎨",
-      "color": "#EC4899",
-      "fields": ["12"]
-    },
-    {
-      "id": "sante-sport",
-      "label": "Santé & Sport",
-      "color": "#14B8A6",
-      "fields": ["29"]
+      "fields": ["17", "22"],
+      "open_library": "computer_science"
     }
   ]
 }

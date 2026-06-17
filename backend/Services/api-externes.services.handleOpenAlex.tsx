@@ -1,385 +1,340 @@
-import User from '../Models/User'
-import Article from '../Models/Article'
-import interestsData from '../Assets/interests.json'
 import redisClient from '../Config/redis.conf'
+import interestsValues from '../Assets/interests.json'
 import { isArticlesTooOld } from '../Helpers/CheckTooOld'
+import Article from '../Models/Article'
+import { createArticleSchema } from '../dtos/Article'
 import sequelizeDb from '../Config/dbInit'
 
-import { createArticleSchema } from '../dtos/Article'
+/* ---------------- CONFIG ---------------- */
 
 const CACHE_TTL = 3600 * 24 * 30
 const MAX_PAGES = 3
 const PER_PAGE = 10
 const TOPIC_SCORE_THRESHOLD = 0.75
 const MAX_FINAL_RESULTS = 20
-const MAX_AUTHORS = 5
-const ABSTRACT_MAX_LENGTH = 500
 
 const OPENALEX_HEADERS = {
   Accept: 'application/json',
   'User-Agent': 'mailto:curiosity.the.social.network@gmail.com',
 }
 
-const SUBFIELD_MAPPING = {
-  'ai-ml':            { subfield: '1702', journals: ['S118930848', 'S2764455087', 'S114469174'] },
-  'computer-science': { subfield: '1705', journals: ['S118930848', 'S2764455087', 'S98762135'] },
-  'data-science':     { subfield: '2613', journals: ['S2764455087', 'S114469174', 'S70535770'] },
-  cybersecurity:      { subfield: '1712', journals: ['S118930848', 'S2764455087'] },
-  robotics:           { subfield: '2207', journals: ['S118930848', 'S70535770', 'S2764455087'] },
-  mathematics:        { subfield: '2604', journals: ['S2764455087', 'S70535770'] },
-  physics:            { subfield: '3109', journals: ['S125754415', 'S112505126', 'S70535770'] },
-  chemistry:          { subfield: '1605', journals: ['S70535770', 'S2764455087', 'S4210170802'] },
-  biology:            { subfield: '1312', journals: ['S2764455087', 'S156975444', 'S2764486067', 'S4210220386'] },
-  medicine:           { subfield: '2725', journals: ['S2764455087', 'S202339397', 'S152253655', 'S156975444'] },
-  neuroscience:       { subfield: '2801', journals: ['S2736105967', 'S2764455087', 'S156975444'] },
-  ecology:            { subfield: '2303', journals: ['S2764455087', 'S156975444', 'S100327389', 'S4210170802'] },
-  climate:            { subfield: '1902', journals: ['S100319019', 'S2764455087', 'S70535770', 'S4210193424'] },
-  energy:             { subfield: '2105', journals: ['S100319019', 'S2764455087', 'S70535770'] },
-  economics:          { subfield: '2002', journals: ['S2764455087', 'S70535770'] },
-  finance:            { subfield: '2003', journals: ['S2764455087', 'S70535770'] },
-  psychology:         { subfield: '3204', journals: ['S2736104481', 'S2764455087', 'S70535770'] },
-  sociology:          { subfield: '3312', journals: ['S2764455087', 'S58730300', 'S70535770'] },
-  engineering:        { subfield: '2205', journals: ['S118930848', 'S70535770', 'S2764455087'] },
-  space:              { subfield: '3103', journals: ['S125754415', 'S70535770', 'S2764455087'] },
-  art:                { subfield: '1213', journals: ['S2764455087', 'S4210170802'] },
-  sport:              { subfield: '2732', journals: ['S2764455087', 'S70535770', 'S95457728'] },
-  business:           { subfield: '1402', journals: ['S2764455087', 'S70535770'] },
+/* ---------------- INTERESTS (5 UNIQUEMENT) ---------------- */
+const INTERESTS_MAP = {
+  'ai-ml': '1702',
+  'computer-science': '1705',
+  'cybersecurity': '1712',
+  'data-science': '2613',
+  'robotics': '2207',
+  'computer-vision': '1703',
+  'nlp': '1704',
+  'computer-networks': '1708',
+  'software-engineering': '1710',
+  'databases': '1706',
+  'distributed-systems': '1709',
+  'quantum-computing': '3107',
+  'bioinformatics': '1101',
+}
+export function getAllSubfields(): string[] {
+  let subfield = Object.values(INTERESTS_MAP)
+  console.log("subfield ", subfield)
+  return subfield
+}
+/* ---------------- UTILS ---------------- */
+
+function mapInterestsToSubfields(interests) {
+  return interests
+    .map(i => INTERESTS_MAP[i])
+    .filter(Boolean)
 }
 
-function mapInterestsToSubfields(interestIds) {
-  return interestIds.reduce((acc, id) => {
-    const mapping = SUBFIELD_MAPPING[id]
-    if (!mapping) {
-      console.warn(` Intérêt "${id}" non mappé`)
-      return acc
-    }
-    acc.push({ subfield: mapping.subfield, journals: mapping.journals })
-    return acc
-  }, [])
-}
+/* ---------------- CACHE ---------------- */
 
-
-async function getFromCache(cacheKey) {
-  try{
-    const raw = await redisClient.get(cacheKey)
-    if (!raw) {
-      return null
-    }
-    const rawString = raw.toString();
-    if (!rawString.trim())  {
-      return null
-    }
-
-
-    const parsed = JSON.parse(rawString);
-    const totalResults = Object.keys(parsed.validatedArticles);
-    if (!parsed || totalResults.length < 1) {
-      return null
-    } 
-
-
-    if (isArticlesTooOld(parsed.articles)) {
-      return null
-    }
-
-    return parsed.validatedArticles
-} catch(err) {
-}
-}
-
-async function getFromDB(subfield) {
-    const articles = await Article.findAll({ where: { subfield } })
-    if (!articles || articles.length < 1){
-      return null
-
-    } 
-    const mapped = articles.map(
-      (a) => a.toJSON()
-    )
-
-    if (isArticlesTooOld(mapped)) {
-
-      return null
-    }
-
-    return mapped
-  
-}
-
-async function setInCache(cacheKey, subfield, articles) {
-try {
-
-  if (!articles?.length) {
-    console.warn(`Aucun article pour ${cacheKey}`);
-    return;
+async function getFromCache(key) {
+  const raw = await redisClient.get(key)
+  if (!raw) {
+    return null
   }
 
-  console.warn('refresh DB + cache');
+  try {
+    const parsed = JSON.parse(raw)
+    if (parsed?.articles) {
+      return parsed;
+    } else {
+      return null;
+    }
+  } catch {
+    return null
+  }
+}
+async function setCache(
+  cacheKey,
+  interest,
+  articles
+) {
+  if (!articles?.length) {
+    return
+  }
 
-  const validatedArticles = articles.map((article) =>
-    createArticleSchema.parse({
-      openAlexId: article.openAlexUrl,
-      title: article.title,
-      authors: article.authors,
-      published: article.published,
-      summary: article.summary,
-      doi: article.doi,
-      pdfUrl: article.pdfUrl,
-      isOpenAccess: article.isOpenAccess,
-      publicationYear: article.publicationYear,
-      type: "article",
-      link: article.link,
-      mainTopic: article.mainTopic,
-      topicScore: article.topicScore,
-      concepts: article.concepts,
-      subfield,
+  const articlesArray = articles.map(art => {
+    const topTopic = art.topics?.find(t => {
+      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+
+    }) || art.topics?.[0]
+
+    return createArticleSchema.parse({
+      openAlexId: art.id,
+      title: art.title,
+      authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
+      published: art.publication_date,
+      summary: art.abstract,
+      doi: art.doi,
+      pdfUrl: art.open_access?.oa_url,
+      isOpenAccess: art.open_access?.is_oa || false,
+      publicationYear: art.publication_year,
+      type: 'article',
+      link: art.canonical_url,
+      mainTopic: topTopic?.display_name || 'Unknown',
+      topicScore: Number(topTopic?.score) || 0,
+      concepts: art.concepts?.map(c => c.display_name).filter(Boolean),
+      subfield: interest,
     })
-  );
+  })
 
-  await sequelizeDb.transaction(async (t) => {
-
-    await Article.destroy({
-      where: { subfield },
-      transaction: t
-    });
-
-    await Article.bulkCreate(validatedArticles, {
-      transaction: t
-    });
-
-  });
-
-  await redisClient.setEx(
-    cacheKey,
-    CACHE_TTL,
-    JSON.stringify({
-      subfield,
-      totalResults: validatedArticles.length,
-      validatedArticles
-    })
-  );
+  try {
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify(articlesArray)
+    )
   } catch (err) {
-}
+    console.error('CRON openalex cache error => ', err)
+  }
 }
 
-async function fetchSubfieldFromAPI(subfieldId: string) {
+
+async function setDbAndCache(
+  cacheKey,
+  interest,
+  articles
+) {
+  if (!articles?.length) {
+    return
+  }
+  console.log("set db and cache")
+  const articlesArray = articles.map(art => {
+    const topTopic = art.topics?.find(t => {
+      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+
+    }) || art.topics?.[0]
+
+    return createArticleSchema.parse({
+      openAlexId: art.id,
+      title: art.title,
+      authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
+      published: art.publication_date,
+      summary: art.abstract,
+      doi: art.doi,
+      pdfUrl: art.open_access?.oa_url,
+      isOpenAccess: art.open_access?.is_oa || false,
+      publicationYear: art.publication_year,
+      type: 'article',
+      link: art.canonical_url,
+      mainTopic: topTopic?.display_name || 'Unknown',
+      topicScore: Number(topTopic?.score) || 0,
+      concepts: art.concepts?.map(c => c.display_name).filter(Boolean),
+      subfield: interest,
+    })
+  })
+
+  const t = await sequelizeDb.transaction()
+
+  try {
+    await Article.destroy({ where: { subfield: interest }, transaction: t })
+    await Article.bulkCreate(articlesArray, {
+      transaction: t,
+      ignoreDuplicates: true,
+      logging: false
+    })
+
+    await t.commit()
+
+    await redisClient.setEx(
+      cacheKey,
+      CACHE_TTL,
+      JSON.stringify(articlesArray)
+    )
+  } catch (err) {
+    await t.rollback()
+    console.error('CRON openalex error => ', err)
+  }
+}
+
+/* ---------------- OPENALEX API ---------------- */
+
+export async function fetchInterestFromAPI(interestID) {
+
   const currentYear = new Date().getFullYear()
-  const allFetched = []
+  const all = []
+
+  // Validate interestID to prevent injection
+  if (!/^\d+$/.test(interestID)) {
+    console.error('Invalid interest ID format:', interestID)
+    return []
+  }
 
   for (let page = 1; page <= MAX_PAGES; page++) {
-    const url =
-      `https://api.openalex.org/works` +
-      `?filter=topics.subfield.id:${subfieldId},is_oa:true,institutions.country_code:gb,language:en` +
-      `,publication_year:${currentYear - 1}-${currentYear}` +
-      `&per_page=${PER_PAGE}&page=${page}&sort=cited_by_count:desc`
+    const params = new URLSearchParams({
+      filter: `topics.subfield.id:${interestID},is_oa:true,language:en,publication_year:${currentYear - 1}-${currentYear}`,
+      per_page: String(PER_PAGE),
+      page: String(page),
+    })
+    
+    const url = `https://api.openalex.org/works?${params.toString()}`
 
-    const response = await fetch(url, { method: 'GET', headers: OPENALEX_HEADERS })
-
-    if (!response.ok) {
-      console.warn(`OpenAlex non OK (${subfieldId}) page ${page}:`, response.status)
+    const res = await fetch(url,
+      {
+        headers: OPENALEX_HEADERS
+      })
+    if (!res.ok) {
       break
     }
 
-    const data = await response.json()
-    if (!data.results?.length) break
+    const data = await res.json()
 
-    allFetched.push(...data.results)
-    if (data.results.length < PER_PAGE) break
+    all.push(...data.results)
+
   }
 
-  return allFetched.filter(
-    (e) => e?.topics?.some((t) => t.score >= TOPIC_SCORE_THRESHOLD)
+  return all.filter(work =>
+    work.topics.some(t =>
+      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+    )
   )
 }
 
-function reconstructAbstract(invertedIndex) {
-  if (!invertedIndex || typeof invertedIndex !== 'object') return 'Résumé non disponible'
+/* ---------------- CHECK - COMBINE API ET DB---------------- */
+
+export function getAllOpenAlexQueries() {
+  return Object.values(INTERESTS_MAP)
+}
+
+export async function checkArticles(int) {
+  const resultsInfo = { reussis: 0, cache: 0, db: 0, errors: 0 }
+  const results = []
 
   try {
-    const words = []
-    for (const [word, positions] of Object.entries(invertedIndex)) {
-      if (Array.isArray(positions)) {
-        positions.forEach((pos) => { words[pos] = word })
+    const cacheKey = `openalex-${int}`
+
+    const cached = await getFromCache(cacheKey)
+    if (cached && !isArticlesTooOld(cached)) {
+      resultsInfo.cache++
+      results.push(...cached) 
+      return results
+    }
+
+    const dbArticles = await getFromDB(int)
+    if (dbArticles && !isArticlesTooOld(dbArticles)) {
+      resultsInfo.db++
+      results.push(...dbArticles)
+      await setCache(cacheKey, int, dbArticles)
+      return results
+    }
+
+    const articles = await fetchInterestFromAPI(int)
+    if (!articles.length) {
+      return results
+    }
+
+    await setDbAndCache(cacheKey, int, articles)
+    results.push(...articles)
+    resultsInfo.reussis++
+
+  } catch (err) {
+    resultsInfo.errors++
+    console.error(`CRON OpenAlex error pour "${int}" =>`, "error => ", err)
+  }
+
+  console.log(
+    `CRON OpenAlex: caché ${resultsInfo.cache}, db ${resultsInfo.db}, réussis ${resultsInfo.reussis}, errors ${resultsInfo.errors}`
+  )
+
+  return results
+}
+
+async function getFromDB(interest) {
+  const articles = await Article.findAll({ where: { subfield: interest } })
+  if (!articles.length) {
+    return null
+  }
+  const mapped = articles.map(article => article.toJSON())
+
+  return mapped
+}
+
+/* ---------------- CONTROLLER ---------------- */
+
+async function handleOpenAlex(req, res) {
+  try {
+    const user = req.user
+
+    let interestsRaw = user.interests
+    
+    // Handle interests if it's a string (from DB) or array (from response)
+    if (typeof interestsRaw === 'string') {
+      try {
+        interestsRaw = JSON.parse(interestsRaw)
+      } catch (e) {
+        console.error('Error parsing interests:', e)
+        return res.status(400).json({ message: 'Format des intérêts invalide' })
       }
     }
-    const abstract = words.filter(Boolean).join(' ')
-    return abstract.length > ABSTRACT_MAX_LENGTH
-      ? abstract.substring(0, ABSTRACT_MAX_LENGTH) + '...'
-      : abstract || 'Résumé non disponible'
-  } catch (err) {
-    console.error(' Erreur reconstruction résumé:', err)
-    return 'Résumé non disponible'
-  }
-}
-
-function formatWork(work) {
-  const relevantTopics = (work.topics || [])
-    .filter((t) => t.score >= TOPIC_SCORE_THRESHOLD)
-    .sort((a, b) => b.score - a.score)
-
-  const primaryTopic = relevantTopics[0]
-
-  return {
-    id: work.id,
-    title: work.title,
-    authors: work.authorships
-      ?.slice(0, MAX_AUTHORS)
-      .map((a) => a.author?.display_name)
-      .filter(Boolean) || [],
-    published: work.publication_date,
-    summary: work.abstract_inverted_index
-      ? reconstructAbstract(work.abstract_inverted_index)
-      : 'Résumé non disponible',
-    openAlexUrl: work.id,
-    doi: work.doi,
-    pdfUrl: work.open_access?.oa_url || null,
-    isOpenAccess: work.open_access?.is_oa || false,
-    publicationYear: work.publication_year,
-    type: 'article',
-    link: work.doi
-      ? `https://doi.org/${work.doi.replace('https://doi.org/', '')}`
-      : work.id,
-    mainTopic: primaryTopic?.display_name || 'General',
-    topicScore: primaryTopic?.score || 0,
-    concepts: primaryTopic?.field?.display_name || null,
-  }
-}
-
-function shuffleArray(arr) {
-  const shuffled = [...arr]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     
-  }
-  return shuffled
-}
-
-
-function copyChecked(articles) {
-  const trimedArray = new Set();
-  articles.filter((article=> {
-    if (article.id && !trimedArray.has(article.id)) {
-      trimedArray.add(article.id);
-      return true
+    if (!Array.isArray(interestsRaw) || interestsRaw.length === 0) {
+      return res.status(400).json({ message: 'Aucun intérêt défini' })
     }
-    return false
-  }))
 
-  return articles;
-  
-}
+    const interests = mapInterestsToSubfields(interestsRaw)
+    
+    if (interests.length === 0) {
+      return res.status(400).json({ message: 'Intérêts non valides' })
+    }
 
-async function resolveSubfields(subfieldItems) {
-  const allResults = []
-  const toFetch = []
+    let results = []
 
-
-  await Promise.all(
-    subfieldItems.map(async ({ subfield }) => {
-
-      const cacheKey = `handle-open-alex-${subfield}`
-
-      // 1. Cache Redis
+    for (const interest of interests) {
+      const cacheKey = `openalex-${interest}`
 
       const cached = await getFromCache(cacheKey)
+
       if (cached) {
-
-        allResults.push(...cached)
-        return
+        results.push(...cached)
+        continue
       }
 
-      // 2. BDD
+      const dbArticles = await getFromDB(interest)
 
-      const fromDB = await getFromDB(subfield)
-      if (fromDB) {
-
-        allResults.push(...fromDB)
-        await redisClient.setEx(
-          cacheKey,
-          CACHE_TTL,
-          JSON.stringify({ subfield, totalResults: fromDB.length, articles: fromDB })
-        )
-        return
+      if (dbArticles) {
+        results.push(...dbArticles)
       }
-
-      // 3. API
-      
-      console.log(`Fetch API - ${subfield} non trouvé `)
-      toFetch.push(subfield);
-      console.log("toFetch.length => ", toFetch.length)
-    })
-  )
-    if (toFetch.length > 0) {
-    allResults.push(...await checkArticles(toFetch));
-  }
-
-  return allResults
-}
-
-export async function getAllSubjects() {
-  let allSubfields;
-  for (const [key, value] of Object.entries(SUBFIELD_MAPPING)) {
-    mapInterestsToSubfields(key);
-  }
-  
-
-  return allSubfields
-}
-
-
-
-
-export async function checkArticles(toFetch) {
-
-  const results = await Promise.all(
-
-    toFetch.map(async (subfield) => {
-      
-      const cacheKey = `handle-open-alex-${subfield}`
-      const raw = await fetchSubfieldFromAPI(subfield)
-      const formatted = raw.map(formatWork)
-      await setInCache(cacheKey, subfield, formatted)
-      return formatted  
-
-    })
-
-  )
-  return results.flat()
-}
-async function handleOpenAlex(req, res) {
-    const user = await req.user;
-
-    if (!user) {
-      return res.status(404).json({ status: 'Failed', message: 'Utilisateur non trouvé' })
     }
 
-    const userInterests = JSON.parse(user.interests || '[]')
-
-
-    
-    const subfieldIds = mapInterestsToSubfields(userInterests)
-    if (!subfieldIds || Object.keys(subfieldIds).length < 1) {
-      return res.status(400).json({ status: 'Failed', message: 'Aucun intérêt valide trouvé' })
-    }
-
-    const allResults = await resolveSubfields(subfieldIds)
-    const unique = await copyChecked(allResults)
-    const articles = shuffleArray(unique).slice(0, MAX_FINAL_RESULTS)
+    const unique = Array.from(
+      new Map(results.map(a => [a.openAlexId, a])).values()
+    )
 
     return res.json({
-      status: 'Success',
-      totalResults: allResults.length,
-      filteredCount: articles.length,
-      subfieldCount: subfieldIds.length,
-      articles,
+      totalResults: unique.length,
+      articles: unique
+        .sort(() => Math.random() - 0.5)
+        .slice(0, MAX_FINAL_RESULTS)
     })
+
+  } catch (err) {
+    console.error('handleOpenAlex error:', err)
+    return res.status(500).json({
+      message: 'Erreur serveur'
+    })
+  }
 }
-
-
-
-
-
 
 export default handleOpenAlex

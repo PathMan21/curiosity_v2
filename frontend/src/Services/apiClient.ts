@@ -6,7 +6,6 @@
 interface RefreshResponse {
   status: string
   accessToken: string
-  refreshToken: string
 }
 
 interface ApiError extends Error {
@@ -19,7 +18,7 @@ let failedQueue: Array<{
   reject: (reason?: any) => void
 }> = []
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error)
@@ -32,18 +31,13 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = []
 }
 
-/**
- * Rafraîchit l'access token
- */
-const refreshAccessToken = async (
-  refreshToken: string
-): Promise<RefreshResponse> => {
-  const response = await fetch(`${API_URL}/users/refresh-token`, {
+const refreshAccessToken = async () => {
+  const response = await fetch(`${API_URL}/api/user/refresh-token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ refreshToken }),
+    credentials: 'include',
   })
 
   if (!response.ok) {
@@ -52,23 +46,3 @@ const refreshAccessToken = async (
 
   return response.json()
 }
-
-/**
- * Wrapper fetch standard pour les requêtes avec authentification
- */
-// export const apiCall = async <T>(
-//   endpoint: string,
-//   options: RequestInit = {}
-// ): Promise<T> => {
-//   const response = await fetchWithAuth(endpoint, options)
-//
-//   if (!response.ok) {
-//     const error: ApiError = new Error(
-//       `Erreur API: ${response.status}`
-//     ) as ApiError
-//     error.status = response.status
-//     throw error
-//   }
-//
-//   return response.json()
-// }

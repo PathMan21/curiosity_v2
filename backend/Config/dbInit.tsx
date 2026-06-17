@@ -13,7 +13,7 @@ const sequelizeDb = new Sequelize(
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '3306'),
     dialect: 'mariadb',
-    logging: console.log,
+    logging: false,
     pool: {
       max: 5,
       min: 0,

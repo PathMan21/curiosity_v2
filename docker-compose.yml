@@ -3,7 +3,7 @@ services:
     image: redis:7-alpine
     container_name: redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     restart: unless-stopped
     volumes:
       - ./backend/redis:/data
@@ -20,69 +20,142 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
     networks:
       - appnet
-        
+
     ports:
-        - "3306:3306"
+      - "3306:3306"
 
   backend:
-      build: ./backend
-      environment:
-        - DB_HOST=mariadb
-        - REDIS_HOST=redis
-        - 'MYSQL_ROOT_PASSWORD=root'
-        - 'MYSQL_PWD=root'
-      depends_on:
-        mariadb:
-          condition: service_healthy
-        redis:
-          condition: service_started
-      ports:
-        - '3000:3000'
-      volumes:
+    build: ./backend
+    environment:
+      - DB_HOST=mariadb
+      - REDIS_HOST=redis
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_PWD=root"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    volumes:
       - ./backend:/app
       - /app/node_modules
-      networks:
-        - appnet
-      develop:
-        watch:
-          - action: sync
-            path: ./backend/src
-            target: /app/src
-          - action: rebuild
-            path: ./backend/package.json
+    networks:
+      - appnet
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/src
+          target: /app/src
+          ignore:
+            - Helpers/cron.schedules.Photos.ts
+            - Helpers/cron.schedules.Articles.ts
+        - action: rebuild
+          path: ./backend/package.json
 
   frontend:
-      build:
-        context: ./frontend
-      ports:
-        - '5173:5173'
-      volumes:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
       - ./frontend:/app
       - /app/node_modules
-      environment:
-        - VITE_DEV_SERVER=true
-        - VITE_SERVER_URL=http://localhost:3000
-      depends_on:
-        - backend
-      networks:
-        - appnet
-      develop:
-        watch:
-          - action: sync
-            path: ./frontend/src
-            target: /app/src
-          - action: rebuild
-            path: ./frontend/package.json
+    environment:
+      - VITE_DEV_SERVER=true
+      - VITE_SERVER_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - appnet
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+        - action: rebuild
+          path: ./frontend/package.json
+          
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus_data:/prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.retention.time=15d"
+  #   restart: unless-stopped
+  #   networks:
+  #     - appnet
 
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #     - "3001:3000"
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - prometheus
+  #   networks:
+  #     - appnet
+
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   container_name: node-exporter
+  #   ports:
+  #     - "9100:9100"
+  #   restart: unless-stopped
+  #   networks:
+  #     - appnet
+
+  # redis-exporter:
+  #   image: oliver006/redis_exporter:latest
+  #   container_name: redis-exporter
+  #   environment:
+  #     - REDIS_ADDR=redis://redis:6379
+  #   ports:
+  #     - "9121:9121"
+  #   depends_on:
+  #     - redis
+  #   restart: unless-stopped
+  #   networks:
+  #     - appnet
+
+  # mariadb-exporter:
+  #   image: prom/mysqld-exporter:latest
+  #   container_name: mariadb-exporter
+  #   command:
+  #     - "--config.my-cnf=/etc/mysql/.my.cnf"
+  #     - "--mysqld.address=mariadb:3306"
+  #   volumes:
+  #     - ./monitoring/.my.cnf:/etc/mysql/.my.cnf:ro
+  #   ports:
+  #     - "9104:9104"
+  #   depends_on:
+  #     mariadb:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+  #   networks:
+  #     - appnet
 volumes:
   db_data:
+  # prometheus_data:   
+  # grafana_data:    
 
 networks:
   appnet:

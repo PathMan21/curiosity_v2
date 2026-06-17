@@ -21,15 +21,7 @@ else {
 }
 
 export const PublicOnlyRoute = () => {
-
-  const {
-    isLogged,
-    isLoading,
-  } = useAuthentification()
-
-  if (isLoading) {
-    return <div>Chargement...</div>
-  }
+  const { isLogged } = useAuthentification()
 
   if (isLogged) {
     return <Navigate to="/home" replace />

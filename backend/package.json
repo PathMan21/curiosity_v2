@@ -11,6 +11,7 @@
     "cron": "^4.4.0",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
+    "express-session": "^1.19.0",
     "jest": "^30.2.0",
     "jsonwebtoken": "^9.0.3",
     "jwt-decode": "^4.0.0",
@@ -18,6 +19,7 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.11",
     "oauth": "^0.10.2",
+    "prom-client": "^15.1.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.9.6",
@@ -35,8 +37,8 @@
   },
   "scripts": {
     "start": "tsx backend/server.tsx",
-    "dev:backend": "tsx watch backend/server.ts",
-    "dev": "tsx watch server.tsx",
+    "dev:backend": "tsx watch --ignore ./src/Helpers server.tsxs",
+    "dev": "tsx watch --ignore ./src/Helpers server.tsx",
     "frontend:dev": "vite --host"
   },
   "devDependencies": {
