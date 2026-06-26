@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { AuthentProvider } from '../../../frontend/src/Context/AuthContext';
-import { useAuth } from '../../../frontend/src/Context/AuthContext';
+import { AuthentProvider } from '../../../frontend/src/Context/Auth';
+import { useAuthentification }  from '../../../frontend/src/Context/Auth';
 import '@testing-library/jest-dom'
 import React from 'react';
 
@@ -11,10 +11,10 @@ jest.mock('react-router-dom', () => ({
 }))
 
 const TestComponent = () => {
-  const { user, token, login, logout } = useAuth()
+  const { user, accessToken, login, logout } = useAuthentification()
   return (
     <div>
-      {token && <p>Token: {token.substring(0, 10)}...</p>}
+      {accessToken && <p>Token: {accessToken.substring(0, 10)}...</p>}
       {user && <p>User: {user.username}</p>}
       <button onClick={() => login('test@test.com', 'password')}>Login</button>
       <button onClick={() => logout()}>Logout</button>
@@ -67,7 +67,7 @@ describe('AuthContext Tests', () => {
   it('should handle context hook usage', async () => {
     const TestHookComponent = () => {
       try {
-        const auth = useAuth()
+        const auth = useAuthentification()
         return <p>Auth available: {auth ? 'yes' : 'no'}</p>
       } catch (error) {
         return <p>Context not available</p>
@@ -90,7 +90,7 @@ describe('AuthContext Tests', () => {
     localStorage.setItem('refreshToken', 'refresh-token')
 
     const LogoutButton = () => {
-      const { logout } = useAuth()
+      const { logout } = useAuthentification()
       return <button onClick={logout}>Logout</button>
     }
 
