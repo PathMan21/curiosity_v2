@@ -13,12 +13,10 @@ const toggleLikes = async (req, res) => {
 
   // ✅ FIX: Validate inputs
   if (!contentId || !contentType) {
-    return res
-      .status(400)
-      .json({
-        status: 'Failed',
-        message: 'contentId et contentType sont requis',
-      })
+    return res.status(400).json({
+      status: 'Failed',
+      message: 'contentId et contentType sont requis',
+    })
   }
 
   const ALLOWED_CONTENT_TYPES = ['article', 'photo', 'news', 'book']
@@ -96,12 +94,10 @@ const checkLikeStatus = async (req, res) => {
   }
 
   if (!contentId || !contentType) {
-    return res
-      .status(400)
-      .json({
-        status: 'Failed',
-        message: 'contentId et contentType sont requis',
-      })
+    return res.status(400).json({
+      status: 'Failed',
+      message: 'contentId et contentType sont requis',
+    })
   }
 
   try {
