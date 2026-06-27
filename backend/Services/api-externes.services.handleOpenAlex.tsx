@@ -22,29 +22,27 @@ const OPENALEX_HEADERS = {
 const INTERESTS_MAP = {
   'ai-ml': '1702',
   'computer-science': '1705',
-  'cybersecurity': '1712',
+  cybersecurity: '1712',
   'data-science': '2613',
-  'robotics': '2207',
+  robotics: '2207',
   'computer-vision': '1703',
-  'nlp': '1704',
+  nlp: '1704',
   'computer-networks': '1708',
   'software-engineering': '1710',
-  'databases': '1706',
+  databases: '1706',
   'distributed-systems': '1709',
   'quantum-computing': '3107',
-  'bioinformatics': '1101',
+  bioinformatics: '1101',
 }
 export function getAllSubfields(): string[] {
   let subfield = Object.values(INTERESTS_MAP)
-  console.log("subfield ", subfield)
+  console.log('subfield ', subfield)
   return subfield
 }
 /* ---------------- UTILS ---------------- */
 
 function mapInterestsToSubfields(interests) {
-  return interests
-    .map(i => INTERESTS_MAP[i])
-    .filter(Boolean)
+  return interests.map((i) => INTERESTS_MAP[i]).filter(Boolean)
 }
 
 /* ---------------- CACHE ---------------- */
@@ -58,33 +56,31 @@ async function getFromCache(key) {
   try {
     const parsed = JSON.parse(raw)
     if (parsed?.articles) {
-      return parsed;
+      return parsed
     } else {
-      return null;
+      return null
     }
   } catch {
     return null
   }
 }
-async function setCache(
-  cacheKey,
-  interest,
-  articles
-) {
+async function setCache(cacheKey, interest, articles) {
   if (!articles?.length) {
     return
   }
 
-  const articlesArray = articles.map(art => {
-    const topTopic = art.topics?.find(t => {
-      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
-
-    }) || art.topics?.[0]
+  const articlesArray = articles.map((art) => {
+    const topTopic =
+      art.topics?.find((t) => {
+        Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+      }) || art.topics?.[0]
 
     return createArticleSchema.parse({
       openAlexId: art.id,
       title: art.title,
-      authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
+      authors: art.authorships
+        ?.map((a) => a.author?.display_name)
+        .filter(Boolean),
       published: art.publication_date,
       summary: art.abstract,
       doi: art.doi,
@@ -95,42 +91,35 @@ async function setCache(
       link: art.canonical_url,
       mainTopic: topTopic?.display_name || 'Unknown',
       topicScore: Number(topTopic?.score) || 0,
-      concepts: art.concepts?.map(c => c.display_name).filter(Boolean),
+      concepts: art.concepts?.map((c) => c.display_name).filter(Boolean),
       subfield: interest,
     })
   })
 
   try {
-    await redisClient.setEx(
-      cacheKey,
-      CACHE_TTL,
-      JSON.stringify(articlesArray)
-    )
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(articlesArray))
   } catch (err) {
     console.error('CRON openalex cache error => ', err)
   }
 }
 
-
-async function setDbAndCache(
-  cacheKey,
-  interest,
-  articles
-) {
+async function setDbAndCache(cacheKey, interest, articles) {
   if (!articles?.length) {
     return
   }
-  console.log("set db and cache")
-  const articlesArray = articles.map(art => {
-    const topTopic = art.topics?.find(t => {
-      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
-
-    }) || art.topics?.[0]
+  console.log('set db and cache')
+  const articlesArray = articles.map((art) => {
+    const topTopic =
+      art.topics?.find((t) => {
+        Number(t?.score) >= TOPIC_SCORE_THRESHOLD
+      }) || art.topics?.[0]
 
     return createArticleSchema.parse({
       openAlexId: art.id,
       title: art.title,
-      authors: art.authorships?.map(a => a.author?.display_name).filter(Boolean),
+      authors: art.authorships
+        ?.map((a) => a.author?.display_name)
+        .filter(Boolean),
       published: art.publication_date,
       summary: art.abstract,
       doi: art.doi,
@@ -141,7 +130,7 @@ async function setDbAndCache(
       link: art.canonical_url,
       mainTopic: topTopic?.display_name || 'Unknown',
       topicScore: Number(topTopic?.score) || 0,
-      concepts: art.concepts?.map(c => c.display_name).filter(Boolean),
+      concepts: art.concepts?.map((c) => c.display_name).filter(Boolean),
       subfield: interest,
     })
   })
@@ -153,16 +142,12 @@ async function setDbAndCache(
     await Article.bulkCreate(articlesArray, {
       transaction: t,
       ignoreDuplicates: true,
-      logging: false
+      logging: false,
     })
 
     await t.commit()
 
-    await redisClient.setEx(
-      cacheKey,
-      CACHE_TTL,
-      JSON.stringify(articlesArray)
-    )
+    await redisClient.setEx(cacheKey, CACHE_TTL, JSON.stringify(articlesArray))
   } catch (err) {
     await t.rollback()
     console.error('CRON openalex error => ', err)
@@ -172,7 +157,6 @@ async function setDbAndCache(
 /* ---------------- OPENALEX API ---------------- */
 
 export async function fetchInterestFromAPI(interestID) {
-
   const currentYear = new Date().getFullYear()
   const all = []
 
@@ -183,18 +167,12 @@ export async function fetchInterestFromAPI(interestID) {
   }
 
   for (let page = 1; page <= MAX_PAGES; page++) {
-    const params = new URLSearchParams({
-      filter: `topics.subfield.id:${interestID},is_oa:true,language:en,publication_year:${currentYear - 1}-${currentYear}`,
-      per_page: String(PER_PAGE),
-      page: String(page),
-    })
-    
-    const url = `https://api.openalex.org/works?${params.toString()}`
+    const filter = `topics.subfield.id:${interestID},is_oa:true,language:en,publication_year:${currentYear - 1}-${currentYear}`
+    const url = `https://api.openalex.org/works?filter=${filter}&per_page=${PER_PAGE}&page=${page}`
 
-    const res = await fetch(url,
-      {
-        headers: OPENALEX_HEADERS
-      })
+    const res = await fetch(url, {
+      headers: OPENALEX_HEADERS,
+    })
     if (!res.ok) {
       break
     }
@@ -202,13 +180,10 @@ export async function fetchInterestFromAPI(interestID) {
     const data = await res.json()
 
     all.push(...data.results)
-
   }
 
-  return all.filter(work =>
-    work.topics.some(t =>
-      Number(t?.score) >= TOPIC_SCORE_THRESHOLD
-    )
+  return all.filter((work) =>
+    work.topics?.some((t) => Number(t?.score) >= TOPIC_SCORE_THRESHOLD)
   )
 }
 
@@ -228,7 +203,7 @@ export async function checkArticles(int) {
     const cached = await getFromCache(cacheKey)
     if (cached && !isArticlesTooOld(cached)) {
       resultsInfo.cache++
-      results.push(...cached) 
+      results.push(...cached)
       return results
     }
 
@@ -248,10 +223,9 @@ export async function checkArticles(int) {
     await setDbAndCache(cacheKey, int, articles)
     results.push(...articles)
     resultsInfo.reussis++
-
   } catch (err) {
     resultsInfo.errors++
-    console.error(`CRON OpenAlex error pour "${int}" =>`, "error => ", err)
+    console.error(`CRON OpenAlex error pour "${int}" =>`, 'error => ', err)
   }
 
   console.log(
@@ -266,7 +240,7 @@ async function getFromDB(interest) {
   if (!articles.length) {
     return null
   }
-  const mapped = articles.map(article => article.toJSON())
+  const mapped = articles.map((article) => article.toJSON())
 
   return mapped
 }
@@ -278,7 +252,7 @@ async function handleOpenAlex(req, res) {
     const user = req.user
 
     let interestsRaw = user.interests
-    
+
     // Handle interests if it's a string (from DB) or array (from response)
     if (typeof interestsRaw === 'string') {
       try {
@@ -288,13 +262,13 @@ async function handleOpenAlex(req, res) {
         return res.status(400).json({ message: 'Format des intérêts invalide' })
       }
     }
-    
+
     if (!Array.isArray(interestsRaw) || interestsRaw.length === 0) {
       return res.status(400).json({ message: 'Aucun intérêt défini' })
     }
 
     const interests = mapInterestsToSubfields(interestsRaw)
-    
+
     if (interests.length === 0) {
       return res.status(400).json({ message: 'Intérêts non valides' })
     }
@@ -319,20 +293,19 @@ async function handleOpenAlex(req, res) {
     }
 
     const unique = Array.from(
-      new Map(results.map(a => [a.openAlexId, a])).values()
+      new Map(results.map((a) => [a.openAlexId, a])).values()
     )
 
     return res.json({
       totalResults: unique.length,
       articles: unique
         .sort(() => Math.random() - 0.5)
-        .slice(0, MAX_FINAL_RESULTS)
+        .slice(0, MAX_FINAL_RESULTS),
     })
-
   } catch (err) {
     console.error('handleOpenAlex error:', err)
     return res.status(500).json({
-      message: 'Erreur serveur'
+      message: 'Erreur serveur',
     })
   }
 }

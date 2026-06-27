@@ -34,17 +34,17 @@ function AppContent() {
           <Route path="/" element={<LoginPage />} />
         </Route>
 
-
         <Route element={<Layout />}>
           <Route element={<ProtectedRoute />}>
-            <Route path="/complete-inscription" element={<CompleteInscription />} />
+            <Route
+              path="/complete-inscription"
+              element={<CompleteInscription />}
+            />
             <Route path="/Home" element={<ArticlePage />} />
             <Route path="/Profile" element={<Profile />} />
             <Route path="/Profile/settings" element={<ProfileSettings />} />
-
           </Route>
         </Route>
-
       </Routes>
     </BrowserRouter>
   )

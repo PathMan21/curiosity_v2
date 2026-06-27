@@ -38,9 +38,8 @@ const Book = sequelizeDb.define('Book', {
   type: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: "book"
-
-  }
+    defaultValue: 'book',
+  },
 })
 
 export default Book

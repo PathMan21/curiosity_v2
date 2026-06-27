@@ -6,13 +6,16 @@ function ProfileInfo(props: {
 }) {
   let interestArray: string[] = []
   if (props.interests) {
-    try { interestArray = JSON.parse(props.interests) } catch { interestArray = [] }
+    try {
+      interestArray = JSON.parse(props.interests)
+    } catch {
+      interestArray = []
+    }
   }
 
   return (
     <div className="profile-info-container page-with-nav">
       <div className="profile-info-wrapper">
-
         {/* Hero card */}
         <div className="glass-card p-0 overflow-hidden mb-4">
           {/* Banner */}
@@ -40,11 +43,12 @@ function ProfileInfo(props: {
                 <h1 className="profile-info-header">
                   {props.username || 'Utilisateur'}
                 </h1>
-                <p className="profile-info-email">
-                  {props.email}
-                </p>
+                <p className="profile-info-email">{props.email}</p>
               </div>
-              <a href="/Profile/settings" className="btn btn-outline-primary btn-sm">
+              <a
+                href="/Profile/settings"
+                className="btn btn-outline-primary btn-sm"
+              >
                 ⚙️ Paramètres
               </a>
             </div>
@@ -55,11 +59,9 @@ function ProfileInfo(props: {
         <div className="glass-card p-4">
           <div className="section-title mb-3">Mon compte</div>
           <div className="d-flex flex-column gap-2">
-            <a
-              href="/Profile/settings"
-              className="profile-quick-action-link"
-            >
-              <span className="profile-action-icon">⚙️</span> Paramètres du profil
+            <a href="/Profile/settings" className="profile-quick-action-link">
+              <span className="profile-action-icon">⚙️</span> Paramètres du
+              profil
               <span className="profile-action-arrow">→</span>
             </a>
           </div>

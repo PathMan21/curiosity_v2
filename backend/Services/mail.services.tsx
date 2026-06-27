@@ -8,24 +8,30 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import jwt from 'jsonwebtoken'
 
-import "../Helpers/configLink";
+import '../Helpers/configLink'
 
 const generateTokens = (userId: number) => ({
-  accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' }),
-  refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' }),
+  accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '15m',
+  }),
+  refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '7d',
+  }),
 })
 
 const verifyUser = async (req, res) => {
   try {
-    let { userId, uniqueString } = req.params;
-    console.log("raq => ", req.params);
+    let { userId, uniqueString } = req.params
+    console.log('raq => ', req.params)
 
     const result = await UserVerifications.findOne({
       where: { userId: userId },
     })
 
     if (!result) {
-      throw new Error("L'account n'existe pas ou le lien de vérification est invalide")
+      throw new Error(
+        "L'account n'existe pas ou le lien de vérification est invalide"
+      )
     }
 
     if (result.get('expiresAt') < new Date()) {
@@ -67,7 +73,7 @@ const verifyUser = async (req, res) => {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', 
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
@@ -79,7 +85,6 @@ const verifyUser = async (req, res) => {
       message: "Erreur lors de la vérification de l'email",
     })
   }
- 
 }
 
 const verifiedPage = async (req, res) => {
@@ -88,9 +93,7 @@ const verifiedPage = async (req, res) => {
 }
 
 const sendVerificationEmail = async ({ id, email }, res) => {
-  
   try {
-    
     if (!id) {
       console.error('sendVerificationEmail: id utilisateur manquant', {
         id,
@@ -101,7 +104,7 @@ const sendVerificationEmail = async ({ id, email }, res) => {
         .json({ status: 'Failed', message: 'ID utilisateur manquant' })
     }
 
-    const currentUrl = process.env.SERVER_URL;
+    const currentUrl = process.env.SERVER_URL
     const uniqueString = uuidv4() + id
 
     const options = {
@@ -128,7 +131,10 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     }
 
     const saltRounds = 10
-    const hasheduniqueString = await withTimeout(bcrypt.hash(uniqueString, saltRounds), 5000)
+    const hasheduniqueString = await withTimeout(
+      bcrypt.hash(uniqueString, saltRounds),
+      5000
+    )
 
     const userIdForDb = typeof id === 'string' ? parseInt(id, 10) : id
     if (Number.isNaN(userIdForDb)) {
@@ -147,12 +153,11 @@ const sendVerificationEmail = async ({ id, email }, res) => {
 
     await withTimeout(transport.sendMail(options), 5000)
 
-console.log("STEP 3 - after email");
+    console.log('STEP 3 - after email')
     res.status(200).json({
       status: 'PENDING',
       message: 'Email de vérification envoyé avec succès',
     })
-    
   } catch (error) {
     console.error('Erreur envoi email:', error)
     res.status(500).json({
@@ -166,7 +171,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     promise,
     new Promise<T>((_, reject) =>
       setTimeout(() => reject(new Error('Timeout')), ms)
-    )
-  ]);
+    ),
+  ])
 }
 export { sendVerificationEmail, verifyUser, verifiedPage }

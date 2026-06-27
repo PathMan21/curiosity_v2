@@ -26,16 +26,11 @@ const task = async () => {
 
     const duration = Date.now() - startTime
 
-    console.log(
-      `CRON PHOTO FINI => synchronisation terminée en ${duration}ms`
-    )
+    console.log(`CRON PHOTO FINI => synchronisation terminée en ${duration}ms`)
   } catch (error) {
     const duration = Date.now() - startTime
 
-    console.error(
-      `CRON PHOTO ERREUR => échec après ${duration}ms`,
-      error
-    )
+    console.error(`CRON PHOTO ERREUR => échec après ${duration}ms`, error)
   } finally {
     isCronRunning = false
   }

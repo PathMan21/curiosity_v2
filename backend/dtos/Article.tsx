@@ -1,9 +1,9 @@
-import { z } from "zod"
+import { z } from 'zod'
 
-const stringOrArray = z.union([
-  z.string(),
-  z.array(z.string())
-]).nullable().optional()
+const stringOrArray = z
+  .union([z.string(), z.array(z.string())])
+  .nullable()
+  .optional()
 
 export const createArticleSchema = z.object({
   openAlexId: z.string(),
@@ -24,7 +24,7 @@ export const createArticleSchema = z.object({
 
   publicationYear: z.number().optional(),
 
-    type: z.literal('article'),
+  type: z.literal('article'),
 
   link: z.string().url().nullable().optional(),
 

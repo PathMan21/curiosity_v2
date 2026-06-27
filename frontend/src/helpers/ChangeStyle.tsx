@@ -1,55 +1,73 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from 'react'
 
-const ThemeContext = createContext(undefined);
+const ThemeContext = createContext(undefined)
 
 export const ThemeProvider = ({ children }) => {
   // === États ===
   const [fontSize, setFontSize] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
-    return saved.fontSize || "normal-class";
-  });
+    const saved = JSON.parse(localStorage.getItem('accessibility') || '{}')
+    return saved.fontSize || 'normal-class'
+  })
 
   const [cursor, setCursor] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
-    return saved.cursorSize || false;
-  });
+    const saved = JSON.parse(localStorage.getItem('accessibility') || '{}')
+    return saved.cursorSize || false
+  })
 
   const [dark, setDark] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
-    return saved.dark || false;
-  });
+    const saved = JSON.parse(localStorage.getItem('accessibility') || '{}')
+    return saved.dark || false
+  })
 
   const [highContrast, setHighContrast] = useState(() => {
-    const saved = JSON.parse(localStorage.getItem("accessibility") || "{}");
-    return saved.highContrast || false;
-  });
+    const saved = JSON.parse(localStorage.getItem('accessibility') || '{}')
+    return saved.highContrast || false
+  })
 
   useEffect(() => {
-    const body = document.body;
-    body.classList.remove("font-small", "font-normal", "font-large", "font-xlarge");
-    body.classList.add(fontSize);
+    const body = document.body
+    body.classList.remove(
+      'font-small',
+      'font-normal',
+      'font-large',
+      'font-xlarge'
+    )
+    body.classList.add(fontSize)
 
-    cursor ? body.classList.add("accessible-cursor") : body.classList.remove("accessible-cursor");
-    dark ? body.classList.add("darkmode") : body.classList.remove("darkmode");
-    highContrast ? body.classList.add("high-contrast") : body.classList.remove("high-contrast");
+    cursor
+      ? body.classList.add('accessible-cursor')
+      : body.classList.remove('accessible-cursor')
+    dark ? body.classList.add('darkmode') : body.classList.remove('darkmode')
+    highContrast
+      ? body.classList.add('high-contrast')
+      : body.classList.remove('high-contrast')
 
     localStorage.setItem(
-      "accessibility",
+      'accessibility',
       JSON.stringify({ fontSize, cursorSize: cursor, dark, highContrast })
-    );
-  }, [fontSize, cursor, dark, highContrast]);
+    )
+  }, [fontSize, cursor, dark, highContrast])
 
   return (
     <ThemeContext.Provider
-      value={{ fontSize, cursor, dark, highContrast, setFontSize, setCursor, setDark, setHighContrast }}
+      value={{
+        fontSize,
+        cursor,
+        dark,
+        highContrast,
+        setFontSize,
+        setCursor,
+        setDark,
+        setHighContrast,
+      }}
     >
       {children}
     </ThemeContext.Provider>
-  );
-};
+  )
+}
 
 export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) console.warn("ThemeContext non initialisé");
-  return context;
-};
+  const context = useContext(ThemeContext)
+  if (!context) console.warn('ThemeContext non initialisé')
+  return context
+}

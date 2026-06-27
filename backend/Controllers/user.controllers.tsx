@@ -1,15 +1,19 @@
 import User from '../Models/User'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import "../Helpers/configLink"
+import '../Helpers/configLink'
 import { createUserSchema, updateUserSchema } from '../dtos/User'
 
 const generateTokens = (userId: number) => ({
-  accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' }),
-  refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' }),
+  accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '15m',
+  }),
+  refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: '7d',
+  }),
 })
 
-// 7 jours -> N'autorise que le site 
+// 7 jours -> N'autorise que le site
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: true,
@@ -28,9 +32,6 @@ const formatUser = (user) => ({
   interests: user.interests,
   picture: user.picture,
 })
-
-
-
 
 export const createUser = async (req, res) => {
   try {
@@ -63,7 +64,6 @@ export const createUser = async (req, res) => {
 
     const { sendVerificationEmail } = await import('../Services/mail.services')
     return sendVerificationEmail({ id: user.id, email: user.email }, res)
-
   } catch (error) {
     return res.status(500).json({
       status: 'Failed',
@@ -103,10 +103,10 @@ export const loginUser = async (req, res) => {
       }
     }
 
-    return res.json({ 
-      status: 'Success', 
+    return res.json({
+      status: 'Success',
       accessToken,
-      user: userData
+      user: userData,
     })
   } catch (error) {
     return res.status(500).json({
@@ -132,19 +132,14 @@ export const logoutUser = async (req, res) => {
 }
 
 export async function refresh(req, res) {
-
-  const token = req.cookies.refreshToken;
+  const token = req.cookies.refreshToken
 
   try {
-
-  if (!token) {
+    if (!token) {
       throw new Error('Pas de token')
-  }
+    }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.REFRESH_TOKEN_SECRET
-    )
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET)
 
     const accessToken = jwt.sign(
       { userId: decoded.userId },
@@ -162,33 +157,35 @@ export async function refresh(req, res) {
       throw new Error('Refresh token non existant')
     }
 
-
     return res.status(200).json({
       status: 'Success',
       token: accessToken,
     })
-
   } catch (error) {
-
     return res.status(401).json({ status: 'failed', message: error.message })
-
   }
 }
-
-
 
 export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
-      attributes: ['id', 'username', 'email', 'verified', 'interests', 'picture', 'isTemporary'],
+      attributes: [
+        'id',
+        'username',
+        'email',
+        'verified',
+        'interests',
+        'picture',
+        'isTemporary',
+      ],
     })
 
-    if (!user)  {
+    if (!user) {
       throw new Error('Utilisateur non reconnu')
     }
-    
+
     const userData = user.get({ plain: true })
-    
+
     // Parse interests if they are a JSON string
     if (userData.interests && typeof userData.interests === 'string') {
       try {
@@ -197,9 +194,9 @@ export const getCurrentUser = async (req, res) => {
         userData.interests = []
       }
     }
-    
+
     return res.json({ status: 'Success', user: userData })
-  } catch(err) {
+  } catch (err) {
     return res.status(401).json({ status: 'Failed', message: err.message })
   }
 }
@@ -222,7 +219,8 @@ export const updatedProfile = async (req, res) => {
     const updateData = {}
     if (username !== undefined) updateData.username = username
     if (picture !== undefined) updateData.picture = picture
-    if (interests !== undefined) updateData.interests = JSON.stringify(interests)
+    if (interests !== undefined)
+      updateData.interests = JSON.stringify(interests)
 
     await user.update(updateData)
 
@@ -245,7 +243,7 @@ export const updatedProfile = async (req, res) => {
     }
 
     return res.json({ status: 'Success', accessToken, user: userData })
-  } catch(error) {
+  } catch (error) {
     return res.status(500).json({ status: 'Failed', message: error.message })
   }
 }

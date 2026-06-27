@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
 import { randomBytes } from 'crypto'
 
-import "../Helpers/configLink";
+import '../Helpers/configLink'
 const baseUrl = process.env.BASE_URL_FRONT
 
 const googleAuthId = process.env.ID_OAUTH
@@ -37,9 +37,9 @@ const oauthVerify = async (req, res) => {
 
     const state = randomBytes(32).toString('hex')
     req.session.oauthState = state
-    
+
     const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuthId}&redirect_uri=${googleAuthCallback}&access_type=offline&response_type=code&state=${state}&scope=${encodeURIComponent(scopes)}`
-    
+
     res.json({ url: GOOGLE_OAUTH_CONSENT_SCREEN_URL })
   } catch (err) {
     console.error('OAuth verify error:', err)
@@ -61,23 +61,27 @@ const verifyToken = async (req: Request, res: Response) => {
 const oauthToken = async (req, res) => {
   try {
     const { code, state } = req.query
-    
+
     if (!req.session) {
       return res.status(500).json({ error: 'Session not initialized' })
     }
 
     if (!state || !req.session.oauthState) {
-      return res.status(400).json({ error: 'État CSRF invalide: state manquant' })
+      return res
+        .status(400)
+        .json({ error: 'État CSRF invalide: state manquant' })
     }
-    
+
     if (state !== req.session.oauthState) {
-      return res.status(400).json({ error: 'État CSRF invalide: state non valide' })
+      return res
+        .status(400)
+        .json({ error: 'État CSRF invalide: state non valide' })
     }
-    
+
     if (!code) {
       return res.status(400).json({ error: 'Code manquant dans le callback' })
     }
-    
+
     const data = {
       code,
       client_id: process.env.ID_OAUTH,
@@ -92,21 +96,23 @@ const oauthToken = async (req, res) => {
       body: new URLSearchParams(data),
     })
     const accessToken = await response.json()
-    
+
     if (!accessToken.id_token) {
       return res.status(400).json({ error: 'ID token non reçu' })
     }
-    
+
     const { id_token } = accessToken
 
     const tokenInfoResponse = await fetch(`${URL_TOKEN}?id_token=${id_token}`)
-    
+
     if (!tokenInfoResponse.ok) {
-      return res.status(400).json({ error: 'Erreur lors de la vérification du token' })
+      return res
+        .status(400)
+        .json({ error: 'Erreur lors de la vérification du token' })
     }
 
     const { name, picture, email } = await tokenInfoResponse.json()
-    
+
     if (!email) {
       return res.status(400).json({ error: 'Email non reçu du provider OAuth' })
     }
@@ -115,7 +121,8 @@ const oauthToken = async (req, res) => {
     if (existingUser) {
       // ✅ FIX: Utilisateur existant → on le connecte plutôt que de renvoyer une erreur 418
       // L'ancien code renvoyait le mail en clair dans le body (fuite d'info) et bloquait la reconnexion OAuth
-      const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } = generateTokens(existingUser.id)
+      const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } =
+        generateTokens(existingUser.id)
       await existingUser.update({ refreshToken: jwtRefreshToken })
 
       res.cookie('refreshToken', jwtRefreshToken, {
@@ -145,7 +152,8 @@ const oauthToken = async (req, res) => {
     })
 
     try {
-      const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } = generateTokens(newUser.id)
+      const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } =
+        generateTokens(newUser.id)
 
       await newUser.update({ refreshToken: jwtRefreshToken })
 
@@ -161,10 +169,12 @@ const oauthToken = async (req, res) => {
         secure: true,
         sameSite: 'strict',
       })
-      
+
       res.redirect(`${baseUrl}complete-inscription`)
     } catch (err) {
-      return res.status(500).json({ error: 'Erreur génération token', details: err.message })
+      return res
+        .status(500)
+        .json({ error: 'Erreur génération token', details: err.message })
     }
   } catch (err) {
     console.error('OAuth token error:', err)
@@ -189,7 +199,8 @@ const updateProfile = async (req, res) => {
 
   const updateData: any = {}
   if (typeof username !== 'undefined') updateData.username = username
-  if (typeof interests !== 'undefined') updateData.interests = JSON.stringify(interests)
+  if (typeof interests !== 'undefined')
+    updateData.interests = JSON.stringify(interests)
 
   // ✅ FIX: Le password ne doit PAS être mis à jour ici (route OAuth → completion de profil)
   // L'ancien code permettait de passer n'importe quel password sans validation
@@ -199,7 +210,7 @@ const updateProfile = async (req, res) => {
 
   try {
     await user.reload()
-    
+
     const { accessToken, refreshToken } = generateTokens(user.id)
     await user.update({ refreshToken })
 
@@ -232,7 +243,9 @@ const updateProfile = async (req, res) => {
     })
   } catch (err) {
     console.error('Erreur génération token après updateProfile:', err)
-    return res.status(500).json({ error: 'Erreur lors de la génération du token' })
+    return res
+      .status(500)
+      .json({ error: 'Erreur lors de la génération du token' })
   }
 }
 

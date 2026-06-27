@@ -3,21 +3,17 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthentification } from '../Context/Auth'
 
 export const ProtectedRoute = () => {
+  const { isLoading, isLogged } = useAuthentification()
 
-const { isLoading, isLogged } = useAuthentification();
+  if (isLoading) {
+    return <div>chargement...</div>
+  }
 
-
-if (isLoading) {
-  return <div>chargement...</div>;
-}
-
-if (!isLogged) {
-  return <Navigate to="/login" replace />
-}
-else {
-  return <Outlet/>
-}
-
+  if (!isLogged) {
+    return <Navigate to="/login" replace />
+  } else {
+    return <Outlet />
+  }
 }
 
 export const PublicOnlyRoute = () => {

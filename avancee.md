@@ -9,7 +9,7 @@ _Avancée du jour :_
 -> Ajout de express - node js - typescript en backend
 -> React - ajout en front end
 
--> Trello : 
+-> Trello :
 
 _Choix techniques :_
 
@@ -357,8 +357,9 @@ _choix technique_
 - également je vais remplacer arxiv par quelque chose de plus intelligible et retirer le coté trop technique de l'application, également organiser
   quelles api sont le mieux
 
-**Indispensable** - OpenAlex ( même chose que arxiv sur tout les domaines mais, plus facile à digérer )  
- - Wikipedia ( global - pour avoir des résumés et différents sujets ) - Unsplash ( image, intêret visuel ) - Youtube ( rajouter du visuel intéressant )
+**Indispensable** - OpenAlex ( même chose que arxiv sur tout les domaines mais, plus facile à digérer )
+
+- Wikipedia ( global - pour avoir des résumés et différents sujets ) - Unsplash ( image, intêret visuel ) - Youtube ( rajouter du visuel intéressant )
 
 **Ludique** - Open Trivia : ( questions à poser, interactif )
 
@@ -537,18 +538,18 @@ Si le cache se supprime alors que l'utilisateur veux y réaccéder, je refetch
 **----------------------------------23-02----------------------------------**
 
 -> Jest étant passé - nous rajoutants de l'accessibilité pour les handicap
-    -> Visuel
-    -> Sonores
-    -> 
+-> Visuel
+-> Sonores
+->
 
 J'ai fais un système de select qui récupère les infos que l'utilisateur a inscris dans la bdd quand il change ses
 préférences visuelles - je commence par la taille du texte, que j'ai définit dans des variables globales.
 J'ai choisis rem parce que si je ne définit pas les pixels de mes éléments, c'est ceux du navigateur par défaut qu'il prend
 Je ne l'agrandis alors que si l'utilisateur souhaite une aide en plus
 
--> Prochaines étape : 
-    bug => Pourquoi les images ne sont pas renvoyées X
-    bug => Pourquoi plusieurs articles peuvent etre ressortis => Pas retombé sur le soucis donc a voir
+-> Prochaines étape :
+bug => Pourquoi les images ne sont pas renvoyées X
+bug => Pourquoi plusieurs articles peuvent etre ressortis => Pas retombé sur le soucis donc a voir
 
 **----------------------------------24-02----------------------------------**
 
@@ -560,10 +561,8 @@ Je ne l'agrandis alors que si l'utilisateur souhaite une aide en plus
 
 **---------------------------------11-03----------------------------------**
 
-
 -> Système de rgaa adapter avec des plugins, rajout des alts etc... X
 -> Travail sur le front finis X
-
 
 -> Bugs sur footer / navbar à voir
 
@@ -586,61 +585,52 @@ Annexes / bugs :
 
 **---------------------------------17-03----------------------------------**
 
-
-Aujourd'hui : 
+Aujourd'hui :
 
 -> Partager les articles quand on clique sur partage
 -> Pipeline CI-CD
 
-
 PIPELINE GITHUB ACTION :
 
-*Attention !*
+_Attention !_
 
--  la configuration devra avoir un SHA plutot qu'un tag, un tag arrive quand on envoi du code et que le worflow s'active
-mais visiblement on peux les déplacer sur une autre action X
+- la configuration devra avoir un SHA plutot qu'un tag, un tag arrive quand on envoi du code et que le worflow s'active
+  mais visiblement on peux les déplacer sur une autre action X
 
 - Limiter les permissions à read seulement X
 
-- 
+-
 
 Ajout de pipeline...
 nous avons retiré les sha & tag car en réalité ça permet de récupérer mon code à un instant T. Cependant, si je travaille et maitrise complètement
 mon code il n'y aucun intéret d'avoir une récupération de code
 
-
-*Ajout*
+_Ajout_
 
 -> J'ai ajouté pour les tests et le lint MAIS - une fois hébergé il faudra rajouter le coté serveur
 
-
 **---------------------------------17-03----------------------------------**
-
 
 - Corriger l'erreur 401 de la page d'accueil X Fait
 - Ajouter openLibrary : avec des livres connus du domaine - réfléchir comment le stocker - si je dois le stocker etc.. (EN COURS)
 
-
 **---------------------------------19-03----------------------------------**
-
 
 - Ajout de openlibrary : récupérer une autre api - car celle ci n'a pas de vérification de "ratings", "scoring" etc...
 - Stockage en reddis à faire, même appel que pour les autres
 
 **---------------------------------25-03----------------------------------**
 
+- Ajouts des modèles de données en bdd - plutot que faire ça que via redis - pas efficace
+- Faire une table Likes pour gérer
 
-- Ajouts des modèles de données en bdd - plutot que faire ça que via redis - pas efficace 
-- Faire une table Likes pour gérer 
-
-- Ajouts de Cron pour les appels récurrent reddis => On installe node-cron avec un petit test & 
-également on peux voir comment ça fonctionne sur =>
-https://crontab.guru/
+- Ajouts de Cron pour les appels récurrent reddis => On installe node-cron avec un petit test &
+  également on peux voir comment ça fonctionne sur =>
+  https://crontab.guru/
 
 -> Pourquoi il ne me sort pas les livres également ?
 
 - Tester la sécurité
-
 
 **---------------------------------30-03----------------------------------**
 
@@ -652,24 +642,22 @@ https://crontab.guru/
 
 **---------------------------------19-04----------------------------------**
 
-
-le but ici et de savoir si les articles photos etc.. sont trop vieux et doivent être re-fetch des apis 
+le but ici et de savoir si les articles photos etc.. sont trop vieux et doivent être re-fetch des apis
 comment faire ? Je pensais à on va checker l'intérieur du reddis
 
 on met isArticleTooOld pour savoir où on en est
 on ressort true -> on va chercher dans la base de données (tout ça est déjà fait dans tout ce qui est api etc...)
-La je propose qu'on fasse intervenir les crons 
+La je propose qu'on fasse intervenir les crons
 
-Les crons vont faire tout les appels api - on va changer le système actuel qui fetch côté client 
-=> On va chercher en backend quand les crons s'executent - selon les articles etc... 
-
+Les crons vont faire tout les appels api - on va changer le système actuel qui fetch côté client
+=> On va chercher en backend quand les crons s'executent - selon les articles etc...
 
 actuellement, je vais checker si les articles sont trop vieux. Si ils sont trop vieux je les ""refresh""
 Donc ce que je vais faire c'est que tout les jours, je vais faire un appel - voir si tout n'est pas trop vieux
 ça permet d'avoir le controle à plusieurs endroits centralisés, au lieu de répèter deux fois la même chose
 
 EGALEMENT => du coup il me faut charger TOUT les intérets, au lieu d'un seul, donc la logique doit changer
-comment l'utilisateur récupère tout ça doit aussi changer => 
+comment l'utilisateur récupère tout ça doit aussi changer =>
 
 **---------------------------------22-04----------------------------------**
 
@@ -679,14 +667,12 @@ Je dois également sécuriser le site - mettre un throttle pour limiter les robo
 
 Beaucoup trop d'articles sont cherchés - X réglé
 
-
 **---------------------------------01-05----------------------------------**
 
 -> Les dix failles owasp - à vérifier
-  -> Une faille par jour => 
+-> Une faille par jour =>
 
 -> Monitoring prometheus
-
 
 <!-- -> Retravailler le front
   -> Filtre de contenus - news - articles etc...
@@ -697,25 +683,21 @@ Beaucoup trop d'articles sont cherchés - X réglé
 -> Redis : structurer combien va me couter sur la prod
   ->   -->
 
-  finalement retravail sur le code de manière générale => beaucoup de petits bugs qui s'accumulaient et qui ne voulait rien dire -> en cours toujours
+finalement retravail sur le code de manière générale => beaucoup de petits bugs qui s'accumulaient et qui ne voulait rien dire -> en cours toujours
 
-
-  **---------------------------------03-05----------------------------------**
-
+**---------------------------------03-05----------------------------------**
 
 -> Faire une analyse financière de ce que ça va couter
 -> Checker les bugs
 -> Régler au moins un bugs owasp
 -> Bugs sur les crons à régler
 
--> Refaire l'authorization (exposition au xss) 
+-> Refaire l'authorization (exposition au xss)
 
 Explication de comment ça marche (on revois les bases)
 
 User -> Appel au login avec email - mdp -> serveur
 Le serveur -> cehck l'utilisateur - créer le token avec un secret (bcrypt etc...) -> Access token () et refresh token ()
-
-
 
 Refresh token ( n'envoie jamais en frontend ) => Transmis en http only cookie coté serveur => Génère l'access token coté frontend ( 30 jours )
 L'access token ( frontend ) sert de clé en frontend => Généré par le refresh token ( plutot 15 minutes )
@@ -723,11 +705,10 @@ L'access token va se mettre dans la mémoire vive de react (pas localstorage etc
 
 Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisateur est bon
 
-
 **---------------------------------11-05----------------------------------**
 
 -> Axios - pour les intercepteur - on va sécuriser avant d'envoyer une requête plutot que faire une requête avec un middleware au milieu qui check à chaque fois
--> Faire toutes les autres api  
+-> Faire toutes les autres api
 
 **---------------------------------16-05----------------------------------**
 
@@ -737,19 +718,15 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
     -> faire un effet scroll
     -> Retravailler le côté hierarchisation des données
 
-
-    
 **---------------------------------17-05----------------------------------**
 
 -> Retravail sur les dtos & zod, on essais de faire la protection entre les deux
-
-
 
 **---------------------------------21-05----------------------------------**
 
 -> J'active les images mais c'est tout, le but est d'avoir une appli pour l'oral
 
--> Photos et article dtos mis en place - tout fonctionne  X
+-> Photos et article dtos mis en place - tout fonctionne X
 
 -> Faire les crons - remplacer la logique d'aller chercher chez l'utilisateur
 -> Revoir l'update utilisateur - corriger l'oauth
@@ -758,26 +735,20 @@ Toutes les 15 minutes l'access token va redemander au refresh token si l'utilisa
 -> Rajouter grafana
 -> Corrections sécurité - 10 owasp
 -> Configurer les logs
--> 
+->
 
 **---------------------------------22-05----------------------------------**
-
 
 -> Faire les crons regarder si les tests fonctionnent
 
 **---------------------------------28-05----------------------------------**
 
-
 -> Regarder si il va chercher toutes les id des articles
 -> Faire la séparation entre set cache et set db, pour si il y a plus de cache cherche en db, et recréer le cache
 
-
-
 **---------------------------------11/06----------------------------------**
 
-
--> Prometheus à configurer sur le vps, a mettre de coté 
+-> Prometheus à configurer sur le vps, a mettre de coté
 -> Faire une page d'accueil accessible avt que je me connecte
 
-
--> Starlight - docuzorus 
+-> Starlight - docuzorus

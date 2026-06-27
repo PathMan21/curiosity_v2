@@ -38,6 +38,8 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write .",
     "start": "tsx backend/server.tsx",
     "dev:backend": "tsx watch backend/server.ts",
     "dev": "tsx watch backend/server.tsx",
@@ -72,6 +74,7 @@
     "@types/react-dom": "^18.2.7",
     "babel-jest": "^30.2.0",
     "babel-plugin-transform-import-meta": "^2.3.3",
+    "eslint": "^9.39.4",
     "git-precommit-checks": "^3.1.0",
     "husky": "^9.1.7",
     "jest": "^30.2.0",

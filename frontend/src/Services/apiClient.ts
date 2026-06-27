@@ -4,9 +4,12 @@ interface ApiError extends Error {
   status: number
 }
 
-export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<any> {
+export async function fetchWithAuth(
+  url: string,
+  options: RequestInit = {}
+): Promise<any> {
   const token = localStorage.getItem('authToken')
-  
+
   const headers = {
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -20,7 +23,9 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
   })
 
   if (!response.ok) {
-    const error = new Error(`Request failed with status ${response.status}`) as ApiError
+    const error = new Error(
+      `Request failed with status ${response.status}`
+    ) as ApiError
     error.status = response.status
     throw error
   }

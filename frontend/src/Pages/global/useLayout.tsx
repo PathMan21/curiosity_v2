@@ -1,19 +1,19 @@
-import NavbarSite from "../../Components/NavbarSite"
-import FooterSite from "../../Components/FooterSite"
-import { Outlet } from "react-router-dom"
+import NavbarSite from '../../Components/NavbarSite'
+import FooterSite from '../../Components/FooterSite'
+import { Outlet } from 'react-router-dom'
 
 function Layout() {
-    return (
-        <>
-            <NavbarSite />
+  return (
+    <>
+      <NavbarSite />
 
-            <main>
-                <Outlet />
-            </main>
+      <main>
+        <Outlet />
+      </main>
 
-            <FooterSite />
-        </>
-    )
+      <FooterSite />
+    </>
+  )
 }
 
 export default Layout
