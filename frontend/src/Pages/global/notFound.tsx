@@ -4,7 +4,7 @@ function NotFound() {
             <h1>404</h1>
             <p>Page introuvable</p>
             
-            <a href="/login">Se connecter ?</a>
+            <a href="/">Retourner à l'accueil</a>
         </div>
     )
 }

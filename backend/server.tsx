@@ -24,56 +24,44 @@ import './Models/Photo';
 const app = express()
 const server = createServer(app)
 
+app.use(cookieParser())
 
-
-;(async () => {
-    await connectDB();
-    app.use(cookieParser())
-    
-    app.use(session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: { 
-            secure: process.env.NODE_ENV === 'production',
-            httpOnly: true,
-            sameSite: 'strict'
-        }
-    }))
-
-    // client.collectDefaultMetrics({ register })
-
-    // app.get('/metrics', async (req, res) => {
-    //   res.set('Content-Type', client.register.contentType);
-    //   res.end(await client.register.metrics());
-    // });
-
-    app.use(cors({
-        origin: process.env.FRONTEND_URL || 'https://be-curious.fr',
-        credentials: true
-    }));
-    // test
-
-    app.use('/api/user/', userRoutes);
-    app.use('/api/', authRoutes);
-    app.use('/api/', apiroutes);
-    app.use('/api/', likesRoutes);
-
-    // PROM
-    // app.get("/prom-test", function(req, res) {
-    //   res.send(register.metrics());
-    // });
-
-
-      const PORT = process.env.PORT
-   server.listen(PORT, async () => {
-    console.log(`Serveur lancé sur le port ${PORT}`)
-    try {
-      await import('./Helpers/cron.schedules.Photos')
-      await import('./Helpers/cron.schedules.Articles')
-      console.log('✅ Tous les crons ont démarré avec succès')
-    } catch (error) {
-      console.error('❌ Erreur lors du démarrage des crons:', error)
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'strict'
     }
-  })
-})();
+}))
+
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'https://be-curious.fr',
+    credentials: true
+}));
+
+app.use('/api/user/', userRoutes);
+app.use('/api/', authRoutes);
+app.use('/api/', apiroutes);
+app.use('/api/', likesRoutes);
+
+if (process.env.NODE_ENV !== 'test') {
+  ;(async () => {
+      await connectDB();
+      const PORT = process.env.PORT || 3000
+      server.listen(PORT, async () => {
+        console.log(`Serveur lancé sur le port ${PORT}`)
+        try {
+          await import('./Helpers/cron.schedules.Photos')
+          await import('./Helpers/cron.schedules.Articles')
+          console.log('✅ Tous les crons ont démarré avec succès')
+        } catch (error) {
+          console.error('❌ Erreur lors du démarrage des crons:', error)
+        }
+      })
+  })();
+}
+
+export default app

@@ -7,9 +7,9 @@ const stringOrArray = z.union([
 
 
 export const createPhotosSchema = z.object({
-  unsplashId: z.string(),
+  unsplashId: z.string().min(1),
 
-  url: z.string().min(1).nullable().optional(),
+  url: z.string().url(),
 
   photographer: stringOrArray,
 
@@ -19,7 +19,7 @@ export const createPhotosSchema = z.object({
 
   photographerLink: z.string().url().nullable().optional(),
 
-  type: z.string().default("Photo"),
+  type: z.literal('photo').default('photo'),
 
   interest: z.string(),
 

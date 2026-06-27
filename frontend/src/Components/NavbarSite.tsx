@@ -3,7 +3,7 @@ import Switch from "../helpers/darkmode"
 import { useAuthentification } from '../Context/Auth'
 
 function NavbarSite() {
-  const { logout } = useAuthentification()
+  const { logout, user } = useAuthentification()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -33,33 +33,53 @@ function NavbarSite() {
 
         <div className="collapse navbar-collapse" id="navbarContent">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-1">
-            <li className="nav-item">
-              <a
-                className={`nav-link${isActive('/Home') ? ' active' : ''}`}
-                href="/Home"
-              >
-                🏠 Accueil
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className={`nav-link${isActive('/Profile') ? ' active' : ''}`}
-                href="/Profile"
-              >
-                👤 Profil
-              </a>
-            </li>
+            {user && (
+              <span className="navbar-text px-2" style={{ color: 'var(--text-color)' }}>
+                {user.username}
+              </span>
+            )}
+            {user && (
+              <>
+                <li className="nav-item">
+                  <a
+                    className={`nav-link${isActive('/Home') ? ' active' : ''}`}
+                    href="/Home"
+                  >
+                    🏠 Accueil
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a
+                    className={`nav-link${isActive('/Profile') ? ' active' : ''}`}
+                    href="/Profile"
+                  >
+                    👤 Profil
+                  </a>
+                </li>
+              </>
+            )}
             <li className="nav-item d-flex align-items-center px-2">
               <Switch />
             </li>
-            <li className="nav-item">
-              <button
-                onClick={handleLogout}
-                className="btn btn-outline-primary btn-sm"
-              >
-                Déconnexion
-              </button>
-            </li>
+            {user ? (
+              <li className="nav-item">
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-outline-primary btn-sm"
+                >
+                  Déconnexion
+                </button>
+              </li>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <a className="nav-link" href="/login">Connexion</a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/register">Inscription</a>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

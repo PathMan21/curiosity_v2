@@ -1,77 +1,37 @@
-
-
-
 const MAX_ARTICLE_AGE_DAYS = 30
-const MAX_NEWS_AGE_DAYS = 7
-
-const MAX_BOOK_AGE_DAYS = 50
-const MAX_PHOTO_AGE_DAYS = 50
-
-function isArticlesTooOld(articles): Boolean {
-  if (!articles || articles.length === 0) {
+const MAX_PHOTO_AGE_DAYS = 90
+function isArticlesTooOld(articles: any[] | null | undefined): boolean {
+  if (!articles || !Array.isArray(articles) || articles.length === 0) {
     return true
   }
-
+  const first = articles[0]
+  if (!first) return true
+  const dateStr = first.published || first.publishedAt
+  if (!dateStr) return true
+  
+  const publishedAt = new Date(dateStr)
+  if (isNaN(publishedAt.getTime())) {
+    return true
+  }
   const limitDate = new Date()
   limitDate.setDate(limitDate.getDate() - MAX_ARTICLE_AGE_DAYS)
-  const tooOldCount = articles.filter((article) => {
-    const publishedAt = new Date(article.publishedAt)
-    return publishedAt < limitDate
-  }).length
-  if (tooOldCount > articles.length / 2){
-    return true
-  } else {
-    return false;
-  }
+  return publishedAt < limitDate
 }
-
-
-function isPhotosTooOld(photos): boolean {
-  if (!photos || photos.length === 0) {
+function isPhotosTooOld(photos: any[] | null | undefined): boolean {
+  if (!photos || !Array.isArray(photos) || photos.length === 0) {
     return true
   }
-
+  const first = photos[0]
+  if (!first) return true
+  const dateStr = first.createdAt || first.published
+  if (!dateStr) return true
+  
+  const createdAt = new Date(dateStr)
+  if (isNaN(createdAt.getTime())) {
+    return true
+  }
   const limitDate = new Date()
   limitDate.setDate(limitDate.getDate() - MAX_PHOTO_AGE_DAYS)
-
-  const tooOldCount = photos.filter((p) => new Date(p.createdAt) < limitDate).length
-  if (tooOldCount > photos.length / 2){
-    return true
-  } else {
-    return false;
-  }
+  return createdAt < limitDate
 }
-
-
-
-
-
-// function isNewsTooOld(articles: any[]): boolean {
-//   if (!articles || articles.length === 0) return true
-
-//   const limitDate = new Date()
-//   limitDate.setDate(limitDate.getDate() - MAX_NEWS_AGE_DAYS)
-
-//   const tooOldCount = articles.filter((a) => {
-//     const publishedAt = new Date(a.publishedAt)
-//     return publishedAt < limitDate
-//   }).length
-
-//   // Si plus de la moitié des articles sont trop vieux => on le considère périmé
-//   return tooOldCount > articles.length / 2
-// }
-
-// function isBooksTooOld(books: any[]): boolean {
-//   if (!books || books.length === 0) return true
-
-//   const limitDate = new Date()
-//   limitDate.setDate(limitDate.getDate() - MAX_BOOK_AGE_DAYS)
-
-//   const tooOldCount = books.filter((b) => new Date(b.createdAt) < limitDate).length
-//   return tooOldCount > books.length / 2
-// }
-
-
-
-
 export { isArticlesTooOld, isPhotosTooOld }

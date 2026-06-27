@@ -88,7 +88,9 @@ const verifiedPage = async (req, res) => {
 }
 
 const sendVerificationEmail = async ({ id, email }, res) => {
+  
   try {
+    
     if (!id) {
       console.error('sendVerificationEmail: id utilisateur manquant', {
         id,
@@ -126,7 +128,7 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     }
 
     const saltRounds = 10
-    const hasheduniqueString = await bcrypt.hash(uniqueString, saltRounds)
+    const hasheduniqueString = await withTimeout(bcrypt.hash(uniqueString, saltRounds), 5000)
 
     const userIdForDb = typeof id === 'string' ? parseInt(id, 10) : id
     if (Number.isNaN(userIdForDb)) {
@@ -143,12 +145,14 @@ const sendVerificationEmail = async ({ id, email }, res) => {
       expiresAt: new Date(Date.now() + 600000),
     })
 
-    await transport.sendMail(options)
+    await withTimeout(transport.sendMail(options), 5000)
 
+console.log("STEP 3 - after email");
     res.status(200).json({
       status: 'PENDING',
       message: 'Email de vérification envoyé avec succès',
     })
+    
   } catch (error) {
     console.error('Erreur envoi email:', error)
     res.status(500).json({
@@ -157,5 +161,12 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     })
   }
 }
-
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), ms)
+    )
+  ]);
+}
 export { sendVerificationEmail, verifyUser, verifiedPage }

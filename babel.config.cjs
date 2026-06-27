@@ -3,7 +3,8 @@ module.exports = {
     ['@babel/preset-env', { targets: { node: 'current' } }],
     ['@babel/preset-react', { runtime: 'automatic' }],
     ['@babel/preset-typescript', { allowDeclareFields: true }],
-    ["babel-plugin-transform-import-meta", { "module": "ES6" }]
-
   ],
-};
+  plugins: [
+    ['babel-plugin-transform-import-meta', { module: 'ES6' }],
+  ],
+}
