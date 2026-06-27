@@ -24,13 +24,13 @@ export const createArticleSchema = z.object({
 
   publicationYear: z.number().optional(),
 
-  type: z.string(),
+    type: z.literal('article'),
 
   link: z.string().url().nullable().optional(),
 
   mainTopic: z.string(),
 
-  topicScore: z.number(),
+  topicScore: z.number().min(0).max(1),
 
   concepts: z.array(z.string()).optional().nullable(),
 

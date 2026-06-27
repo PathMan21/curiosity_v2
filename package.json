@@ -4,6 +4,8 @@
     "@fortawesome/react-fontawesome": "^3.3.0",
     "@vitejs/plugin-react": "^4.0.0",
     "axios": "^1.16.0",
+    "babel": "^5.8.38",
+    "babel-test": "^0.2.4",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.1",
     "bootstrap": "^5.3.8",

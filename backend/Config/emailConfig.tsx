@@ -2,8 +2,8 @@ import nodemailer from 'nodemailer'
 
 import "../Helpers/configLink";
 export const transport = nodemailer.createTransport({
-    host: "smtp.scaleway.com",
-    port: 587,
+    host: "smtp.tem.scaleway.com",
+    port: 465,
     secure: false,
     auth: {
     user: process.env.AUTH_MAIL,

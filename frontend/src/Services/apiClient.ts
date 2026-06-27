@@ -1,48 +1,44 @@
-
-
-
- 
-
-interface RefreshResponse {
-  status: string
-  accessToken: string
-}
+const API_URL = import.meta.env?.VITE_SERVER_URL || ''
 
 interface ApiError extends Error {
   status: number
 }
 
-let isRefreshing = false
-let failedQueue: Array<{
-  resolve: (value: string) => void
-  reject: (reason?: any) => void
-}> = []
+export async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<any> {
+  const token = localStorage.getItem('authToken')
+  
+  const headers = {
+    ...options.headers,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  } as Record<string, string>
 
-const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error)
-    } else {
-      prom.resolve(token!)
-    }
-  })
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`
 
-  isRefreshing = false
-  failedQueue = []
-}
-
-const refreshAccessToken = async () => {
-  const response = await fetch(`${API_URL}/api/user/refresh-token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
+  const response = await fetch(fullUrl, {
+    ...options,
+    headers,
   })
 
   if (!response.ok) {
-    throw new Error('Impossible de rafraîchir le token')
+    const error = new Error(`Request failed with status ${response.status}`) as ApiError
+    error.status = response.status
+    throw error
   }
 
   return response.json()
+}
+
+export async function getArticles() {
+  return fetchWithAuth('/api/openalex')
+}
+
+export async function getPhotos() {
+  return fetchWithAuth('/api/unsplash')
+}
+
+export async function updateProfile(data: any) {
+  return fetchWithAuth('/api/user/updated-profile', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
 }
