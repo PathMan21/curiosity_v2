@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import Switch from "../helpers/darkmode"
+import Switch from '../helpers/darkmode'
 import { useAuthentification } from '../Context/Auth'
 
 function NavbarSite() {
@@ -17,7 +17,9 @@ function NavbarSite() {
   return (
     <nav className="navbar fixed-top navbar-expand-lg">
       <div className="container-fluid px-3">
-        <a className="navbar-brand" href="/Home">✦ Curiosity</a>
+        <a className="navbar-brand" href="/Home">
+          ✦ Curiosity
+        </a>
 
         <button
           className="navbar-toggler border-0"
@@ -34,7 +36,10 @@ function NavbarSite() {
         <div className="collapse navbar-collapse" id="navbarContent">
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-1">
             {user && (
-              <span className="navbar-text px-2" style={{ color: 'var(--text-color)' }}>
+              <span
+                className="navbar-text px-2"
+                style={{ color: 'var(--text-color)' }}
+              >
                 {user.username}
               </span>
             )}
@@ -73,10 +78,14 @@ function NavbarSite() {
             ) : (
               <>
                 <li className="nav-item">
-                  <a className="nav-link" href="/login">Connexion</a>
+                  <a className="nav-link" href="/login">
+                    Connexion
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/register">Inscription</a>
+                  <a className="nav-link" href="/register">
+                    Inscription
+                  </a>
                 </li>
               </>
             )}

@@ -1,9 +1,6 @@
-
 import path from 'path'
 import { Sequelize } from 'sequelize'
-import "../Helpers/configLink";
-
-
+import '../Helpers/configLink'
 
 const sequelizeDb = new Sequelize(
   process.env.DB_NAME,

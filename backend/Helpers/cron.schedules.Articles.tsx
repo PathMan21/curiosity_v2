@@ -1,11 +1,12 @@
-import { checkArticles, getAllOpenAlexQueries } from "../Services/api-externes.services.handleOpenAlex"
+import {
+  checkArticles,
+  getAllOpenAlexQueries,
+} from '../Services/api-externes.services.handleOpenAlex'
 import cron from 'node-cron'
 
 let isCronRunning = false
 
-  const task = async () => {
-  
-  
+const task = async () => {
   if (isCronRunning) return
 
   isCronRunning = true
@@ -19,21 +20,16 @@ let isCronRunning = false
     for (const query of queries) {
       console.log("valeur de l'intéret open alex cron => ", query)
       await checkArticles(query)
-      await new Promise(resolve =>
-        setTimeout(resolve, 200)
-      )
+      await new Promise((resolve) => setTimeout(resolve, 200))
     }
 
-    console.log(
-      `CRON DONE => ${Date.now() - startTime}ms`
-    )
+    console.log(`CRON DONE => ${Date.now() - startTime}ms`)
   } catch (error) {
     console.error('CRON ERROR =>', error)
   } finally {
     isCronRunning = false
   }
 }
-
 
 const scheduledTask = cron.schedule('0 7 * * *', task)
 

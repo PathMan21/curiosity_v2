@@ -9,11 +9,11 @@ export default defineConfig({
     allowedHosts: ['be-curious.fr'],
 
     proxy: {
-      '/api': 'http://backend:3000'
+      '/api': 'http://backend:3000',
     },
 
     watch: {
-      usePolling: true
-    }
-  }
+      usePolling: true,
+    },
+  },
 })

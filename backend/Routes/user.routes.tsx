@@ -18,10 +18,25 @@ import {
 import { verifiedPage, verifyUser } from '../Services/mail.services'
 const router = Router()
 
-const signupLimiter = createRateLimiter((req) => req.ip || 'unknown', 3, 15 * 60 * 1000) 
-const loginLimiter = createRateLimiter((req) => req.body.email || req.ip || 'unknown', 5, 15 * 60 * 1000) 
+const signupLimiter = createRateLimiter(
+  (req) => req.ip || 'unknown',
+  3,
+  15 * 60 * 1000
+)
+const loginLimiter = createRateLimiter(
+  (req) => req.body.email || req.ip || 'unknown',
+  5,
+  15 * 60 * 1000
+)
 
-router.post('/create', bodyParser.json(), signupLimiter, validateUser, validateByMail, createUser)
+router.post(
+  '/create',
+  bodyParser.json(),
+  signupLimiter,
+  validateUser,
+  validateByMail,
+  createUser
+)
 router.post('/login', bodyParser.json(), loginLimiter, loginUser)
 router.post('/logout', bodyParser.json(), logoutUser)
 router.post('/refresh-token', refresh)
@@ -37,4 +52,3 @@ router.post(
 )
 
 export default router
-

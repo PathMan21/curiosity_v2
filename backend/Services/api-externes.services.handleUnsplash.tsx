@@ -13,27 +13,27 @@ const CACHE_TTL = 3600 * 24 * 90
 /* ---------------- INTERESTS (SOURCE UNIQUE) ---------------- */
 
 const INTEREST_TO_SENTENCE: Record<string, string> = {
-  'ai-ml':               'artificial intelligence technology',
-  'computer-vision':     'computer vision camera lens',
-  'nlp':                 'natural language text processing',
-  'cybersecurity':       'cybersecurity digital lock',
-  'robotics':            'robot automation machine',
-  'data-science':        'data visualization analytics dashboard',
-  'computer-networks':   'network server cables infrastructure',
-  'software-engineering':'software developer code screen',
-  'databases':           'database storage server',
+  'ai-ml': 'artificial intelligence technology',
+  'computer-vision': 'computer vision camera lens',
+  nlp: 'natural language text processing',
+  cybersecurity: 'cybersecurity digital lock',
+  robotics: 'robot automation machine',
+  'data-science': 'data visualization analytics dashboard',
+  'computer-networks': 'network server cables infrastructure',
+  'software-engineering': 'software developer code screen',
+  databases: 'database storage server',
   'distributed-systems': 'cloud computing infrastructure',
-  'quantum-computing':   'quantum physics laboratory',
+  'quantum-computing': 'quantum physics laboratory',
 }
 
 /* ---------------- HELPERS ---------------- */
 
-export function getAllUnsplashQueries(){
+export function getAllUnsplashQueries() {
   return Object.values(INTEREST_TO_SENTENCE)
 }
 
 function mapInterestsToSentences(interests) {
-  return interests.map(int => INTEREST_TO_SENTENCE[int]).filter(Boolean)
+  return interests.map((int) => INTEREST_TO_SENTENCE[int]).filter(Boolean)
 }
 
 /* ---------------- CACHE ---------------- */
@@ -59,7 +59,7 @@ async function getFromDB(interest) {
   if (!photos.length) {
     return null
   }
-  const mapped = photos.map(p => p.toJSON())
+  const mapped = photos.map((p) => p.toJSON())
   if (isPhotosTooOld(mapped)) {
     return null
   }
@@ -68,52 +68,50 @@ async function getFromDB(interest) {
 
 /* ---------------- WRITE SYNC ---------------- */
 
-async function setCache(
-  cacheKey,
-  interest,
-  photos
-) {
+async function setCache(cacheKey, interest, photos) {
   if (!photos?.length) {
     return
-
   }
-const photosArray = photos.map(photo =>
-  createPhotosSchema.parse({
-    unsplashId: String(photo.id),
-    url: photo.url,
-    thumb: photo.thumb,
-    description: photo.description,
-    photographer: photo.photographer,
-    photographerLink: photo.photographerLink,
-    downloadLink: photo.downloadLink,
-    interest,
-    type: 'photo',
-  })
-)
+  const photosArray = photos.map((photo) =>
+    createPhotosSchema.parse({
+      unsplashId: String(photo.id),
+      url: photo.url,
+      thumb: photo.thumb,
+      description: photo.description,
+      photographer: photo.photographer,
+      photographerLink: photo.photographerLink,
+      downloadLink: photo.downloadLink,
+      interest,
+      type: 'photo',
+    })
+  )
 
   try {
-
     await redisClient.setEx(
       cacheKey,
       CACHE_TTL,
       JSON.stringify({ photosArray })
     )
   } catch (err) {
-    console.error('[CRON] Unsplash cache write failed:', err instanceof Error ? err.message : err)
+    console.error(
+      '[CRON] Unsplash cache write failed:',
+      err instanceof Error ? err.message : err
+    )
   }
 }
-async function setDbAndCache(
-  cacheKey,
-  interest,
-  photos
-) {
-  console.log("set db and cache - interest:", interest, "photos count:", photos?.length)
+async function setDbAndCache(cacheKey, interest, photos) {
+  console.log(
+    'set db and cache - interest:',
+    interest,
+    'photos count:',
+    photos?.length
+  )
   if (!photos?.length) {
     console.warn(`No photos to save for interest: ${interest}`)
     return
   }
 
-  const photosArray = photos.map(photo =>
+  const photosArray = photos.map((photo) =>
     createPhotosSchema.parse({
       unsplashId: photo.id,
       url: photo.url,
@@ -131,14 +129,16 @@ async function setDbAndCache(
 
   try {
     // First try to create new photos
-    await Photo.bulkCreate(photosArray, { 
+    await Photo.bulkCreate(photosArray, {
       transaction: t,
-      ignoreDuplicates: true,  // Skip duplicates instead of failing
-      logging: false 
+      ignoreDuplicates: true, // Skip duplicates instead of failing
+      logging: false,
     })
 
     await t.commit()
-    console.log(`✅ Successfully saved ${photosArray.length} photos for interest: ${interest}`)
+    console.log(
+      `✅ Successfully saved ${photosArray.length} photos for interest: ${interest}`
+    )
 
     // Then save to cache
     try {
@@ -153,15 +153,18 @@ async function setDbAndCache(
     }
   } catch (err) {
     await t.rollback()
-    console.error('[CRON] Unsplash DB write failed for interest:', interest, 'Error:', err)
+    console.error(
+      '[CRON] Unsplash DB write failed for interest:',
+      interest,
+      'Error:',
+      err
+    )
   }
 }
 
 /* ---------------- UNSPLASH API ---------------- */
 
-async function fetchPhotosFromAPI(
-  interest, clientId
-) {
+async function fetchPhotosFromAPI(interest, clientId) {
   const baseUrl = 'https://api.unsplash.com'
 
   const url =
@@ -175,7 +178,6 @@ async function fetchPhotosFromAPI(
     const res = await fetch(url, { signal: controller.signal })
     if (!res.ok) {
       return []
-
     }
     const data = await res.json()
 
@@ -198,14 +200,10 @@ async function fetchPhotosFromAPI(
 
 async function fetchGlobal(sent) {
   const results = await Promise.all(
-    sent.map(async interest => {
+    sent.map(async (interest) => {
       const cacheKey = `unsplash-${interest}`
 
-      return (
-        (await getFromCache(cacheKey)) ||
-        (await getFromDB(interest)) ||
-        []
-      )
+      return (await getFromCache(cacheKey)) || (await getFromDB(interest)) || []
     })
   )
 
@@ -216,12 +214,12 @@ async function fetchGlobal(sent) {
 
 async function handleUnsplash(req, res) {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.id
     const user = await User.findByPk(userId)
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' })
     }
-    
+
     // Handle null or empty interests
     if (!user.interests) {
       return res.status(400).json({ message: 'Aucun intérêt défini' })
@@ -229,20 +227,23 @@ async function handleUnsplash(req, res) {
 
     let interests
     try {
-      interests = typeof user.interests === 'string' ? JSON.parse(user.interests) : user.interests
+      interests =
+        typeof user.interests === 'string'
+          ? JSON.parse(user.interests)
+          : user.interests
     } catch (e) {
-      console.error("Erreur parsing intérêts:", e)
+      console.error('Erreur parsing intérêts:', e)
       return res.status(400).json({ message: 'Format des intérêts invalide' })
     }
 
     if (!interests.length) {
-      console.error("Intérets vide");
+      console.error('Intérets vide')
       return res.status(400).json({ message: 'Aucun intérêt défini' })
     }
 
     const sent = mapInterestsToSentences(interests)
     const photos = await fetchGlobal(sent)
-    console.log("photos backend => ", photos);
+    console.log('photos backend => ', photos)
 
     return res.json({ photos })
   } catch (err) {
@@ -276,20 +277,21 @@ export async function checkPhotos(queries) {
       }
 
       const photos = await fetchPhotosFromAPI(interest, clientId)
-      console.log("photos fetched =>", photos.length)
+      console.log('photos fetched =>', photos.length)
       if (!photos.length) {
         continue
       }
       await setDbAndCache(cacheKey, interest, photos)
       resultsInfo.synced++
-
     } catch (err) {
       resultsInfo.errors++
       console.error(`CRON UNSPLASH erreur => "${interest}" : `, err)
     }
   }
 
-  console.log(`CRON UNSPLASH : caché ${resultsInfo.cached}, db ${resultsInfo.db}, réussis ${resultsInfo.synced}, errors ${resultsInfo.errors}`)
+  console.log(
+    `CRON UNSPLASH : caché ${resultsInfo.cached}, db ${resultsInfo.db}, réussis ${resultsInfo.synced}, errors ${resultsInfo.errors}`
+  )
 }
 
 export default handleUnsplash

@@ -3,7 +3,17 @@ import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 // import { fetchWithAuth } from '../../Services/apiClient'
 
-function Article({ id, title, date, excerpt, author, type, url, concepts, topic }: any) {
+function Article({
+  id,
+  title,
+  date,
+  excerpt,
+  author,
+  type,
+  url,
+  concepts,
+  topic,
+}: any) {
   // const { token } = useAuth()
 
   // useEffect(() => {
@@ -27,13 +37,17 @@ function Article({ id, title, date, excerpt, author, type, url, concepts, topic 
     if (!dateStr) return ''
     try {
       return new Date(dateStr).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       })
-    } catch { return dateStr }
+    } catch {
+      return dateStr
+    }
   }
 
   const truncateExcerpt = (text) => {
-    let maxLength = 200;
+    let maxLength = 200
     if (!text) return ''
     return text.length > maxLength ? text.substring(0, maxLength) + '…' : text
   }
@@ -61,48 +75,39 @@ function Article({ id, title, date, excerpt, author, type, url, concepts, topic 
   //   }
   // }
 
-
   const formattedDate = formatDate(date)
 
   return (
-    <article
-      className="mb-4 articleComp"
-    >
-      <div className='d-flex mx-auto'>
+    <article className="mb-4 articleComp">
+      <div className="d-flex mx-auto">
         <div className="mb-1">
-
-            <div className='mb-1 d-flex flex-wrap gap-3'>
-                <span className='articleText'
-                >
-                  { type ? type : concepts }
-               </span>
-              <span className='articleText'
-                >
-                  { topic ? topic : concepts }
-               </span>
-            </div>
-
-          <h2 className='card-title'>
-            {title}
-          </h2>
-
-          <div className='subtitle'>
-            {date && <time dateTime={date}>{formattedDate}</time>}
-            {author && <span> · <span>{author}</span></span>}
+          <div className="mb-1 d-flex flex-wrap gap-3">
+            <span className="articleText">{type ? type : concepts}</span>
+            <span className="articleText">{topic ? topic : concepts}</span>
           </div>
 
-          <p className="paragraph" >
-            {truncateExcerpt(excerpt)}
-          </p>
+          <h2 className="card-title">{title}</h2>
 
-          <div className='d-flex justify-content-between'>
+          <div className="subtitle">
+            {date && <time dateTime={date}>{formattedDate}</time>}
+            {author && (
+              <span>
+                {' '}
+                · <span>{author}</span>
+              </span>
+            )}
+          </div>
+
+          <p className="paragraph">{truncateExcerpt(excerpt)}</p>
+
+          <div className="d-flex justify-content-between">
             {url && (
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Lire l'article : ${title} (nouvelle fenêtre)`}
-                className='lire_larticle'
+                className="lire_larticle"
               >
                 Lire l'article
                 <span className="visually-hidden"> (nouvelle fenêtre)</span>
@@ -117,7 +122,6 @@ function Article({ id, title, date, excerpt, author, type, url, concepts, topic 
               </span>
             </button> */}
           </div>
-
         </div>
       </div>
     </article>

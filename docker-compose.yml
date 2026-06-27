@@ -3,7 +3,7 @@ services:
     image: redis:7-alpine
     container_name: redis
     ports:
-      - "127.0.0.1:6379:6379"
+      - '127.0.0.1:6379:6379'
     restart: unless-stopped
     volumes:
       - ./backend/redis:/data
@@ -20,7 +20,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,22 +29,22 @@ services:
       - appnet
 
     ports:
-      - "127.0.0.1:3307:3306"
+      - '127.0.0.1:3307:3306'
 
   backend:
     build: ./backend
     environment:
       - DB_HOST=mariadb
       - REDIS_HOST=redis
-      - "MYSQL_ROOT_PASSWORD=root"
-      - "MYSQL_PWD=root"
+      - 'MYSQL_ROOT_PASSWORD=root'
+      - 'MYSQL_PWD=root'
     depends_on:
       mariadb:
         condition: service_healthy
       redis:
         condition: service_started
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -65,7 +65,7 @@ services:
     build:
       context: ./frontend
     ports:
-      - "5173:5173"
+      - '5173:5173'
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -83,7 +83,7 @@ services:
           target: /app/src
         - action: rebuild
           path: ./frontend/package.json
-          
+
   # prometheus:
   #   image: prom/prometheus:latest
   #   container_name: prometheus
@@ -154,8 +154,8 @@ services:
   #     - appnet
 volumes:
   db_data:
-  # prometheus_data:   
-  # grafana_data:    
+  # prometheus_data:
+  # grafana_data:
 
 networks:
   appnet:

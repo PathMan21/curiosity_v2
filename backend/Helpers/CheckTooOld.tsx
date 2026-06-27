@@ -8,7 +8,7 @@ function isArticlesTooOld(articles: any[] | null | undefined): boolean {
   if (!first) return true
   const dateStr = first.published || first.publishedAt
   if (!dateStr) return true
-  
+
   const publishedAt = new Date(dateStr)
   if (isNaN(publishedAt.getTime())) {
     return true
@@ -25,7 +25,7 @@ function isPhotosTooOld(photos: any[] | null | undefined): boolean {
   if (!first) return true
   const dateStr = first.createdAt || first.published
   if (!dateStr) return true
-  
+
   const createdAt = new Date(dateStr)
   if (isNaN(createdAt.getTime())) {
     return true

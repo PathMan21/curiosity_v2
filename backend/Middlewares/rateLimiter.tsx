@@ -56,13 +56,16 @@ export const createRateLimiter = (
 }
 
 // Nettoyer les anciennes entrées toutes les heures
-setInterval(() => {
-  const now = Date.now()
-  Object.keys(store).forEach((key) => {
-    if (now - store[key].timestamp > WINDOW_MS * 2) {
-      delete store[key]
-    }
-  })
-}, 60 * 60 * 1000)
+setInterval(
+  () => {
+    const now = Date.now()
+    Object.keys(store).forEach((key) => {
+      if (now - store[key].timestamp > WINDOW_MS * 2) {
+        delete store[key]
+      }
+    })
+  },
+  60 * 60 * 1000
+)
 
 export default createRateLimiter
