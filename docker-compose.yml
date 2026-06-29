@@ -2,8 +2,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    ports:
-      - '127.0.0.1:6379:6379'
     restart: unless-stopped
     volumes:
       - ./backend/redis:/data
@@ -28,9 +26,6 @@ services:
     networks:
       - appnet
 
-    ports:
-      - '127.0.0.1:3307:3306'
-
   backend:
     build: ./backend
     env_file:
@@ -42,9 +37,6 @@ services:
         condition: service_started
     ports:
       - '3000:3000'
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - appnet
     develop:
@@ -73,13 +65,13 @@ services:
       - backend
     networks:
       - appnet
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend/src
-          target: /app/src
-        - action: rebuild
-          path: ./frontend/package.json
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./frontend/src
+    #       target: /app/src
+    #     - action: rebuild
+    #       path: ./frontend/package.json
 
   # prometheus:
   #   image: prom/prometheus:latest
