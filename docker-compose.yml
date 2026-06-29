@@ -29,7 +29,7 @@ services:
   backend:
     build: ./backend
     env_file:
-      - .env
+      - .env.dev
     depends_on:
       mariadb:
         condition: service_healthy
