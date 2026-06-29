@@ -8,5 +8,3 @@ Config/.env.dev
 backend/redis
 ./redis
 
-tests
-./tests
