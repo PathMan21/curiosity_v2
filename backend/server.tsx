@@ -52,6 +52,7 @@ app.use('/api/', likesRoutes)
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
 if (process.env.NODE_ENV !== 'test') {
   ;(async () => {
+    console.log("node env n'est pas test : ")
     await connectDB()
     const PORT = process.env.PORT || 3000
     server.listen(PORT, async () => {
