@@ -4,12 +4,16 @@ services:
     container_name: redis
     restart: unless-stopped
     volumes:
-      - ./backend/redis:/data
+      - redis_data:/data
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lfu
     networks:
       - appnet
 
   mariadb:
+    image: mariadb:11
+    env_file:
+      - .env.dev
+
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -18,11 +22,11 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
-      interval: 10s
+      test: ['CMD', '/usr/local/bin/healthcheck.sh', '--innodb_initialized']
+      start_period: 5s
       timeout: 5s
+      interval: 5s
       retries: 5
-      start_period: 10s
     networks:
       - appnet
 
@@ -57,7 +61,7 @@ services:
       - '5173:5173'
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - frontend_node_modules:/app/node_modules
     environment:
       - VITE_DEV_SERVER=true
       - VITE_SERVER_URL=https://be-curious.fr
@@ -143,6 +147,7 @@ services:
   #     - appnet
 volumes:
   db_data:
+  frontend_node_modules:
   # prometheus_data:
   # grafana_data:
 
