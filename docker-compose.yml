@@ -12,11 +12,11 @@ services:
       - appnet
 
   mariadb:
-    image: mariadb:10.11
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_PWD=root
-      - MYSQL_DATABASE=db_curiosity
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -33,11 +33,8 @@ services:
 
   backend:
     build: ./backend
-    environment:
-      - DB_HOST=mariadb
-      - REDIS_HOST=redis
-      - 'MYSQL_ROOT_PASSWORD=root'
-      - 'MYSQL_PWD=root'
+    env_file:
+      - .env
     depends_on:
       mariadb:
         condition: service_healthy
