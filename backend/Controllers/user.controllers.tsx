@@ -62,17 +62,17 @@ export const createUser = async (req, res) => {
       interests: interests ? JSON.stringify(interests) : null,
       verified: false,
     })
-        try {
-          await sendVerificationEmail({ id: user.id, email: user.email })
-        } catch (emailError) {
-          console.error('Erreur envoi email:', emailError)
-        }
+    try {
+      await sendVerificationEmail({ id: user.id, email: user.email })
+    } catch (emailError) {
+      console.error('Erreur envoi email:', emailError)
+    }
 
-        return res.status(201).json({
-          status: 'Success',
-          message: 'Utilisateur créé, email de vérification envoyé',
-          data: { id: user.id, username: user.username, email: user.email },
-        })
+    return res.status(201).json({
+      status: 'Success',
+      message: 'Utilisateur créé, email de vérification envoyé',
+      data: { id: user.id, username: user.username, email: user.email },
+    })
   } catch (error) {
     return res.status(400).json({
       status: 'Failed',

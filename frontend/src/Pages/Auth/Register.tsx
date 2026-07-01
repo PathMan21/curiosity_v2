@@ -31,34 +31,34 @@ function Register() {
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     )
   }
-const handleForm = async (e: React.FormEvent) => {
-  e.preventDefault()
-  setLoading(true)
-  setIsErrorBool(false) 
-  setIsError('')
-  try {
-    const response = await fetch(`${API_URL}/api/user/create`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username,
-        email,
-        password,
-        interests: selectedInterests,
-      }),
-    })
-    const data = await response.json()
-    if (!response.ok) {
-      throw new Error(data?.message || "Erreur lors de l'inscription")
+  const handleForm = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setIsErrorBool(false)
+    setIsError('')
+    try {
+      const response = await fetch(`${API_URL}/api/user/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          interests: selectedInterests,
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data?.message || "Erreur lors de l'inscription")
+      }
+      setSuccess(true)
+    } catch (err) {
+      setIsError(err instanceof Error ? err.message : String(err))
+      setIsErrorBool(true)
+    } finally {
+      setLoading(false)
     }
-    setSuccess(true)
-  } catch (err) {
-    setIsError(err instanceof Error ? err.message : String(err))
-    setIsErrorBool(true)
-  } finally {
-    setLoading(false)  
   }
-}
 
   if (success) {
     return (

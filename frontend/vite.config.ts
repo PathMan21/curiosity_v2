@@ -6,9 +6,6 @@ export default defineConfig({
 
   server: {
     host: true,
-    allowedHosts: [
-      'be-curious.fr',
-      'www.be-curious.fr'
-    ]
-  }
+    allowedHosts: ['be-curious.fr', 'www.be-curious.fr'],
+  },
 })
