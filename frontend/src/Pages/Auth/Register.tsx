@@ -31,10 +31,11 @@ function Register() {
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
     )
   }
-
   const handleForm = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setIsErrorBool(false)
+    setIsError('')
     try {
       const response = await fetch(`${API_URL}/api/user/create`, {
         method: 'POST',
@@ -52,12 +53,9 @@ function Register() {
       }
       setSuccess(true)
     } catch (err) {
-      setIsError(err)
+      setIsError(err instanceof Error ? err.message : String(err))
       setIsErrorBool(true)
-      console.error('Erreur inscription:', err)
     } finally {
-      setIsErrorBool(false)
-      setIsError('')
       setLoading(false)
     }
   }

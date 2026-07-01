@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import '../Helpers/configLink'
 import { createUserSchema, updateUserSchema } from '../dtos/User'
+import { sendVerificationEmail } from '../Services/mail.services'
 
 const generateTokens = (userId: number) => ({
   accessToken: jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
@@ -61,13 +62,21 @@ export const createUser = async (req, res) => {
       interests: interests ? JSON.stringify(interests) : null,
       verified: false,
     })
+    try {
+      await sendVerificationEmail({ id: user.id, email: user.email })
+    } catch (emailError) {
+      console.error('Erreur envoi email:', emailError)
+    }
 
-    const { sendVerificationEmail } = await import('../Services/mail.services')
-    return sendVerificationEmail({ id: user.id, email: user.email }, res)
+    return res.status(201).json({
+      status: 'Success',
+      message: 'Utilisateur créé, email de vérification envoyé',
+      data: { id: user.id, username: user.username, email: user.email },
+    })
   } catch (error) {
-    return res.status(500).json({
+    return res.status(400).json({
       status: 'Failed',
-      message: error.message,
+      errors: error.flatten().fieldErrors,
     })
   }
 }
