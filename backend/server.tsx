@@ -2,8 +2,6 @@ import express from 'express'
 import { createServer } from 'http'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import swaggerUi from 'swagger-ui-express'
-import swaggerJsDoc from 'swagger-jsdoc'
 import session from 'express-session'
 
 import './Helpers/configLink'
@@ -19,6 +17,7 @@ import './Models/Likes'
 import './Models/Book'
 import './Models/Article'
 import './Models/Photo'
+import validateByMail from './Middlewares/mail.middlewares'
 
 const app = express()
 const server = createServer(app)
@@ -58,6 +57,7 @@ if (process.env.NODE_ENV !== 'test') {
     server.listen(PORT, async () => {
       console.log(`Serveur lancé sur le port ${PORT}`)
       try {
+        await validateByMail();
         await import('./Helpers/cron.schedules.Photos')
         await import('./Helpers/cron.schedules.Articles')
         console.log('✅ Tous les crons ont démarré avec succès')

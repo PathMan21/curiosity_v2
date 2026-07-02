@@ -1,12 +1,14 @@
 import axios from 'axios'
 import { getAccessToken } from '../Hooks/authStore'
 
+const API_BASE_URL = process.env.VITE_SERVER_URL || ''
+
 export const publicApi = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL,
+  baseURL: API_BASE_URL,
 })
 
 export const privateApi = axios.create({
-  baseURL: `${import.meta.env.VITE_SERVER_URL}/api`,
+  baseURL: `${API_BASE_URL}/api`,
   withCredentials: true,
 })
 

@@ -26,7 +26,7 @@ jest.mock('../backend/Models/Photo', () => ({
   bulkCreate: jest.fn(),
 }))
 
-jest.mock('../backend/Models/Favorite', () => ({
+jest.mock('../backend/Models/Likes', () => ({
   findAll: jest.fn(),
   findOne: jest.fn(),
   create: jest.fn(),
@@ -39,15 +39,34 @@ jest.mock('../backend/Config/redis.conf', () => ({
 }))
 
 jest.mock('../backend/Config/dbInit', () => ({
-  transaction: jest.fn(),
-  authenticate: jest.fn(),
-  sync: jest.fn(),
+  __esModule: true,
+  default: {
+    define: jest.fn(() => ({
+      belongsTo: jest.fn(),
+      hasMany: jest.fn(),
+      hasOne: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+      findByPk: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      destroy: jest.fn(),
+      sync: jest.fn(),
+      authenticate: jest.fn(),
+      transaction: jest.fn(),
+    })),
+    authenticate: jest.fn(),
+    sync: jest.fn(),
+    transaction: jest.fn(),
+  },
 }))
 
 jest.mock('../backend/Services/mail.services', () => ({
   sendVerificationEmail: jest.fn().mockResolvedValue({}),
   verifyEmail: jest.fn(),
   resendVerificationEmail: jest.fn(),
+  verifyUser: jest.fn((req, res) => res.status(200).json({ ok: true })),
+  verifiedPage: jest.fn((req, res) => res.status(200).send('verified')),
 }))
 
 jest.mock('../backend/Helpers/CheckTooOld', () => ({
@@ -68,14 +87,16 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../backend/Models/User'
 import Article from '../backend/Models/Article'
-import Favorite from '../backend/Models/Favorite'
+import Likes from '../backend/Models/Likes'
 import redisClient from '../backend/Config/redis.conf'
 
 jest.mock('bcrypt')
 jest.mock('jsonwebtoken')
 
+const Favorite = Likes
+
 // Import app aprÃ¨s les mocks
-import app from '../backend/app'
+import app from '../backend/server'
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 

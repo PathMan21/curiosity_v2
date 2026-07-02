@@ -52,7 +52,10 @@ export const createUser = async (req, res) => {
     })
 
     if (existingUser) {
-      throw new Error('Cet email existe déjà')
+      return res.status(409).json({
+        status: 'Failed',
+        message: 'Cet email existe déjà',
+      })
     }
 
     const user = await User.create({
@@ -63,7 +66,7 @@ export const createUser = async (req, res) => {
       verified: false,
     })
     try {
-      await sendVerificationEmail({ id: user.id, email: user.email })
+      await sendVerificationEmail({ id: user.id, email: user.email }, res)
     } catch (emailError) {
       console.error('Erreur envoi email:', emailError)
     }
@@ -74,9 +77,10 @@ export const createUser = async (req, res) => {
       data: { id: user.id, username: user.username, email: user.email },
     })
   } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erreur serveur'
     return res.status(400).json({
       status: 'Failed',
-      errors: error.flatten().fieldErrors,
+      message,
     })
   }
 }
@@ -86,16 +90,33 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-      throw new Error('Email ou mot de passe incorrect')
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Email ou mot de passe incorrect',
+      })
     }
+
     const user = await User.findOne({ where: { email } })
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new Error('Utilisateur non valide')
+    if (!user) {
+      return res.status(404).json({
+        status: 'Failed',
+        message: 'Utilisateur introuvable',
+      })
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({
+        status: 'Failed',
+        message: 'Mot de passe incorrect',
+      })
     }
 
     if (!user.verified) {
-      throw new Error('Utilisateur non vérifié')
+      return res.status(403).json({
+        status: 'Failed',
+        message: 'Utilisateur non vérifié',
+      })
     }
 
     const { accessToken, refreshToken } = generateTokens(user.id)
@@ -103,7 +124,6 @@ export const loginUser = async (req, res) => {
     setRefreshCookie(res, refreshToken)
 
     const userData = formatUser(user)
-    // Parse interests if they are a JSON string
     if (userData.interests && typeof userData.interests === 'string') {
       try {
         userData.interests = JSON.parse(userData.interests)
@@ -112,15 +132,16 @@ export const loginUser = async (req, res) => {
       }
     }
 
-    return res.json({
+    return res.status(200).json({
       status: 'Success',
+      token: accessToken,
       accessToken,
       user: userData,
     })
   } catch (error) {
     return res.status(500).json({
       status: 'Failed',
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Erreur serveur',
     })
   }
 }

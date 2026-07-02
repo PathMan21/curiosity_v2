@@ -2,9 +2,11 @@
 import '@testing-library/jest-dom'
 
 // â”€â”€â”€ Mocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-jest.mock('../frontend/src/Context/AuthContext')
+jest.mock('../frontend/src/Context/Auth', () => ({
+  useAuthentification: jest.fn(),
+}))
 
-import { useAuth } from '../frontend/src/Context/AuthContext'
+import { useAuthentification } from '../frontend/src/Context/Auth'
 import { useAutoRefreshToken } from '../frontend/src/Hooks/useAutoRefreshToken'
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -55,7 +57,7 @@ describe('useAutoRefreshToken', () => {
 
   describe('Token absent', () => {
     it('ne fait rien si token est null', () => {
-      ;(useAuth as jest.Mock).mockReturnValue({ token: null, setToken, logout })
+      ;(useAuthentification as jest.Mock).mockReturnValue({ token: null, setToken, logout })
 
       renderHook(() => useAutoRefreshToken())
 
@@ -66,7 +68,7 @@ describe('useAutoRefreshToken', () => {
     })
 
     it('ne plante pas si token est une chaÃ®ne vide', () => {
-      ;(useAuth as jest.Mock).mockReturnValue({ token: '', setToken, logout })
+      ;(useAuthentification as jest.Mock).mockReturnValue({ token: '', setToken, logout })
 
       expect(() => renderHook(() => useAutoRefreshToken())).not.toThrow()
     })
@@ -76,7 +78,7 @@ describe('useAutoRefreshToken', () => {
 
   describe('Token invalide', () => {
     it('gÃ¨re un token malformÃ© sans lever d exception', () => {
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: 'not.a.valid.jwt.atall',
         setToken,
         logout,
@@ -87,7 +89,7 @@ describe('useAutoRefreshToken', () => {
 
     it('gÃ¨re un token dont le payload n est pas du JSON valide', () => {
       const badPayload = `header.${btoa('not json')}.sig`
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: badPayload,
         setToken,
         logout,
@@ -98,7 +100,7 @@ describe('useAutoRefreshToken', () => {
 
     it('gÃ¨re un token sans champ exp', () => {
       const noExp = makeToken({ userId: 1 }) // pas de exp
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: noExp,
         setToken,
         logout,
@@ -112,7 +114,7 @@ describe('useAutoRefreshToken', () => {
 
   describe('Token dÃ©jÃ  expirÃ©', () => {
     it('appelle logout immÃ©diatement si le token est dÃ©jÃ  expirÃ©', () => {
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: expiredToken(),
         setToken,
         logout,
@@ -129,7 +131,7 @@ describe('useAutoRefreshToken', () => {
     })
 
     it('nessaie pas de rafraÃ®chir un token dÃ©jÃ  expirÃ©', () => {
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: expiredToken(3600), // expirÃ© il y a 1h
         setToken,
         logout,
@@ -150,7 +152,7 @@ describe('useAutoRefreshToken', () => {
     it('planifie un timeout pour rafraÃ®chir avant expiration', () => {
       const spySetTimeout = jest.spyOn(global, 'setTimeout')
 
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: tokenExpiringIn(600), // expire dans 10 min
         setToken,
         logout,
@@ -168,7 +170,7 @@ describe('useAutoRefreshToken', () => {
         ok: true,
         json: jest.fn().mockResolvedValue({ token: newToken }),
       })
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: tokenExpiringIn(600), // 10 min
         setToken,
         logout,
@@ -195,7 +197,7 @@ describe('useAutoRefreshToken', () => {
           .fn()
           .mockResolvedValue({ message: 'Refresh token invalide' }),
       })
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: tokenExpiringIn(30), // expire dans 30s â†’ refresh imminent
         setToken,
         logout,
@@ -219,7 +221,7 @@ describe('useAutoRefreshToken', () => {
     it('annule le timeout lors du dÃ©montage du composant', () => {
       const spyClearTimeout = jest.spyOn(global, 'clearTimeout')
 
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: tokenExpiringIn(600),
         setToken,
         logout,
@@ -234,7 +236,7 @@ describe('useAutoRefreshToken', () => {
     })
 
     it('ne dÃ©clenche pas de refresh aprÃ¨s le dÃ©montage', async () => {
-      ;(useAuth as jest.Mock).mockReturnValue({
+      ;(useAuthentification as jest.Mock).mockReturnValue({
         token: tokenExpiringIn(600),
         setToken,
         logout,
@@ -257,7 +259,7 @@ describe('useAutoRefreshToken', () => {
 
       const { rerender } = renderHook(
         ({ token }: { token: string | null }) => {
-          ;(useAuth as jest.Mock).mockReturnValue({ token, setToken, logout })
+          ;(useAuthentification as jest.Mock).mockReturnValue({ token, setToken, logout })
           return useAutoRefreshToken()
         },
         { initialProps: { token: tokenExpiringIn(600) } }
