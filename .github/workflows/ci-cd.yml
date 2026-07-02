@@ -63,6 +63,7 @@ jobs:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.USER_VPS }}
           key: ${{ secrets.SSH_KEY_VPS }}
+          port: ${{ secrets.PORT_VPS }}
           script: |
             cd /var/www/be-curious/curiosity_v2
 
