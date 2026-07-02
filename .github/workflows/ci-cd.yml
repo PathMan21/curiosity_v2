@@ -65,7 +65,7 @@ jobs:
           key: ${{ secrets.SSH_KEY_VPS }}
           port: ${{ secrets.PORT_VPS }}
           script: |
-            cd /var/www/be-curious/curiosity_v2
+            cd /home/ubuntu/curiosity_v2
 
             git fetch origin
             git reset --hard origin/main
