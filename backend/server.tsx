@@ -17,7 +17,6 @@ import './Models/Likes'
 import './Models/Book'
 import './Models/Article'
 import './Models/Photo'
-import validateByMail from './Middlewares/mail.middlewares'
 
 const app = express()
 const server = createServer(app)
@@ -57,12 +56,12 @@ if (process.env.NODE_ENV !== 'test') {
     server.listen(PORT, async () => {
       console.log(`Serveur lancé sur le port ${PORT}`)
       try {
-        await validateByMail();
+        // await validateByMail();
         await import('./Helpers/cron.schedules.Photos')
         await import('./Helpers/cron.schedules.Articles')
         console.log('✅ Tous les crons ont démarré avec succès')
       } catch (error) {
-        console.error('❌ Erreur lors du démarrage des crons:', error)
+        console.error('❌ Erreur lors du démarrage :', error)
       }
     })
   })()
