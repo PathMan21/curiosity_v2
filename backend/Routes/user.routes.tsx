@@ -34,9 +34,9 @@ router.post(
   bodyParser.json(),
   signupLimiter,
   validateUser,
-  validateByMail,
   createUser
 )
+router.post('/register', bodyParser.json(), signupLimiter, validateUser, validateByMail, createUser)
 router.post('/login', bodyParser.json(), loginLimiter, loginUser)
 router.post('/logout', bodyParser.json(), logoutUser)
 router.post('/refresh-token', refresh)
@@ -44,6 +44,7 @@ router.get('/verify/:userId/:uniqueString', verifyUser)
 router.get('/verified', verifiedPage)
 router.get('/me', bodyParser.json(), authentificatedUser, getCurrentUser)
 
+router.put('/profile', bodyParser.json(), authentificatedUser, updatedProfile)
 router.post(
   '/updated-profile',
   bodyParser.json(),

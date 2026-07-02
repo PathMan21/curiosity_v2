@@ -1,0 +1,154 @@
+import React from 'react'
+import { render, screen, waitFor } from '@testing-library/react'
+import '@testing-library/jest-dom'
+import { BrowserRouter } from 'react-router-dom'
+
+const mockGet = jest.fn()
+
+jest.mock('../frontend/src/Context/Auth', () => ({
+  useAuthentification: () => ({
+    isLogged: true,
+    user: { username: 'TestUser' },
+  }),
+}))
+
+jest.mock('../frontend/src/Context/Interceptor', () => ({
+  privateApi: {
+    get: mockGet,
+  },
+}))
+
+jest.mock(
+  '../frontend/src/Components/FooterSite',
+  () =>
+    function MockFooter() {
+      return <div data-testid="footer">Footer</div>
+    }
+)
+
+jest.mock(
+  '../frontend/src/Components/NavbarSite',
+  () =>
+    function MockNavbar() {
+      return <div data-testid="navbar">Navbar</div>
+    }
+)
+
+jest.mock('../frontend/src/Components/FeedPost', () => ({
+  __esModule: true,
+  default: ({ title, excerpt, author }: any) => (
+    <div>
+      <h3>{title}</h3>
+      <p>{excerpt}</p>
+      <span>{author}</span>
+    </div>
+  ),
+}))
+
+jest.mock('../frontend/src/Pages/Articles/Photos', () => ({
+  __esModule: true,
+  default: ({ title, description }: any) => (
+    <div>
+      <h3>{title}</h3>
+      <p>{description}</p>
+    </div>
+  ),
+}))
+
+import ArticlePage from '../frontend/src/Pages/Articles/ArticlePage'
+
+const mockArticles = [
+  {
+    id: 'W1',
+    title: 'Deep Learning in 2024',
+    authors: ['Alice Martin'],
+    published: '2024-01-15',
+    summary: 'A study about deep learning.',
+    isOpenAccess: true,
+    mainTopic: 'Machine Learning',
+  },
+  {
+    id: 'W2',
+    title: 'Quantum Computing Advances',
+    authors: ['Bob Dupont', 'Claire Morin'],
+    published: '2024-02-20',
+    summary: 'Progress in quantum hardware.',
+    isOpenAccess: false,
+    mainTopic: 'Quantum Computing',
+  },
+]
+
+const mockPhotos = [
+  {
+    id: 'p1',
+    url: 'https://images.unsplash.com/1',
+    thumb: 'https://images.unsplash.com/1/thumb',
+    description: 'AI visualization',
+    photographer: 'Jane Photo',
+  },
+]
+
+const renderArticlePage = () =>
+  render(
+    <BrowserRouter>
+      <ArticlePage />
+    </BrowserRouter>
+  )
+
+describe('ArticlePage', () => {
+  beforeEach(() => {
+    mockGet.mockReset()
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/articles/')) {
+        return Promise.resolve({ data: { articles: mockArticles } })
+      }
+      if (url.includes('/photos/')) {
+        return Promise.resolve({ data: { photos: mockPhotos } })
+      }
+      return Promise.resolve({ data: { articles: [], photos: [] } })
+    })
+  })
+
+  it('affiche la navbar et le footer', async () => {
+    renderArticlePage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('navbar')).toBeInTheDocument()
+      expect(screen.getByTestId('footer')).toBeInTheDocument()
+    })
+  })
+
+  it('affiche les titres des articles après le chargement', async () => {
+    renderArticlePage()
+
+    await waitFor(() => {
+      expect(screen.getByText('Deep Learning in 2024')).toBeInTheDocument()
+      expect(screen.getByText('Quantum Computing Advances')).toBeInTheDocument()
+    })
+  })
+
+  it('affiche un état vide si aucun contenu n est retourné', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/articles/')) {
+        return Promise.resolve({ data: { articles: [] } })
+      }
+      return Promise.resolve({ data: { photos: [] } })
+    })
+
+    renderArticlePage()
+
+    await waitFor(() => {
+      expect(screen.getByText(/Aucun contenu pour ce thème/i)).toBeInTheDocument()
+    })
+  })
+
+  it('affiche un message d erreur si la requête échoue', async () => {
+    mockGet.mockRejectedValue(new Error('Network error'))
+
+    renderArticlePage()
+
+    await waitFor(() => {
+      expect(screen.getByText(/Network error|Erreur/i)).toBeInTheDocument()
+    })
+  })
+})

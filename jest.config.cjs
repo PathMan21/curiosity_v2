@@ -8,6 +8,10 @@ module.exports = {
   testEnvironment: 'jsdom',
   setupFiles: ['<rootDir>/jest.polyfills.cjs'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^react$': '<rootDir>/node_modules/react',
+    '^react-dom$': '<rootDir>/node_modules/react-dom',
+  },
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',
   },

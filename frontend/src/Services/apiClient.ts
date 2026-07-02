@@ -1,4 +1,5 @@
-const API_URL = import.meta.env?.VITE_SERVER_URL || ''
+const API_URL =
+  (typeof window !== 'undefined' && window.location?.origin) || ''
 
 interface ApiError extends Error {
   status: number

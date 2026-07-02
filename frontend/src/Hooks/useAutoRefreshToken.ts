@@ -1,7 +1,7 @@
-import { useEffect } from 'react'
+import * as React from 'react'
 import { useAuthentification } from '../Context/Auth'
 
-const API_URL = import.meta.env?.VITE_SERVER_URL || ''
+const API_URL = process.env.VITE_SERVER_URL || ''
 
 export const useAutoRefreshToken = () => {
   const context = useAuthentification()
@@ -9,7 +9,7 @@ export const useAutoRefreshToken = () => {
   const logout = context?.logout
   const setToken = (context as any)?.setToken
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!token) return
 
     try {
