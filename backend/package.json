@@ -40,7 +40,6 @@
     "dev:backend": "tsx watch --ignore ./src/Helpers server.tsxs",
     "dev": "tsx watch --ignore ./src/Helpers server.tsx",
     "build": "vite build",
-
     "frontend:dev": "vite --host"
   },
   "devDependencies": {
