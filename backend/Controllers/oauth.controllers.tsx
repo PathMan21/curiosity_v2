@@ -5,17 +5,6 @@ import { Request, Response, NextFunction } from 'express'
 import { randomBytes } from 'crypto'
 
 import '../Helpers/configLink'
-const baseUrl = process.env.BASE_URL_FRONT
-
-const googleAuthId = process.env.ID_OAUTH
-const googleAuthUrl = process.env.URL_OAUTH
-const googleAuthCallback = process.env.CALLBACK_OAUTH
-
-const GOOGLE_OAUTH_SCOPES = [process.env.SCOPE1, process.env.SCOPE2]
-const URL_EXCHANGE = process.env.URL_EXCHANGE
-const URL_TOKEN = process.env.TOKEN_URL_OAUTH
-
-const scopes = GOOGLE_OAUTH_SCOPES.join(' ')
 
 // ✅ FIX: Refresh token OAuth aligné sur 7j (cohérent avec user.controllers et COOKIE_OPTIONS)
 // Avant : expiresIn: 60 * 60 (1h) → le cookie durait 7j mais le token expirait au bout de 1h
@@ -34,6 +23,12 @@ const oauthVerify = async (req, res) => {
     if (!req.session) {
       return res.status(500).json({ error: 'Session not initialized' })
     }
+
+    // Lire les variables dynamiquement (évite le gel à l'import, utile en test aussi)
+    const googleAuthUrl = process.env.URL_OAUTH
+    const googleAuthId = process.env.ID_OAUTH
+    const googleAuthCallback = process.env.CALLBACK_OAUTH
+    const scopes = [process.env.SCOPE1, process.env.SCOPE2].join(' ')
 
     const state = randomBytes(32).toString('hex')
     req.session.oauthState = state
@@ -58,7 +53,7 @@ const verifyToken = async (req: Request, res: Response) => {
   }
 }
 
-const oauthToken = async (req, res) => {
+const oauthToken = async (req, res) => { 
   try {
     const { code, state } = req.query
 
@@ -89,6 +84,9 @@ const oauthToken = async (req, res) => {
       redirect_uri: process.env.CALLBACK_OAUTH,
       grant_type: 'authorization_code',
     }
+
+    const URL_EXCHANGE = process.env.URL_EXCHANGE
+    const URL_TOKEN = process.env.TOKEN_URL_OAUTH
 
     const response = await fetch(URL_EXCHANGE, {
       method: 'POST',
@@ -137,7 +135,7 @@ const oauthToken = async (req, res) => {
         sameSite: 'strict',
       })
 
-      return res.redirect(`${baseUrl}`)
+      return res.redirect(`${process.env.BASE_URL_FRONT}`)
     }
 
     // Nouvel utilisateur OAuth
@@ -170,7 +168,7 @@ const oauthToken = async (req, res) => {
         sameSite: 'strict',
       })
 
-      res.redirect(`${baseUrl}complete-inscription`)
+      res.redirect(`${process.env.BASE_URL_FRONT}complete-inscription`)
     } catch (err) {
       return res
         .status(500)

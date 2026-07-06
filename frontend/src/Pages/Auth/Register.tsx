@@ -4,7 +4,7 @@ import interestsValues from '../../Assets/interests.json'
 import dotenv from "dotenv";
 
 dotenv.config();
-const API_URL = process.env.VITE_SERVER_URL || ''
+const API_URL = import.meta.env.VITE_SERVER_URL || ''
 
 const handleOAuthRegister = async () => {
   try {

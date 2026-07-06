@@ -1,11 +1,15 @@
-﻿// â”€â”€â”€ Env â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€â”€ Env â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 process.env.JWT_SECRET = 'test_secret'
 process.env.JWT_REFRESH_SECRET = 'test_refresh_secret'
+process.env.ACCESS_TOKEN_SECRET = 'test_access_secret'
+process.env.REFRESH_TOKEN_SECRET = 'test_refresh_secret'
 process.env.DB_NAME = 'test_db'
 process.env.DB_USER = 'test_user'
 process.env.ID_OAUTH = 'test_oauth_id'
 process.env.URL_OAUTH = 'https://accounts.google.com/o/oauth2/v2/auth'
 process.env.CALLBACK_OAUTH = 'http://localhost:3000/api/google/callback'
+process.env.SCOPE1 = 'https://www.googleapis.com/auth/userinfo.email'
+process.env.SCOPE2 = 'https://www.googleapis.com/auth/userinfo.profile'
 
 // â”€â”€â”€ Mocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 jest.mock('../backend/Models/User', () => ({
@@ -91,7 +95,17 @@ import Likes from '../backend/Models/Likes'
 import redisClient from '../backend/Config/redis.conf'
 
 jest.mock('bcrypt')
-jest.mock('jsonwebtoken')
+jest.mock('jsonwebtoken', () => ({
+  __esModule: true,
+  default: {
+    sign: jest.fn(() => 'mocked-token'),
+    verify: jest.fn(() => ({ userId: 1 })),
+    decode: jest.fn(),
+  },
+  sign: jest.fn(() => 'mocked-token'),
+  verify: jest.fn(() => ({ userId: 1 })),
+  decode: jest.fn(),
+}))
 
 const Favorite = Likes
 
@@ -105,20 +119,25 @@ const makeAuthToken = (userId = 1) => {
   return 'Bearer valid-test-token'
 }
 
-const mockUserInDB = (overrides: Record<string, any> = {}) => ({
-  id: 1,
-  username: 'testuser',
-  email: 'test@example.com',
-  password: '$2b$10$hashedpassword',
-  verified: true,
-  interests: JSON.stringify(['ai-ml', 'robotics']),
-  update: jest.fn().mockResolvedValue({}),
-  reload: jest.fn().mockResolvedValue({}),
-  toJSON: jest.fn(function () {
-    return { ...this }
-  }),
-  ...overrides,
-})
+const mockUserInDB = (overrides: Record<string, any> = {}) => {
+  const base = {
+    id: 1,
+    username: 'testuser',
+    email: 'test@example.com',
+    password: '$2b$10$hashedpassword',
+    verified: true,
+    interests: JSON.stringify(['ai-ml', 'robotics']),
+    picture: null,
+    isTemporary: false,
+    update: jest.fn().mockResolvedValue({}),
+    reload: jest.fn().mockResolvedValue({}),
+    toJSON: jest.fn(function () { return { ...this } }),
+    ...overrides,
+  }
+  // Simule Sequelize's model.get({ plain: true })
+  base.get = jest.fn((_opts?: any) => ({ ...base }))
+  return base
+}
 
 // â”€â”€â”€ Suite â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -233,7 +252,7 @@ describe("Routes Express â€” Tests d'intÃ©gration", () => {
         .set('Authorization', makeAuthToken())
 
       expect(res.status).toBe(200)
-      expect(res.body).toHaveProperty('email', 'test@example.com')
+      expect(res.body).toHaveProperty('user.email', 'test@example.com')
     })
 
     it('retourne 401 sans token', async () => {

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getAccessToken } from '../Hooks/authStore'
 
-const API_BASE_URL = process.env.VITE_SERVER_URL || ''
+const API_BASE_URL = import.meta.env.VITE_SERVER_URL || ''
 
 export const publicApi = axios.create({
   baseURL: API_BASE_URL,
