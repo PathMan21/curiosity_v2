@@ -131,7 +131,9 @@ const mockUserInDB = (overrides: Record<string, any> = {}) => {
     isTemporary: false,
     update: jest.fn().mockResolvedValue({}),
     reload: jest.fn().mockResolvedValue({}),
-    toJSON: jest.fn(function () { return { ...this } }),
+    toJSON: jest.fn(function () {
+      return { ...this }
+    }),
     ...overrides,
   }
   // Simule Sequelize's model.get({ plain: true })

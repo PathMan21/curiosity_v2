@@ -36,7 +36,14 @@ router.post(
   validateUser,
   createUser
 )
-router.post('/register', bodyParser.json(), signupLimiter, validateUser, validateByMail, createUser)
+router.post(
+  '/register',
+  bodyParser.json(),
+  signupLimiter,
+  validateUser,
+  validateByMail,
+  createUser
+)
 router.post('/login', bodyParser.json(), loginLimiter, loginUser)
 router.post('/logout', bodyParser.json(), logoutUser)
 router.post('/refresh-token', refresh)

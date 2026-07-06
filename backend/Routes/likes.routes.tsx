@@ -30,56 +30,74 @@ router.get('/favorites', authentificatedUser, async (req, res) => {
   }
 })
 
-router.post('/favorites', bodyParser.json(), authentificatedUser, async (req, res) => {
-  const { articles_id } = req.body
+router.post(
+  '/favorites',
+  bodyParser.json(),
+  authentificatedUser,
+  async (req, res) => {
+    const { articles_id } = req.body
 
-  if (!articles_id) {
-    return res.status(400).json({ message: 'articles_id requis' })
-  }
-
-  try {
-    const existingLike = await Likes.findOne({
-      where: { userId: req.user.id, contentId: articles_id, contentType: 'article' },
-    })
-
-    if (existingLike) {
-      return res.status(409).json({ message: 'Favori existe déjà' })
+    if (!articles_id) {
+      return res.status(400).json({ message: 'articles_id requis' })
     }
 
-    const newLike = await Likes.create({
-      userId: req.user.id,
-      contentId: articles_id,
-      contentType: 'article',
-    })
+    try {
+      const existingLike = await Likes.findOne({
+        where: {
+          userId: req.user.id,
+          contentId: articles_id,
+          contentType: 'article',
+        },
+      })
 
-    return res.status(201).json({ favorite: newLike })
-  } catch (error) {
-    return res.status(500).json({ message: 'Erreur serveur' })
+      if (existingLike) {
+        return res.status(409).json({ message: 'Favori existe déjà' })
+      }
+
+      const newLike = await Likes.create({
+        userId: req.user.id,
+        contentId: articles_id,
+        contentType: 'article',
+      })
+
+      return res.status(201).json({ favorite: newLike })
+    } catch (error) {
+      return res.status(500).json({ message: 'Erreur serveur' })
+    }
   }
-})
+)
 
-router.delete('/favorites', bodyParser.json(), authentificatedUser, async (req, res) => {
-  const { articles_id } = req.body
+router.delete(
+  '/favorites',
+  bodyParser.json(),
+  authentificatedUser,
+  async (req, res) => {
+    const { articles_id } = req.body
 
-  if (!articles_id) {
-    return res.status(400).json({ message: 'articles_id requis' })
-  }
-
-  try {
-    const existingLike = await Likes.findOne({
-      where: { userId: req.user.id, contentId: articles_id, contentType: 'article' },
-    })
-
-    if (!existingLike) {
-      return res.status(404).json({ message: 'Favori introuvable' })
+    if (!articles_id) {
+      return res.status(400).json({ message: 'articles_id requis' })
     }
 
-    await existingLike.destroy()
-    return res.status(200).json({ message: 'Favori supprimé' })
-  } catch (error) {
-    return res.status(500).json({ message: 'Erreur serveur' })
+    try {
+      const existingLike = await Likes.findOne({
+        where: {
+          userId: req.user.id,
+          contentId: articles_id,
+          contentType: 'article',
+        },
+      })
+
+      if (!existingLike) {
+        return res.status(404).json({ message: 'Favori introuvable' })
+      }
+
+      await existingLike.destroy()
+      return res.status(200).json({ message: 'Favori supprimé' })
+    } catch (error) {
+      return res.status(500).json({ message: 'Erreur serveur' })
+    }
   }
-})
+)
 
 router.post(
   '/likes/toggle',
