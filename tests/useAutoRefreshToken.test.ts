@@ -57,7 +57,11 @@ describe('useAutoRefreshToken', () => {
 
   describe('Token absent', () => {
     it('ne fait rien si token est null', () => {
-      ;(useAuthentification as jest.Mock).mockReturnValue({ token: null, setToken, logout })
+      ;(useAuthentification as jest.Mock).mockReturnValue({
+        token: null,
+        setToken,
+        logout,
+      })
 
       renderHook(() => useAutoRefreshToken())
 
@@ -68,7 +72,11 @@ describe('useAutoRefreshToken', () => {
     })
 
     it('ne plante pas si token est une chaÃ®ne vide', () => {
-      ;(useAuthentification as jest.Mock).mockReturnValue({ token: '', setToken, logout })
+      ;(useAuthentification as jest.Mock).mockReturnValue({
+        token: '',
+        setToken,
+        logout,
+      })
 
       expect(() => renderHook(() => useAutoRefreshToken())).not.toThrow()
     })
@@ -259,7 +267,11 @@ describe('useAutoRefreshToken', () => {
 
       const { rerender } = renderHook(
         ({ token }: { token: string | null }) => {
-          ;(useAuthentification as jest.Mock).mockReturnValue({ token, setToken, logout })
+          ;(useAuthentification as jest.Mock).mockReturnValue({
+            token,
+            setToken,
+            logout,
+          })
           return useAutoRefreshToken()
         },
         { initialProps: { token: tokenExpiringIn(600) } }

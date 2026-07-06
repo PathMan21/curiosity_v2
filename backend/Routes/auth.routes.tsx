@@ -7,7 +7,11 @@ import {
   validateUserOauth,
 } from '../Middlewares/user.middlewares'
 import { updateProfile } from '../Controllers/oauth.controllers'
-import { createUser, getCurrentUser, loginUser } from '../Controllers/user.controllers'
+import {
+  createUser,
+  getCurrentUser,
+  loginUser,
+} from '../Controllers/user.controllers'
 import bodyParser from 'body-parser'
 
 const router = Router()
@@ -18,7 +22,12 @@ router.get('/auth/me', bodyParser.json(), authentificatedUser, getCurrentUser)
 router.get('/google/verify', oauthVerify)
 router.get('/google/url', oauthVerify)
 router.get('/google/callback', oauthToken)
-router.put('/auth/profile', bodyParser.json(), authentificatedUser, updateProfile)
+router.put(
+  '/auth/profile',
+  bodyParser.json(),
+  authentificatedUser,
+  updateProfile
+)
 router.post(
   '/complete-inscription-oauth',
   bodyParser.json(),

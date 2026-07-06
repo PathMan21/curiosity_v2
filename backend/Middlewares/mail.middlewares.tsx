@@ -8,12 +8,12 @@ const validateByMail = () => {
   return new Promise((resolve, reject) => {
     transport.verify((err, success) => {
       if (err) {
-        reject(err);
+        reject(err)
       } else {
-        resolve(success);
+        resolve(success)
       }
-    });
-  });
-};
+    })
+  })
+}
 
 export default validateByMail

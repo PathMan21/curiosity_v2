@@ -1,5 +1,4 @@
-const API_URL =
-  (typeof window !== 'undefined' && window.location?.origin) || ''
+const API_URL = (typeof window !== 'undefined' && window.location?.origin) || ''
 
 interface ApiError extends Error {
   status: number

@@ -53,7 +53,7 @@ const verifyToken = async (req: Request, res: Response) => {
   }
 }
 
-const oauthToken = async (req, res) => { 
+const oauthToken = async (req, res) => {
   try {
     const { code, state } = req.query
 
