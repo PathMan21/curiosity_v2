@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useAuthentification } from '../Context/Auth'
 
-const API_URL = process.env.VITE_SERVER_URL || ''
+const API_URL = import.meta.env.VITE_SERVER_URL || ''
 
 export const useAutoRefreshToken = () => {
   const context = useAuthentification()

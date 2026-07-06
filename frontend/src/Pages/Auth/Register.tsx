@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useAuthentification } from '../../Context/Auth'
 import interestsValues from '../../Assets/interests.json'
+import dotenv from "dotenv";
 
-const API_URL = process.env.VITE_SERVER_URL || ''
+dotenv.config();
+const API_URL = import.meta.env.VITE_SERVER_URL || ''
 
 const handleOAuthRegister = async () => {
   try {

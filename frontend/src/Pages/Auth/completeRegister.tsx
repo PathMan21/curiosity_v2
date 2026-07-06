@@ -14,7 +14,7 @@ function CompleteInscription() {
   const [searchParams] = useSearchParams()
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
 
-  const API_URL = process.env.VITE_SERVER_URL || ''
+  const API_URL = import.meta.env.VITE_SERVER_URL || ''
 
   function handleInterests(value: string) {
     setSelectedInterests((prev) =>
