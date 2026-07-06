@@ -53,7 +53,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    # needs: test
+    needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
@@ -65,18 +65,34 @@ jobs:
           key: ${{ secrets.SSH_KEY_VPS }}
           port: ${{ secrets.PORT_VPS }}
           script: |
+            set -e
+
             cd /home/ubuntu/curiosity_v2
 
             git fetch origin
             git reset --hard origin/main
 
-            docker compose down
-            docker compose up -d --build
+            # Redémarrage des services backend
+            docker compose up -d --build backend mariadb redis
 
+            # Construction du frontend
+            cd frontend
+            npm ci
+            npm run build
+
+            # Déploiement des fichiers statiques
+            sudo mkdir -p /var/www/be-curious
+            sudo rm -rf /var/www/be-curious/dist
+            sudo cp -r dist /var/www/be-curious/
+
+            # Vérification et rechargement de Nginx
+            sudo nginx -t
+            sudo systemctl reload nginx
+
+            # Nettoyage
             docker image prune -f
 
       - name: Health check
         run: |
-          echo "Waiting for app to start..."
-          sleep 15
-          curl -f --retry 5 --retry-delay 5 http://${{ secrets.VPS_IP }}/health || exit 1
+          sleep 10
+          curl -f https://be-curious.fr/api/health
