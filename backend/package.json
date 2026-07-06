@@ -36,9 +36,11 @@
     "zod": "^4.4.3"
   },
   "scripts": {
-    "start": "tsx backend/server.tsx",
+    "start": "tsx server.tsx",
     "dev:backend": "tsx watch --ignore ./src/Helpers server.tsxs",
     "dev": "tsx watch --ignore ./src/Helpers server.tsx",
+    "build": "vite build",
+
     "frontend:dev": "vite --host"
   },
   "devDependencies": {
