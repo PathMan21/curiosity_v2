@@ -5,3 +5,8 @@ dist
 .DS_Store
 npm-debug.log
 .env
+redis/appendonlydir
+redis/dump.rdb
+redis/appendonly.aof
+appendonly.aof
+appendonlydir
