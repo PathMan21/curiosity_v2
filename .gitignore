@@ -8,3 +8,4 @@ Config/.env.dev
 backend/redis
 ./redis
 dist
+coverage
