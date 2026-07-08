@@ -99,49 +99,32 @@ const sendVerificationEmail = async ({ id, email }, res) => {
         id,
         email,
       })
-      return res
-        .status(400)
-        .json({ status: 'Failed', message: 'ID utilisateur manquant' })
+
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'ID utilisateur manquant',
+      })
     }
 
     const currentUrl = process.env.SERVER_URL
     const uniqueString = uuidv4() + id
 
-    const options = {
-      from: process.env.AUTH_MAIL,
-      to: email,
-      subject: 'Vérifiez votre email',
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
-          <h2>Bienvenue !</h2>
-          <p>Merci de vous être inscrit ! Veuillez cliquez sur le lien pour vous inscrire.</p>
-          <p><b>Ce lien expire dans 10 minutes !</b></p>
-          <br>
-          <a href="${currentUrl}/api/user/verify/${id}/${uniqueString}" 
-             style="background-color: #4CAF50; color: white; padding: 12px 24px; 
-                    text-decoration: none; border-radius: 18px; display: inline-block;">
-            Vérifier mon email
-          </a>
-          <br><br>
-          <p style="color: #666; font-size: 12px;">
-            Si vous n'avez pas créé ce compte, ignorez cet email.
-          </p>
-        </div>
-      `,
-    }
-
     const saltRounds = 10
+
     const hasheduniqueString = await withTimeout(
       bcrypt.hash(uniqueString, saltRounds),
       5000
     )
 
     const userIdForDb = typeof id === 'string' ? parseInt(id, 10) : id
+
     if (Number.isNaN(userIdForDb)) {
       console.error('userId invalide pour UserVerifications.create:', id)
-      return res
-        .status(400)
-        .json({ status: 'Failed', message: 'ID utilisateur invalide' })
+
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'ID utilisateur invalide',
+      })
     }
 
     await UserVerifications.create({
@@ -151,16 +134,69 @@ const sendVerificationEmail = async ({ id, email }, res) => {
       expiresAt: new Date(Date.now() + 600000),
     })
 
-    await withTimeout(transport.sendMail(options), 5000)
+    const { data, error } = await withTimeout(
+      transport.emails.send({
+        from: 'Be Curious <noreply@be-curious.fr>',
+        to: email,
+        subject: 'Vérifiez votre email',
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>Bienvenue !</h2>
 
-    console.log('STEP 3 - after email')
-    res.status(200).json({
+            <p>
+              Merci de vous être inscrit !
+              Veuillez cliquer sur le lien ci-dessous pour vérifier votre adresse email.
+            </p>
+
+            <p><b>Ce lien expire dans 10 minutes.</b></p>
+
+            <br>
+
+            <a
+              href="${currentUrl}/api/user/verify/${id}/${uniqueString}"
+              style="
+                background-color:#4CAF50;
+                color:white;
+                padding:12px 24px;
+                text-decoration:none;
+                border-radius:18px;
+                display:inline-block;
+              "
+            >
+              Vérifier mon email
+            </a>
+
+            <br><br>
+
+            <p style="color:#666;font-size:12px;">
+              Si vous n'êtes pas à l'origine de cette inscription,
+              vous pouvez ignorer cet email.
+            </p>
+          </div>
+        `,
+      }),
+      5000
+    )
+
+    if (error) {
+      console.error('Erreur Resend :', error)
+
+      return res.status(500).json({
+        status: 'Failed',
+        message: "Erreur lors de l'envoi de l'email",
+      })
+    }
+
+    console.log('Email envoyé :', data)
+
+    return res.status(200).json({
       status: 'PENDING',
       message: 'Email de vérification envoyé avec succès',
     })
   } catch (error) {
-    console.error('Erreur envoi email:', error)
-    res.status(500).json({
+    console.error('Erreur envoi email :', error)
+
+    return res.status(500).json({
       status: 'Failed',
       message: "Erreur lors de l'envoi de l'email de vérification",
     })
