@@ -9,3 +9,6 @@ backend/redis
 ./redis
 dist
 coverage
+lcov-report
+./coverage
+coverage/
