@@ -3,8 +3,13 @@ module.exports = {
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  roots: ['<rootDir>/tests'],
-  collectCoverageFrom: ['src/**/*.{ts,tsx,js}'],
+  collectCoverageFrom: [
+    'backend/**/*.{js,ts,tsx}',
+    'frontend/**/*.{js,ts,tsx}',
+    '!backend/**/*.test.{js,ts,tsx}',
+    '!frontend/**/*.test.{js,ts,tsx}',
+    '!backend/config/**'
+  ],
   testEnvironment: 'jsdom',
   setupFiles: ['<rootDir>/jest.polyfills.cjs'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],

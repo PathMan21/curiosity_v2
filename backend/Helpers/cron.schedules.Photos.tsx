@@ -36,8 +36,6 @@ const task = async () => {
   }
 }
 
-const scheduledTask = cron.schedule('* * * * *', task, {
-  scheduled: true,
-})
+const scheduledTask = cron.schedule('0 2 * * *', task)
 
 export default scheduledTask
