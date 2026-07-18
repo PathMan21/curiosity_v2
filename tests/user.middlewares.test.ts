@@ -209,7 +209,7 @@ describe('user.middlewares – validateUser', () => {
     expect(next).toHaveBeenCalledTimes(1)
   })
 
-  it('retourne 400 si l\'email est manquant', () => {
+  it("retourne 400 si l'email est manquant", () => {
     const req = mockReq({
       body: { username: 'JohnDoe', password: 'Test@123abc' },
     })
@@ -223,7 +223,7 @@ describe('user.middlewares – validateUser', () => {
     )
   })
 
-  it('retourne 400 si l\'email est invalide', () => {
+  it("retourne 400 si l'email est invalide", () => {
     const req = mockReq({
       body: {
         username: 'JohnDoe',
@@ -379,7 +379,7 @@ describe('user.middlewares – authentificatedUser', () => {
     )
   })
 
-  it('retourne 401 si l\'utilisateur n\'existe pas en base', async () => {
+  it("retourne 401 si l'utilisateur n'existe pas en base", async () => {
     const validToken = jwt.sign(
       { userId: 999 },
       process.env.ACCESS_TOKEN_SECRET!,
@@ -399,7 +399,7 @@ describe('user.middlewares – authentificatedUser', () => {
     )
   })
 
-  it('attache l\'utilisateur à req.user et appelle next() si tout est OK', async () => {
+  it("attache l'utilisateur à req.user et appelle next() si tout est OK", async () => {
     const validToken = jwt.sign(
       { userId: 42 },
       process.env.ACCESS_TOKEN_SECRET!,

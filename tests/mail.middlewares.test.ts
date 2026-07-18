@@ -32,7 +32,7 @@ describe('mail.middlewares – validateByMail', () => {
     expect(mockVerify).toHaveBeenCalledTimes(1)
   })
 
-  it('rejette avec l\'erreur de transport.verify en cas d\'échec', async () => {
+  it("rejette avec l'erreur de transport.verify en cas d'échec", async () => {
     const error = new Error('SMTP connection failed')
     mockVerify.mockImplementation((cb: (err: any, success: any) => void) => {
       cb(error, null)
