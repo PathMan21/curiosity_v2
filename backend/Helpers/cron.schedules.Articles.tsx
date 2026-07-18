@@ -6,7 +6,7 @@ import cron from 'node-cron'
 
 let isCronRunning = false
 
-const task = async () => {
+export const task = async () => {
   if (isCronRunning) return
 
   isCronRunning = true
