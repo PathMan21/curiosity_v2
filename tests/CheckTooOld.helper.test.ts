@@ -9,9 +9,21 @@ describe('CheckTooOld Helper', () => {
   // ── isArticlesTooOld ─────────────────────────────────────────────────────────
 
   describe('isArticlesTooOld', () => {
+    // describe sert à englober une suite de tests dans un bloc
+    // - ici on teste si nos articles doivent être mis à jour
+
     it("retourne false si les articles sont récents (aujourd'hui)", () => {
+      // Arrange - première étape : on prépare le contexte
+
       const articles = [{ published: new Date().toISOString() }]
-      expect(isArticlesTooOld(articles)).toBe(false)
+
+      // Act - deuxième étape : on appelle / exécute la fonction
+
+      const result = isArticlesTooOld(articles)
+
+      // Act - troisième étape : on vérifie si le résultat est celui qu'on attendait
+
+      expect(result).toBe(false)
     })
 
     it("retourne false si les articles ont moins d'un mois", () => {
