@@ -12,3 +12,5 @@ coverage
 lcov-report
 ./coverage
 coverage/
+
+coverage
