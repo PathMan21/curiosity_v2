@@ -5,26 +5,10 @@ import { toggleLikes, getUserLikes, checkLikeStatus } from '../Controllers/likes
 
 const router = Router()
 
-// Toggle likes (add/remove)
-router.post(
-  '/toggle',
-  bodyParser.json(),
-  authentificatedUser,
-  toggleLikes
-)
-
-// Get user's likes
-router.get(
-  '/user',
-  authentificatedUser,
-  getUserLikes
-)
-
-// Check if user has liked specific content
-router.get(
-  '/status',
-  authentificatedUser,
-  checkLikeStatus
-)
+// ✅ FIX: Préfixe /likes/ pour éviter les collisions avec d'autres routes /api/
+// Avant : POST /api/toggle  →  Après : POST /api/likes/toggle
+router.post('/likes/toggle', bodyParser.json(), authentificatedUser, toggleLikes)
+router.get('/likes/user', authentificatedUser, getUserLikes)
+router.get('/likes/status', authentificatedUser, checkLikeStatus)
 
 export default router

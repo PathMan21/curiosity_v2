@@ -43,7 +43,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:ci": "jest --ci --coverage --maxWorkers=2"
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "migration:create": "sequelize-cli migration:generate --name",
+    "migration:up": "sequelize-cli db:migrate",
+    "migration:down": "sequelize-cli db:migrate:undo",
+    "migration:status": "sequelize-cli db:migrate:status"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"
@@ -77,6 +81,8 @@
     "precise-commits": "^1.0.2",
     "prettier": "^3.8.1",
     "prettier-config-standard": "^7.0.0",
+    "sequelize-auto": "^0.8.8",
+    "supertest": "^7.2.2",
     "ts-jest": "^29.4.6",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

@@ -188,12 +188,12 @@ function Register() {
             ) : "Créer mon compte"}
           </button>
 
-          <div className="register-divider-container">
+          {/* <div className="register-divider-container">
             <div className="register-divider-line" />
             <span className="register-divider-text">ou</span>
             <div className="register-divider-line" />
-          </div>
-
+          </div> */}
+{/* 
           <button
             type="button"
             className="btn btn-outline-primary w-100 mb-3 d-flex align-items-center justify-content-center gap-2"
@@ -206,7 +206,7 @@ function Register() {
               <path d="M9 3.5796C10.3214 3.5796 11.5077 4.0336 12.4405 4.9259L15.0218 2.3445C13.4632 0.8918 11.4259 0 9 0C5.48182 0 2.43818 2.0168 0.957275 4.9582L3.96409 7.29C4.67182 5.1627 6.65591 3.5796 9 3.5796Z" fill="#EA4335" />
             </svg>
             Continuer avec Google
-          </button>
+          </button> */}
 
         </form>
 

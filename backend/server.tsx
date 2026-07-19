@@ -7,6 +7,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import session from 'express-session'
 
 import "./Helpers/configLink";
+// import { register } from "prom-client";
 
 
 import connectDB from './Config/connexion'
@@ -39,16 +40,31 @@ const server = createServer(app)
             sameSite: 'strict'
         }
     }))
-    
+
+    // client.collectDefaultMetrics({ register })
+
+    // app.get('/metrics', async (req, res) => {
+    //   res.set('Content-Type', client.register.contentType);
+    //   res.end(await client.register.metrics());
+    // });
+
     app.use(cors({
-        origin: 'http://localhost:5173',
+        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
         credentials: true
     }));
+    // test
 
     app.use('/api/user/', userRoutes);
     app.use('/api/', authRoutes);
     app.use('/api/', apiroutes);
     app.use('/api/', likesRoutes);
+
+    // PROM
+    // app.get("/prom-test", function(req, res) {
+    //   res.send(register.metrics());
+    // });
+
+
       const PORT = process.env.PORT
    server.listen(PORT, async () => {
     console.log(`Serveur lancé sur le port ${PORT}`)

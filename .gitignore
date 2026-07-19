@@ -2,10 +2,15 @@ node_modules
 .env
 .env.dev
 
+.env.prod
 Config/.env.dev
 
 backend/redis
 ./redis
+dist
+coverage
+lcov-report
+./coverage
+coverage/
 
-tests
-./tests
+coverage

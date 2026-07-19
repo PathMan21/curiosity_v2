@@ -14,11 +14,17 @@ const sequelizeDb = new Sequelize(
     port: parseInt(process.env.DB_PORT || '3306'),
     dialect: 'mariadb',
     logging: false,
+    dialectOptions: {
+      connectTimeout: 20000, // 20s au lieu du défaut ~1s
+    },
     pool: {
       max: 5,
       min: 0,
       acquire: 30000,
       idle: 10000,
+    },
+    retry: {
+      max: 5, // réessaie jusqu'à 5 fois en cas d'échec de connexion
     },
     define: {
       freezeTableName: true,

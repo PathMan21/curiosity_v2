@@ -74,6 +74,7 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
+    console.log("test");
     const { email, password } = req.body
 
     if (!email || !password) {
@@ -226,7 +227,6 @@ export const updatedProfile = async (req, res) => {
 
     await user.update(updateData)
 
-    // Reload user from DB to get updated values
     await user.reload()
 
     const { accessToken, refreshToken } = generateTokens(user.id)
@@ -234,7 +234,6 @@ export const updatedProfile = async (req, res) => {
     await user.update({ refreshToken })
     setRefreshCookie(res, refreshToken)
 
-    // Format user with interests as array
     const userData = formatUser(user)
     if (userData.interests && typeof userData.interests === 'string') {
       try {

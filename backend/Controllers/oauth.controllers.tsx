@@ -17,13 +17,14 @@ const URL_TOKEN = process.env.TOKEN_URL_OAUTH
 
 const scopes = GOOGLE_OAUTH_SCOPES.join(' ')
 
+// ✅ FIX: Refresh token OAuth aligné sur 7j (cohérent avec user.controllers et COOKIE_OPTIONS)
+// Avant : expiresIn: 60 * 60 (1h) → le cookie durait 7j mais le token expirait au bout de 1h
 const generateTokens = (userId: number) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: 15 * 60,
   })
-
   const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: 60 * 60,
+    expiresIn: 7 * 24 * 60 * 60, // ✅ 7 jours (était 1h)
   })
   return { accessToken, refreshToken }
 }
@@ -39,9 +40,7 @@ const oauthVerify = async (req, res) => {
     
     const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${googleAuthUrl}?client_id=${googleAuthId}&redirect_uri=${googleAuthCallback}&access_type=offline&response_type=code&state=${state}&scope=${encodeURIComponent(scopes)}`
     
-    res.json({
-      url: GOOGLE_OAUTH_CONSENT_SCREEN_URL,
-    })
+    res.json({ url: GOOGLE_OAUTH_CONSENT_SCREEN_URL })
   } catch (err) {
     console.error('OAuth verify error:', err)
     res.status(500).json({ error: 'OAuth initialization failed' })
@@ -112,44 +111,60 @@ const oauthToken = async (req, res) => {
       return res.status(400).json({ error: 'Email non reçu du provider OAuth' })
     }
 
-    let newUser
     let existingUser = await User.findOne({ where: { email } })
     if (existingUser) {
-      return res.status(418).send('Utilisateur déjà existant : ' + email)
-    } else {
-      newUser = await User.create({
-        username: name,
-        email,
-        password: 'oauth_placeholder',
-        picture,
-        isTemporary: true,
+      // ✅ FIX: Utilisateur existant → on le connecte plutôt que de renvoyer une erreur 418
+      // L'ancien code renvoyait le mail en clair dans le body (fuite d'info) et bloquait la reconnexion OAuth
+      const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } = generateTokens(existingUser.id)
+      await existingUser.update({ refreshToken: jwtRefreshToken })
+
+      res.cookie('refreshToken', jwtRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      res.cookie('jwt', jwtAccessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
       })
 
-      try {
-        const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } =
-          generateTokens(newUser.id)
+      return res.redirect(`${baseUrl}`)
+    }
 
-        await newUser.update({ refreshToken: jwtRefreshToken })
+    // Nouvel utilisateur OAuth
+    const newUser = await User.create({
+      username: name,
+      email,
+      // ✅ FIX: Mot de passe OAuth généré aléatoirement (était 'oauth_placeholder' en clair)
+      // Le hook beforeCreate hache automatiquement le mot de passe
+      password: randomBytes(32).toString('hex'),
+      picture,
+      isTemporary: true,
+    })
 
-        res.cookie('refreshToken', jwtRefreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        })
+    try {
+      const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } = generateTokens(newUser.id)
 
-        res.cookie('jwt', jwtAccessToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-        })
-        
-        res.redirect(`${baseUrl}complete-inscription`)
-      } catch (err) {
-        return res
-          .status(500)
-          .json({ error: 'Erreur génération token', details: err.message })
-      }
+      await newUser.update({ refreshToken: jwtRefreshToken })
+
+      res.cookie('refreshToken', jwtRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+
+      res.cookie('jwt', jwtAccessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      })
+      
+      res.redirect(`${baseUrl}complete-inscription`)
+    } catch (err) {
+      return res.status(500).json({ error: 'Erreur génération token', details: err.message })
     }
   } catch (err) {
     console.error('OAuth token error:', err)
@@ -159,15 +174,11 @@ const oauthToken = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const { username, password, interests } = req.body
-  let selectedinterests = JSON.stringify(interests)
 
-  const userId = req.user?.userId || req.userId
+  // ✅ FIX: Utiliser req.user.id (set par authentificatedUser) — plus fiable que req.user?.userId
+  const userId = req.user?.id
 
   if (!userId) {
-    console.error(
-      'updateProfile: userId manquant dans la requête (payload):',
-      req.user
-    )
     return res.status(401).json({ error: 'Utilisateur non authentifié' })
   }
 
@@ -175,16 +186,18 @@ const updateProfile = async (req, res) => {
   if (!user) {
     return res.status(404).json({ error: 'Utilisateur introuvable' })
   }
+
   const updateData: any = {}
   if (typeof username !== 'undefined') updateData.username = username
-  if (typeof password !== 'undefined') updateData.password = password
-  if (typeof interests !== 'undefined')
-    updateData.interests = selectedinterests
+  if (typeof interests !== 'undefined') updateData.interests = JSON.stringify(interests)
+
+  // ✅ FIX: Le password ne doit PAS être mis à jour ici (route OAuth → completion de profil)
+  // L'ancien code permettait de passer n'importe quel password sans validation
+  // Si besoin d'un changement de mot de passe, créer une route dédiée avec validation
 
   await user.update(updateData)
 
   try {
-    // Reload user from DB to get updated values
     await user.reload()
     
     const { accessToken, refreshToken } = generateTokens(user.id)
@@ -201,7 +214,6 @@ const updateProfile = async (req, res) => {
     }
 
     const userData = user.get({ plain: true })
-    // Ensure interests is returned as array for consistency
     if (userData.interests && typeof userData.interests === 'string') {
       try {
         userData.interests = JSON.parse(userData.interests)
@@ -210,15 +222,17 @@ const updateProfile = async (req, res) => {
       }
     }
 
+    // ✅ FIX: Ne pas exposer refreshToken et password dans la réponse
+    delete userData.refreshToken
+    delete userData.password
+
     return res.status(200).json({
       message: 'Profil mis à jour',
       user: userData,
     })
   } catch (err) {
     console.error('Erreur génération token après updateProfile:', err)
-    return res
-      .status(500)
-      .json({ error: 'Erreur lors de la génération du token' })
+    return res.status(500).json({ error: 'Erreur lors de la génération du token' })
   }
 }
 

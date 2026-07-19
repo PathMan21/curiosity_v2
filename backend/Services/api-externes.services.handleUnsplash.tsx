@@ -77,21 +77,19 @@ async function setCache(
     return
 
   }
-  const photosArray = photos.map(photo =>
-    createPhotosSchema.parse({
-      unsplashId: photo.id,
-      url: photo.url,
-      thumb: photo.thumb,
-      description: photo.description,
-      photographer: photo.photographer,
-      photographerLink: photo.photographerLink,
-      downloadLink: photo.downloadLink,
-      interest,
-      type: 'photo',
-    })
-  )
-
- 
+const photosArray = photos.map(photo =>
+  createPhotosSchema.parse({
+    unsplashId: String(photo.id),
+    url: photo.url,
+    thumb: photo.thumb,
+    description: photo.description,
+    photographer: photo.photographer,
+    photographerLink: photo.photographerLink,
+    downloadLink: photo.downloadLink,
+    interest,
+    type: 'photo',
+  })
+)
 
   try {
 
@@ -147,7 +145,7 @@ async function setDbAndCache(
       await redisClient.setEx(
         cacheKey,
         CACHE_TTL,
-        JSON.stringify(photosArray)
+        JSON.stringify({ photosArray })
       )
       console.log(`✅ Cache set for: ${cacheKey}`)
     } catch (cacheErr) {
@@ -244,6 +242,7 @@ async function handleUnsplash(req, res) {
 
     const sent = mapInterestsToSentences(interests)
     const photos = await fetchGlobal(sent)
+    console.log("photos backend => ", photos);
 
     return res.json({ photos })
   } catch (err) {
@@ -277,7 +276,7 @@ export async function checkPhotos(queries) {
       }
 
       const photos = await fetchPhotosFromAPI(interest, clientId)
-
+      console.log("photos fetched =>", photos.length)
       if (!photos.length) {
         continue
       }
