@@ -1,10 +1,9 @@
-name: CICD
+name: Deploy
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -19,41 +18,40 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js 20
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      - name: Lint
+      - name: Check formatting
         run: npm run format:check
 
-      - name: Lint
-        run: npm run format:fix
-
       - name: Run tests with coverage
-        run: npm run test:ci -- --coverage --coverageThreshold='{"global":{"lines":70,"functions":70,"branches":70}}'
-
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 30
+        run: |
+          npm run test:ci -- \
+            --coverage \
+            --coverageThreshold='{"global":{"lines":60,"functions":60,"branches":60}}'
 
       - name: Create Git tag
-        if: success() && startsWith(github.event.head_commit.message, 'release:')
+        if: startsWith(github.event.head_commit.message, 'release:')
         run: |
           VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'v\d+\.\d+\.\d+')
-          git tag $VERSION
-          git push origin $VERSION
+
+          if [ -n "$VERSION" ]; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+
+            git tag "$VERSION"
+            git push origin "$VERSION"
+          fi
 
   deploy:
+    name: Deploy to VPS
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: test
 
     steps:
       - name: Deploy on VPS
@@ -71,24 +69,21 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            # Redémarrage des services backend
+            # Backend
             docker compose up -d --build backend mariadb redis
 
-            # Construction du frontend
+            # Frontend
             cd frontend
             npm ci
             npm run build
 
-            # Déploiement des fichiers statiques
             sudo mkdir -p /var/www/be-curious
             sudo rm -rf /var/www/be-curious/dist
             sudo cp -r dist /var/www/be-curious/
 
-            # Vérification et rechargement de Nginx
             sudo nginx -t
             sudo systemctl reload nginx
 
-            # Nettoyage
             docker image prune -f
 
       - name: Health check

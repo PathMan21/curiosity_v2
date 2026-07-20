@@ -6,7 +6,7 @@ import {
 
 let isCronRunning = false
 
-export const task= async () => {
+export const task = async () => {
   if (isCronRunning) {
     console.warn('CRON PHOTO => TOUJOURS EN EXECUTION')
     return

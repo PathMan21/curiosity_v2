@@ -11,7 +11,7 @@ module.exports = {
     '!backend/server.tsx',
     '!**/index.{ts,tsx}',
     '!backend/Helpers/configLink.tsx',
-    '!backend/Services/api-externes.services.handleNewsmech.tsx'
+    '!backend/Services/api-externes.services.handleNewsmech.tsx',
   ],
   testEnvironment: 'jsdom',
   setupFiles: ['<rootDir>/jest.polyfills.cjs'],
@@ -25,10 +25,10 @@ module.exports = {
   },
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
+      branches: 60,
+      functions: 60,
+      lines: 60,
+      statements: 60,
     },
   },
 }

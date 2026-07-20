@@ -10,7 +10,6 @@ jest.mock('node-cron', () => ({
   }),
 }))
 
-
 jest.mock('../backend/Services/api-externes.services.handleOpenAlex', () => ({
   checkArticles: jest.fn(),
   getAllOpenAlexQueries: jest.fn(),
@@ -29,7 +28,10 @@ import {
 describe('cron.schedules.Articles', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => { cb(); return 0 as any })
+    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+      cb()
+      return 0 as any
+    })
   })
 
   afterEach(() => {
@@ -40,7 +42,9 @@ describe('cron.schedules.Articles', () => {
 
   describe('Planification', () => {
     it('planifie le cron avec l\'expression "0 2 * * *"', () => {
-      const hasCall = mockCronScheduleCalls.some(([expr]) => expr === '0 2 * * *')
+      const hasCall = mockCronScheduleCalls.some(
+        ([expr]) => expr === '0 2 * * *'
+      )
       expect(hasCall).toBe(true)
     })
 
@@ -62,7 +66,11 @@ describe('cron.schedules.Articles', () => {
     })
 
     it('appelle checkArticles pour chaque query', async () => {
-      ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702', '1703', '1705'])
+      ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue([
+        '1702',
+        '1703',
+        '1705',
+      ])
       ;(checkArticles as jest.Mock).mockResolvedValue([])
 
       await task()
@@ -73,9 +81,13 @@ describe('cron.schedules.Articles', () => {
       expect(checkArticles).toHaveBeenCalledWith('1705')
     })
 
-    it('respecte l\'ordre séquentiel des queries', async () => {
+    it("respecte l'ordre séquentiel des queries", async () => {
       const order: string[] = []
-      ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702', '1703', '1705'])
+      ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue([
+        '1702',
+        '1703',
+        '1705',
+      ])
       ;(checkArticles as jest.Mock).mockImplementation(async (q: string) => {
         order.push(q)
       })
@@ -94,7 +106,7 @@ describe('cron.schedules.Articles', () => {
       await task()
 
       const delays = setTimeoutSpy.mock.calls.map(([, ms]) => ms)
-      expect(delays.every(ms => ms === 200)).toBe(true)
+      expect(delays.every((ms) => ms === 200)).toBe(true)
       expect(delays).toHaveLength(2)
     })
 
@@ -106,7 +118,7 @@ describe('cron.schedules.Articles', () => {
       expect(checkArticles).not.toHaveBeenCalled()
     })
 
-    it('log le début et la fin de l\'exécution', async () => {
+    it("log le début et la fin de l'exécution", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
       ;(checkArticles as jest.Mock).mockResolvedValue([])
 
@@ -115,19 +127,22 @@ describe('cron.schedules.Articles', () => {
       await task()
 
       const messages = logSpy.mock.calls.map(([msg]) => msg as string)
-      expect(messages.some(m => m.includes('CRON START'))).toBe(true)
-      expect(messages.some(m => m.includes('CRON DONE'))).toBe(true)
+      expect(messages.some((m) => m.includes('CRON START'))).toBe(true)
+      expect(messages.some((m) => m.includes('CRON DONE'))).toBe(true)
     })
   })
 
   // ── Protection isCronRunning ──────────────────────────────────────────────────
 
   describe('Protection isCronRunning', () => {
-    it('ne s\'exécute pas en parallèle', async () => {
+    it("ne s'exécute pas en parallèle", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
       let resolveArticles: any
       ;(checkArticles as jest.Mock).mockImplementation(
-        () => new Promise(resolve => { resolveArticles = resolve })
+        () =>
+          new Promise((resolve) => {
+            resolveArticles = resolve
+          })
       )
 
       const p1 = task()
@@ -153,7 +168,6 @@ describe('cron.schedules.Articles', () => {
       ;(checkArticles as jest.Mock).mockRejectedValue(new Error('API down'))
 
       await task()
-
       ;(checkArticles as jest.Mock).mockResolvedValue([])
       await task()
 
@@ -164,14 +178,16 @@ describe('cron.schedules.Articles', () => {
   // ── Gestion des erreurs ───────────────────────────────────────────────────────
 
   describe('Gestion des erreurs', () => {
-    it('ne lève pas d\'exception si checkArticles rejette', async () => {
+    it("ne lève pas d'exception si checkArticles rejette", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
-      ;(checkArticles as jest.Mock).mockRejectedValue(new Error('Network error'))
+      ;(checkArticles as jest.Mock).mockRejectedValue(
+        new Error('Network error')
+      )
 
       await expect(task()).resolves.not.toThrow()
     })
 
-    it('ne lève pas d\'exception si getAllOpenAlexQueries lève une erreur', async () => {
+    it("ne lève pas d'exception si getAllOpenAlexQueries lève une erreur", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockImplementation(() => {
         throw new Error('Service unavailable')
       })
@@ -179,7 +195,7 @@ describe('cron.schedules.Articles', () => {
       await expect(task()).resolves.not.toThrow()
     })
 
-    it('log l\'erreur avec console.error', async () => {
+    it("log l'erreur avec console.error", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
       ;(checkArticles as jest.Mock).mockRejectedValue(new Error('Crash'))
 
