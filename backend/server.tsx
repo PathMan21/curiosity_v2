@@ -1,4 +1,5 @@
 import express from 'express'
+import rateLimit from "express-rate-limit";
 import { createServer } from 'http'
 import cors from 'cors'
 import cookieParser from "cookie-parser";
@@ -24,12 +25,21 @@ import './Models/Photo';
 const app = express()
 const server = createServer(app)
 
-
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,                 
+  message: {
+    error: "Trop de requêtes, veuillez réessayer plus tard."
+  },
+  standardHeaders: true,    
+  legacyHeaders: false    
+});
 
 ;(async () => {
     await connectDB();
     app.use(cookieParser())
-    
+    app.use(limiter);
+
     app.use(session({
         secret: process.env.SESSION_SECRET,
         resave: false,
