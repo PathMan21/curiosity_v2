@@ -28,6 +28,9 @@ jobs:
 
       - name: Check formatting
         run: npm run format:check
+        
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
 
       - name: Run tests with coverage
         continue-on-error: true
