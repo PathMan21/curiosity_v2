@@ -11,7 +11,7 @@ module.exports = {
     '!backend/server.tsx',
     '!**/index.{ts,tsx}',
     '!backend/Helpers/configLink.tsx',
-    '!backend/Services/api-externes.services.handleNewsmech.tsx'
+    '!backend/Services/api-externes.services.handleNewsmech.tsx',
   ],
   testEnvironment: 'jsdom',
   setupFiles: ['<rootDir>/jest.polyfills.cjs'],

@@ -28,7 +28,10 @@ import {
 describe('cron.schedules.Photos', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => { cb(); return 0 as any })
+    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+      cb()
+      return 0 as any
+    })
   })
 
   afterEach(() => {
@@ -39,7 +42,9 @@ describe('cron.schedules.Photos', () => {
 
   describe('Planification', () => {
     it('planifie le cron avec l\'expression "0 2 * * *"', () => {
-      const hasCall = mockCronScheduleCalls.some(([expr]) => expr === '0 2 * * *')
+      const hasCall = mockCronScheduleCalls.some(
+        ([expr]) => expr === '0 2 * * *'
+      )
       expect(hasCall).toBe(true)
     })
 
@@ -52,7 +57,9 @@ describe('cron.schedules.Photos', () => {
 
   describe('Exécution normale', () => {
     it('appelle getAllUnsplashQueries au démarrage', async () => {
-      ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['artificial intelligence technology'])
+      ;(getAllUnsplashQueries as jest.Mock).mockReturnValue([
+        'artificial intelligence technology',
+      ])
       ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
 
       await task()
@@ -84,7 +91,7 @@ describe('cron.schedules.Photos', () => {
       expect(checkPhotos).toHaveBeenCalledWith([])
     })
 
-    it('log le début de l\'exécution', async () => {
+    it("log le début de l'exécution", async () => {
       ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
       ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
 
@@ -93,10 +100,10 @@ describe('cron.schedules.Photos', () => {
       await task()
 
       const messages = logSpy.mock.calls.map(([msg]) => msg as string)
-      expect(messages.some(m => m.includes('CRON PHOTO'))).toBe(true)
+      expect(messages.some((m) => m.includes('CRON PHOTO'))).toBe(true)
     })
 
-    it('log la durée d\'exécution en cas de succès', async () => {
+    it("log la durée d'exécution en cas de succès", async () => {
       ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
       ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
 
@@ -105,18 +112,21 @@ describe('cron.schedules.Photos', () => {
       await task()
 
       const messages = logSpy.mock.calls.map(([msg]) => msg as string)
-      expect(messages.some(m => m.includes('FINI'))).toBe(true)
+      expect(messages.some((m) => m.includes('FINI'))).toBe(true)
     })
   })
 
   // ── Protection isCronRunning ──────────────────────────────────────────────────
 
   describe('Protection isCronRunning', () => {
-    it('ne s\'exécute pas en parallèle', async () => {
+    it("ne s'exécute pas en parallèle", async () => {
       ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
       let resolvePhoto: any
       ;(checkPhotos as jest.Mock).mockImplementation(
-        () => new Promise(resolve => { resolvePhoto = resolve })
+        () =>
+          new Promise((resolve) => {
+            resolvePhoto = resolve
+          })
       )
 
       const p1 = task()
@@ -131,7 +141,10 @@ describe('cron.schedules.Photos', () => {
       ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
       let resolvePhoto: any
       ;(checkPhotos as jest.Mock).mockImplementation(
-        () => new Promise(resolve => { resolvePhoto = resolve })
+        () =>
+          new Promise((resolve) => {
+            resolvePhoto = resolve
+          })
       )
 
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
@@ -162,7 +175,6 @@ describe('cron.schedules.Photos', () => {
       ;(checkPhotos as jest.Mock).mockRejectedValue(new Error('Unsplash down'))
 
       await task()
-
       ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
       await task()
 
@@ -173,14 +185,14 @@ describe('cron.schedules.Photos', () => {
   // ── Gestion des erreurs ───────────────────────────────────────────────────────
 
   describe('Gestion des erreurs', () => {
-    it('ne lève pas d\'exception si checkPhotos rejette', async () => {
+    it("ne lève pas d'exception si checkPhotos rejette", async () => {
       ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
       ;(checkPhotos as jest.Mock).mockRejectedValue(new Error('Network error'))
 
       await expect(task()).resolves.not.toThrow()
     })
 
-    it('ne lève pas d\'exception si getAllUnsplashQueries lève une erreur', async () => {
+    it("ne lève pas d'exception si getAllUnsplashQueries lève une erreur", async () => {
       ;(getAllUnsplashQueries as jest.Mock).mockImplementation(() => {
         throw new Error('Service unavailable')
       })
@@ -188,7 +200,7 @@ describe('cron.schedules.Photos', () => {
       await expect(task()).resolves.not.toThrow()
     })
 
-    it('log l\'erreur avec console.error et la durée', async () => {
+    it("log l'erreur avec console.error et la durée", async () => {
       ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
       ;(checkPhotos as jest.Mock).mockRejectedValue(new Error('Crash'))
 

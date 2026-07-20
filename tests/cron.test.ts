@@ -22,8 +22,14 @@ jest.mock('../backend/Services/api-externes.services.handleUnsplash', () => ({
   getAllUnsplashQueries: jest.fn(),
 }))
 
-import { checkArticles, getAllOpenAlexQueries } from '../backend/Services/api-externes.services.handleOpenAlex'
-import { checkPhotos, getAllUnsplashQueries } from '../backend/Services/api-externes.services.handleUnsplash'
+import {
+  checkArticles,
+  getAllOpenAlexQueries,
+} from '../backend/Services/api-externes.services.handleOpenAlex'
+import {
+  checkPhotos,
+  getAllUnsplashQueries,
+} from '../backend/Services/api-externes.services.handleUnsplash'
 import { task as articlesTask } from '../backend/Helpers/cron.schedules.Articles'
 import { task as photosTask } from '../backend/Helpers/cron.schedules.Photos'
 
@@ -31,7 +37,10 @@ describe('cron.schedules.Articles', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     // Mock global setTimeout to execute callback immediately
-    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => { cb(); return 0 as any })
+    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+      cb()
+      return 0 as any
+    })
   })
 
   afterEach(() => {
@@ -54,7 +63,11 @@ describe('cron.schedules.Articles', () => {
   })
 
   it('appelle checkArticles pour chaque query retournée', async () => {
-    ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702', '1703', '1705'])
+    ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue([
+      '1702',
+      '1703',
+      '1705',
+    ])
     ;(checkArticles as jest.Mock).mockResolvedValue([])
 
     await articlesTask()
@@ -65,7 +78,7 @@ describe('cron.schedules.Articles', () => {
     expect(checkArticles).toHaveBeenCalledWith('1705')
   })
 
-  it('respecte l\'ordre des queries (séquentiel, pas parallèle)', async () => {
+  it("respecte l'ordre des queries (séquentiel, pas parallèle)", async () => {
     const order: string[] = []
     ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702', '1703'])
     ;(checkArticles as jest.Mock).mockImplementation(async (q: string) => {
@@ -86,15 +99,18 @@ describe('cron.schedules.Articles', () => {
     await articlesTask()
 
     const delays = setTimeoutSpy.mock.calls.map(([, ms]) => ms)
-    expect(delays.every(ms => ms === 200)).toBe(true)
+    expect(delays.every((ms) => ms === 200)).toBe(true)
     expect(delays.length).toBe(2)
   })
 
-  it('ne s\'exécute pas en parallèle si isCronRunning est true', async () => {
+  it("ne s'exécute pas en parallèle si isCronRunning est true", async () => {
     ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
     let resolveArticles: any
     ;(checkArticles as jest.Mock).mockImplementation(
-      () => new Promise(resolve => { resolveArticles = resolve })
+      () =>
+        new Promise((resolve) => {
+          resolveArticles = resolve
+        })
     )
 
     const p1 = articlesTask()
@@ -120,21 +136,20 @@ describe('cron.schedules.Articles', () => {
     ;(checkArticles as jest.Mock).mockRejectedValue(new Error('API down'))
 
     await articlesTask()
-
     ;(checkArticles as jest.Mock).mockResolvedValue([])
     await articlesTask()
 
     expect(checkArticles).toHaveBeenCalledTimes(2)
   })
 
-  it('ne lève pas d\'exception si checkArticles rejette', async () => {
+  it("ne lève pas d'exception si checkArticles rejette", async () => {
     ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
     ;(checkArticles as jest.Mock).mockRejectedValue(new Error('Network error'))
 
     await expect(articlesTask()).resolves.not.toThrow()
   })
 
-  it('ne lève pas d\'exception si getAllOpenAlexQueries retourne un tableau vide', async () => {
+  it("ne lève pas d'exception si getAllOpenAlexQueries retourne un tableau vide", async () => {
     ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue([])
 
     await expect(articlesTask()).resolves.not.toThrow()
@@ -145,7 +160,10 @@ describe('cron.schedules.Articles', () => {
 describe('cron.schedules.Photos', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => { cb(); return 0 as any })
+    jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+      cb()
+      return 0 as any
+    })
   })
 
   afterEach(() => {
@@ -159,7 +177,9 @@ describe('cron.schedules.Photos', () => {
   })
 
   it('appelle getAllUnsplashQueries au démarrage de la tâche', async () => {
-    ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['artificial intelligence technology'])
+    ;(getAllUnsplashQueries as jest.Mock).mockReturnValue([
+      'artificial intelligence technology',
+    ])
     ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
 
     await photosTask()
@@ -168,7 +188,10 @@ describe('cron.schedules.Photos', () => {
   })
 
   it('passe toutes les queries à checkPhotos en un seul appel', async () => {
-    const queries = ['artificial intelligence technology', 'robot automation machine']
+    const queries = [
+      'artificial intelligence technology',
+      'robot automation machine',
+    ]
     ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(queries)
     ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
 
@@ -178,11 +201,14 @@ describe('cron.schedules.Photos', () => {
     expect(checkPhotos).toHaveBeenCalledWith(queries)
   })
 
-  it('ne s\'exécute pas en parallèle si isCronRunning est true', async () => {
+  it("ne s'exécute pas en parallèle si isCronRunning est true", async () => {
     ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
     let resolvePhoto: any
     ;(checkPhotos as jest.Mock).mockImplementation(
-      () => new Promise(resolve => { resolvePhoto = resolve })
+      () =>
+        new Promise((resolve) => {
+          resolvePhoto = resolve
+        })
     )
 
     const p1 = photosTask()
@@ -208,21 +234,20 @@ describe('cron.schedules.Photos', () => {
     ;(checkPhotos as jest.Mock).mockRejectedValue(new Error('Unsplash down'))
 
     await photosTask()
-
     ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
     await photosTask()
 
     expect(checkPhotos).toHaveBeenCalledTimes(2)
   })
 
-  it('ne lève pas d\'exception si checkPhotos rejette', async () => {
+  it("ne lève pas d'exception si checkPhotos rejette", async () => {
     ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
     ;(checkPhotos as jest.Mock).mockRejectedValue(new Error('Network error'))
 
     await expect(photosTask()).resolves.not.toThrow()
   })
 
-  it('ne lève pas d\'exception si getAllUnsplashQueries retourne un tableau vide', async () => {
+  it("ne lève pas d'exception si getAllUnsplashQueries retourne un tableau vide", async () => {
     ;(getAllUnsplashQueries as jest.Mock).mockReturnValue([])
     ;(checkPhotos as jest.Mock).mockResolvedValue(undefined)
 

@@ -102,7 +102,7 @@ describe('rateLimiter – createRateLimiter', () => {
     expect(next2).toHaveBeenCalledTimes(1)
   })
 
-  it('utilise une fonction comme clé d\'identification', () => {
+  it("utilise une fonction comme clé d'identification", () => {
     const keyFn = (req: Request) => req.body.email || 'anon'
     const limiter = createRateLimiter(keyFn, 1, 900000)
 

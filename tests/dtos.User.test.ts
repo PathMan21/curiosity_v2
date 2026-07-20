@@ -106,7 +106,7 @@ describe('dtos/User – createUserSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejette une picture qui n\'est pas une URL', () => {
+  it("rejette une picture qui n'est pas une URL", () => {
     const result = createUserSchema.safeParse({
       username: 'JohnDoe',
       password: 'Test@123abc',
@@ -168,7 +168,7 @@ describe('dtos/User – updateUserSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('valide une mise à jour avec seulement l\'email', () => {
+  it("valide une mise à jour avec seulement l'email", () => {
     const result = updateUserSchema.safeParse({ email: 'new@example.com' })
     expect(result.success).toBe(true)
   })
@@ -188,7 +188,7 @@ describe('dtos/User – updateUserSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejette une picture qui n\'est pas une URL', () => {
+  it("rejette une picture qui n'est pas une URL", () => {
     const result = updateUserSchema.safeParse({ picture: 'not-a-url' })
     expect(result.success).toBe(false)
   })
