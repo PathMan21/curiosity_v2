@@ -86,4 +86,3 @@ jobs:
             sudo systemctl reload nginx
 
             docker image prune -f
-

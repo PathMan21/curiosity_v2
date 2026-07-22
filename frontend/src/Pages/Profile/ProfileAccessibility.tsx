@@ -47,7 +47,6 @@ function ProfileAccessibility() {
           </select>
         </div>
 
-
         {/* Mode sombre */}
         <div className="form-check form-switch mb-3">
           <input

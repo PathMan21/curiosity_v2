@@ -112,29 +112,29 @@ describe('cron.schedules.Photos', () => {
 
   describe('Protection isCronRunning', () => {
     it("ne s'exécute pas en parallèle", async () => {
-        ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['1702'])
-        let resolvePhoto: (() => void) | undefined
-        ;(checkPhotos as jest.Mock).mockImplementation(
-          () =>
-            new Promise<void>((resolve) => {
-              resolvePhoto = resolve
-            })
-        )
+      ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['1702'])
+      let resolvePhoto: (() => void) | undefined
+      ;(checkPhotos as jest.Mock).mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolvePhoto = resolve
+          })
+      )
 
-        const p1 = task()
-        const p2 = task()
+      const p1 = task()
+      const p2 = task()
 
-        // Laisse task() traverser le `await getAllOpenAlexQueries()`
-        // interne avant que checkArticles (et donc resolveArticles) existe
-        while (typeof resolvePhoto !== 'function') {
-          await Promise.resolve()
-        }
+      // Laisse task() traverser le `await getAllOpenAlexQueries()`
+      // interne avant que checkArticles (et donc resolveArticles) existe
+      while (typeof resolvePhoto !== 'function') {
+        await Promise.resolve()
+      }
 
-        resolvePhoto()
-        await Promise.all([p1, p2])
+      resolvePhoto()
+      await Promise.all([p1, p2])
 
-        expect(checkPhotos).toHaveBeenCalledTimes(1)
-      })
+      expect(checkPhotos).toHaveBeenCalledTimes(1)
+    })
     // it("ne s'exécute pas en parallèle", async () => {
     //   ;(getAllUnsplashQueries as jest.Mock).mockReturnValue(['ai technology'])
     //   let resolvePhoto: any

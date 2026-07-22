@@ -127,30 +127,30 @@ describe('cron.schedules.Articles', () => {
   })
 
   describe('Protection isCronRunning', () => {
-it("ne s'exécute pas en parallèle", async () => {
-  ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
-  let resolveArticles: (() => void) | undefined
-  ;(checkArticles as jest.Mock).mockImplementation(
-    () =>
-      new Promise<void>((resolve) => {
-        resolveArticles = resolve
-      })
-  )
+    it("ne s'exécute pas en parallèle", async () => {
+      ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
+      let resolveArticles: (() => void) | undefined
+      ;(checkArticles as jest.Mock).mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveArticles = resolve
+          })
+      )
 
-  const p1 = task()
-  const p2 = task()
+      const p1 = task()
+      const p2 = task()
 
-  // Laisse task() traverser le `await getAllOpenAlexQueries()`
-  // interne avant que checkArticles (et donc resolveArticles) existe
-  while (typeof resolveArticles !== 'function') {
-    await Promise.resolve()
-  }
+      // Laisse task() traverser le `await getAllOpenAlexQueries()`
+      // interne avant que checkArticles (et donc resolveArticles) existe
+      while (typeof resolveArticles !== 'function') {
+        await Promise.resolve()
+      }
 
-  resolveArticles()
-  await Promise.all([p1, p2])
+      resolveArticles()
+      await Promise.all([p1, p2])
 
-  expect(checkArticles).toHaveBeenCalledTimes(1)
-})
+      expect(checkArticles).toHaveBeenCalledTimes(1)
+    })
 
     it('remet isCronRunning à false après succès', async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
