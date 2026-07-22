@@ -22,7 +22,6 @@ function Login() {
       setIsError(true)
     } finally {
       setIsLoading(false)
-      setIsError(false)
     }
   }
 

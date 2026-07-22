@@ -79,7 +79,7 @@ function ProfileSettings() {
 
   return (
     <main id="contenu-principal" className="container py-5">
-      <h1 className="mb-4">Paramètres du profil</h1>
+      <h1 className="mb-4"></h1>
 
       <div
         ref={statusRef}

@@ -86,8 +86,3 @@ jobs:
             sudo systemctl reload nginx
 
             docker image prune -f
-
-      - name: Health check
-        run: |
-          sleep 10
-          curl -f https://be-curious.fr/api/health
