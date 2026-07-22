@@ -6,8 +6,6 @@ import Photos from './Photos'
 import { useAuthentification } from '../../Context/Auth'
 import { privateApi } from '../../Context/Interceptor'
 
-// const topics = ['Tout', 'Science', 'Tech', 'Nature', 'Art', 'Histoire']
-
 type FeedItem =
   | {
       id: string
@@ -43,8 +41,7 @@ function ArticlePage() {
   }, [isLogged])
 
   /**
-   * FETCH GLOBAL FEED
-   */
+   * Va chercher le fil d'actualité global   */
   const fetchFeed = async () => {
     try {
       setLoading(true)
@@ -57,8 +54,6 @@ function ArticlePage() {
 
       const articles = articlesRes.data.articles
       const photos = photosRes.data.photos
-
-      console.log('photos => ', photos)
 
       if (!Array.isArray(articles) || !Array.isArray(photos)) {
         throw new Error('Format de réponse invalide')
@@ -122,7 +117,6 @@ function ArticlePage() {
     if (activeTopic === 'Tout') return items
 
     return items.filter((item) => {
-      console.log(item)
       if (!item.type) return false
       return item.topic?.toLowerCase() === activeTopic.toLowerCase()
     })

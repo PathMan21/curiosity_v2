@@ -50,18 +50,15 @@ app.use('/api/', likesRoutes)
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
 if (process.env.NODE_ENV !== 'test') {
   ;(async () => {
-    console.log("node env n'est pas test : ")
     await connectDB()
     const PORT = process.env.PORT || 3000
     server.listen(PORT, async () => {
-      console.log(`Serveur lancé sur le port ${PORT}`)
       try {
-        // await validateByMail();
         await import('./Helpers/cron.schedules.Photos')
         await import('./Helpers/cron.schedules.Articles')
-        console.log('✅ Tous les crons ont démarré avec succès')
+        console.log('Tous les crons ont démarré avec succès')
       } catch (error) {
-        console.error('❌ Erreur lors du démarrage :', error)
+        console.log('Les crons n ont pas démarrés')
       }
     })
   })()

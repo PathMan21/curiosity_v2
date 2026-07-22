@@ -1,9 +1,6 @@
 import '@testing-library/jest-dom'
 
-// ─── Setup ────────────────────────────────────────────────────────────────────
 global.fetch = jest.fn()
-
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('API Client Services', () => {
   let fetchWithAuth: any
@@ -22,7 +19,7 @@ describe('API Client Services', () => {
     localStorage.clear()
   })
 
-  // ── Authentication ───────────────────────────────────────────────────────────
+  // Auth
 
   describe('Authentication Headers', () => {
     it('ajoute le header Authorization avec le token stocké dans localStorage', async () => {
@@ -72,7 +69,7 @@ describe('API Client Services', () => {
     })
   })
 
-  // ── Data Transformation ──────────────────────────────────────────────────────
+  // Transformation
 
   describe('Data Transformation', () => {
     it('parse correctement les interests JSON depuis la DB', () => {
@@ -145,7 +142,7 @@ describe('API Client Services', () => {
     })
   })
 
-  // ── Error Handling ───────────────────────────────────────────────────────────
+  // En cas d'erreur
 
   describe('Error Handling', () => {
     it('lève une erreur sur réponse 401 Unauthorized', async () => {
@@ -212,7 +209,7 @@ describe('API Client Services', () => {
     })
   })
 
-  // ── Request Validation ────────────────────────────────────────────────────────
+  // Validation de requêtes
 
   describe('Request Validation (règles métier)', () => {
     it('rejette si un champ requis est vide', () => {
@@ -262,7 +259,7 @@ describe('API Client Services', () => {
     })
   })
 
-  // ── Endpoints métier ─────────────────────────────────────────────────────────
+  // Test des endpoints
 
   describe('Endpoints métier', () => {
     it('getArticles appelle /api/openalex et retourne les articles', async () => {

@@ -62,13 +62,16 @@ export const createUser = async (req, res) => {
       username,
       email,
       password,
-      interests: interests ? JSON.stringify(interests) : null,
+      interests: interests || null,
       verified: false,
     })
     try {
       await sendVerificationEmail({ id: user.id, email: user.email }, res)
     } catch (emailError) {
-      console.error('Erreur envoi email:', emailError)
+      return res.status(500).json({
+        status: 'Failed',
+        message: "Erreur lors de l'envoi de l'email de vérification",
+      })
     }
 
     return res.status(201).json({
@@ -124,13 +127,6 @@ export const loginUser = async (req, res) => {
     setRefreshCookie(res, refreshToken)
 
     const userData = formatUser(user)
-    if (userData.interests && typeof userData.interests === 'string') {
-      try {
-        userData.interests = JSON.parse(userData.interests)
-      } catch (e) {
-        userData.interests = []
-      }
-    }
 
     return res.status(200).json({
       status: 'Success',
@@ -216,15 +212,6 @@ export const getCurrentUser = async (req, res) => {
 
     const userData = user.get({ plain: true })
 
-    // Parse interests if they are a JSON string
-    if (userData.interests && typeof userData.interests === 'string') {
-      try {
-        userData.interests = JSON.parse(userData.interests)
-      } catch (e) {
-        userData.interests = []
-      }
-    }
-
     return res.json({ status: 'Success', user: userData })
   } catch (err) {
     return res.status(401).json({ status: 'Failed', message: err.message })
@@ -249,8 +236,7 @@ export const updatedProfile = async (req, res) => {
     const updateData = {}
     if (username !== undefined) updateData.username = username
     if (picture !== undefined) updateData.picture = picture
-    if (interests !== undefined)
-      updateData.interests = JSON.stringify(interests)
+    if (interests !== undefined) updateData.interests = interests
 
     await user.update(updateData)
 
@@ -262,15 +248,7 @@ export const updatedProfile = async (req, res) => {
     await user.update({ refreshToken })
     setRefreshCookie(res, refreshToken)
 
-    // Format user with interests as array
     const userData = formatUser(user)
-    if (userData.interests && typeof userData.interests === 'string') {
-      try {
-        userData.interests = JSON.parse(userData.interests)
-      } catch (e) {
-        userData.interests = []
-      }
-    }
 
     return res.json({ status: 'Success', accessToken, user: userData })
   } catch (error) {

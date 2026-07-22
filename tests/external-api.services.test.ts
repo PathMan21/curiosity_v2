@@ -1,10 +1,8 @@
-// ─── Env ───────────────────────────────────────────────────────────────────────
 process.env.DB_NAME = 'test_db'
 process.env.DB_USER = 'test_user'
 process.env.API_KEY_UNSPLASH = 'test-unsplash-key'
 process.env.API_KEY_NEWS = 'test-news-key'
 
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 jest.mock('../backend/Config/redis.conf', () => ({
   get: jest.fn(),
   setEx: jest.fn(),
@@ -49,8 +47,6 @@ import {
   isArticlesTooOld,
   isPhotosTooOld,
 } from '../backend/Helpers/CheckTooOld'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeWork(id = 'W1', score = 0.9) {
   return {
@@ -112,17 +108,11 @@ function mockFailFetch(status = 500) {
   })
 }
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
-
 describe('External API Services', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     global.fetch = jest.fn()
   })
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // OPENALEX
-  // ─────────────────────────────────────────────────────────────────────────────
 
   describe('OpenAlex Service', () => {
     let fetchInterestFromAPI: any
@@ -174,11 +164,7 @@ describe('External API Services', () => {
           callCount++
           const results =
             callCount === 1
-              ? [
-                  makeWork('W1', 0.9), // ✓ passe
-                  makeWork('W2', 0.5), // ✗ filtré
-                  makeWork('W3', 0.75), // ✓ passe (valeur limite)
-                ]
+              ? [makeWork('W1', 0.9), makeWork('W2', 0.5), makeWork('W3', 0.75)]
               : []
           return Promise.resolve({
             ok: true,
@@ -318,10 +304,6 @@ describe('External API Services', () => {
     })
   })
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // UNSPLASH
-  // ─────────────────────────────────────────────────────────────────────────────
-
   describe('Unsplash Service', () => {
     let checkPhotos: any
     let getAllUnsplashQueries: any
@@ -452,10 +434,6 @@ describe('External API Services', () => {
     })
   })
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // NEWS API
-  // ─────────────────────────────────────────────────────────────────────────────
-
   describe('News Service', () => {
     let fetchNews: any
     let checkNews: any
@@ -467,7 +445,6 @@ describe('External API Services', () => {
         fetchNews = mod.fetchNews ?? mod.fetchNewsFromAPI
         checkNews = mod.checkNews
       } catch {
-        // Le module News n'est peut-être pas encore créé — les tests sont skippés
         fetchNews = null
         checkNews = null
       }
@@ -513,7 +490,6 @@ describe('External API Services', () => {
 
         const results = await fetchNews('ai')
 
-        // Seul le premier article complet doit passer
         expect(results.length).toBe(1)
       })
 

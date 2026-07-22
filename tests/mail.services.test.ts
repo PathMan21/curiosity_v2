@@ -1,10 +1,7 @@
-// ─── Env ───────────────────────────────────────────────────────────────────────
 process.env.ACCESS_TOKEN_SECRET = 'access_secret_test'
 process.env.REFRESH_TOKEN_SECRET = 'refresh_secret_test'
 process.env.SERVER_URL = 'https://app.test'
 process.env.AUTH_MAIL = 'noreply@app.test'
-
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 
 jest.mock('../backend/Helpers/configLink', () => ({}))
 
@@ -45,8 +42,6 @@ import {
   verifyUser,
 } from '../backend/Services/mail.services'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function makeRes() {
   const res: any = {}
   res.status = jest.fn().mockReturnValue(res)
@@ -64,11 +59,7 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
-
 describe('mail.services', () => {
-  // ── sendVerificationEmail ────────────────────────────────────────────────────
-
   describe('sendVerificationEmail', () => {
     it('retourne 400 si l’id utilisateur est manquant', async () => {
       const res = makeRes()
@@ -141,8 +132,6 @@ describe('mail.services', () => {
       expect(res.status).toHaveBeenCalledWith(500)
     })
   })
-
-  // ── verifyUser ───────────────────────────────────────────────────────────────
 
   describe('verifyUser', () => {
     it('retourne 500 si aucune vérification n’est trouvée', async () => {

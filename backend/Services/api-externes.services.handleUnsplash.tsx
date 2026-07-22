@@ -100,12 +100,6 @@ async function setCache(cacheKey, interest, photos) {
   }
 }
 async function setDbAndCache(cacheKey, interest, photos) {
-  console.log(
-    'set db and cache - interest:',
-    interest,
-    'photos count:',
-    photos?.length
-  )
   if (!photos?.length) {
     console.warn(`No photos to save for interest: ${interest}`)
     return
@@ -128,26 +122,23 @@ async function setDbAndCache(cacheKey, interest, photos) {
   const t = await sequelizeDb.transaction()
 
   try {
-    // First try to create new photos
     await Photo.bulkCreate(photosArray, {
       transaction: t,
-      ignoreDuplicates: true, // Skip duplicates instead of failing
+      ignoreDuplicates: true,
       logging: false,
     })
 
     await t.commit()
     console.log(
-      `✅ Successfully saved ${photosArray.length} photos for interest: ${interest}`
+      `${photosArray.length} photos pour l'intéret : ${interest} enregistrés`
     )
 
-    // Then save to cache
     try {
       await redisClient.setEx(
         cacheKey,
         CACHE_TTL,
         JSON.stringify({ photosArray })
       )
-      console.log(`✅ Cache set for: ${cacheKey}`)
     } catch (cacheErr) {
       console.warn('Redis cache write failed (non-critical):', cacheErr)
     }
@@ -220,21 +211,11 @@ async function handleUnsplash(req, res) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' })
     }
 
-    // Handle null or empty interests
     if (!user.interests) {
       return res.status(400).json({ message: 'Aucun intérêt défini' })
     }
 
-    let interests
-    try {
-      interests =
-        typeof user.interests === 'string'
-          ? JSON.parse(user.interests)
-          : user.interests
-    } catch (e) {
-      console.error('Erreur parsing intérêts:', e)
-      return res.status(400).json({ message: 'Format des intérêts invalide' })
-    }
+    let interests = user.interests
 
     if (!interests.length) {
       console.error('Intérets vide')
@@ -243,7 +224,6 @@ async function handleUnsplash(req, res) {
 
     const sent = mapInterestsToSentences(interests)
     const photos = await fetchGlobal(sent)
-    console.log('photos backend => ', photos)
 
     return res.json({ photos })
   } catch (err) {
@@ -277,7 +257,6 @@ export async function checkPhotos(queries) {
       }
 
       const photos = await fetchPhotosFromAPI(interest, clientId)
-      console.log('photos fetched =>', photos.length)
       if (!photos.length) {
         continue
       }

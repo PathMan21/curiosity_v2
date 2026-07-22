@@ -1,5 +1,3 @@
-// ─── Mocks ────────────────────────────────────────────────────────────────────
-
 const mockVerify = jest.fn()
 
 jest.mock('../backend/Config/emailConfig', () => {
@@ -11,11 +9,7 @@ jest.mock('../backend/Config/emailConfig', () => {
   }
 })
 
-// ─── Imports ──────────────────────────────────────────────────────────────────
-
 import validateByMail from '../backend/middlewares/mail.middlewares'
-
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('mail.middlewares – validateByMail', () => {
   beforeEach(() => {

@@ -16,21 +16,19 @@ export const task = async () => {
   const startTime = Date.now()
 
   try {
-    console.log('CRON PHOTO => COMMENCEMENT')
+    console.log('CRON PHOTO ')
 
     const queries = getAllUnsplashQueries()
-
-    console.log('Nombre de requêtes :', queries.length)
 
     await checkPhotos(queries)
 
     const duration = Date.now() - startTime
 
-    console.log(`CRON PHOTO FINI => synchronisation terminée en ${duration}ms`)
+    console.log(`CRON PHOTO FINI`)
   } catch (error) {
     const duration = Date.now() - startTime
 
-    console.error(`CRON PHOTO ERREUR => échec après ${duration}ms`, error)
+    console.error(`CRON PHOTO ERREUR : `, error)
   } finally {
     isCronRunning = false
   }

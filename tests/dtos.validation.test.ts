@@ -1,11 +1,7 @@
 import { createArticleSchema } from '../backend/dtos/Article'
 import { createPhotosSchema } from '../backend/dtos/Photos'
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
-
 describe('DTOs Zod — Validation des schémas', () => {
-  // ── createArticleSchema ──────────────────────────────────────────────────────
-
   describe('createArticleSchema', () => {
     const validArticle = {
       openAlexId: 'https://openalex.org/W1234',
@@ -92,8 +88,6 @@ describe('DTOs Zod — Validation des schémas', () => {
       expect(() => createArticleSchema.parse(article)).toThrow()
     })
   })
-
-  // ── createPhotosSchema ───────────────────────────────────────────────────────
 
   describe('createPhotosSchema', () => {
     const validPhoto = {

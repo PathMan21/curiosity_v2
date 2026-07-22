@@ -15,15 +15,12 @@ jest.mock('../backend/Services/api-externes.services.handleOpenAlex', () => ({
   getAllOpenAlexQueries: jest.fn(),
 }))
 
-// ─── Imports ──────────────────────────────────────────────────────────────────
 import { task } from '../backend/Helpers/cron.schedules.Articles'
 import cron from 'node-cron'
 import {
   checkArticles,
   getAllOpenAlexQueries,
 } from '../backend/Services/api-externes.services.handleOpenAlex'
-
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('cron.schedules.Articles', () => {
   beforeEach(() => {
@@ -38,8 +35,6 @@ describe('cron.schedules.Articles', () => {
     jest.restoreAllMocks()
   })
 
-  // ── Planification ────────────────────────────────────────────────────────────
-
   describe('Planification', () => {
     it('planifie le cron avec l\'expression "0 2 * * *"', () => {
       const hasCall = mockCronScheduleCalls.some(
@@ -52,8 +47,6 @@ describe('cron.schedules.Articles', () => {
       expect(typeof task).toBe('function')
     })
   })
-
-  // ── Exécution normale ─────────────────────────────────────────────────────────
 
   describe('Exécution normale', () => {
     it('appelle getAllOpenAlexQueries au démarrage', async () => {
@@ -132,8 +125,6 @@ describe('cron.schedules.Articles', () => {
     })
   })
 
-  // ── Protection isCronRunning ──────────────────────────────────────────────────
-
   describe('Protection isCronRunning', () => {
     it("ne s'exécute pas en parallèle", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
@@ -174,8 +165,6 @@ describe('cron.schedules.Articles', () => {
       expect(checkArticles).toHaveBeenCalledTimes(2)
     })
   })
-
-  // ── Gestion des erreurs ───────────────────────────────────────────────────────
 
   describe('Gestion des erreurs', () => {
     it("ne lève pas d'exception si checkArticles rejette", async () => {

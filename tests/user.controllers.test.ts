@@ -1,8 +1,5 @@
-// ─── Env ───────────────────────────────────────────────────────────────────────
 process.env.ACCESS_TOKEN_SECRET = 'access_secret_test'
 process.env.REFRESH_TOKEN_SECRET = 'refresh_secret_test'
-
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 
 jest.mock('../backend/Helpers/configLink', () => ({}))
 
@@ -44,8 +41,6 @@ import {
   updatedProfile,
 } from '../backend/Controllers/user.controllers'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function makeRes() {
   const res: any = {}
   res.status = jest.fn().mockReturnValue(res)
@@ -68,11 +63,7 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
-
 describe('user.controllers', () => {
-  // ── createUser ───────────────────────────────────────────────────────────────
-
   describe('createUser', () => {
     it('retourne 400 si la validation du schéma échoue', async () => {
       const req = makeReq({ body: {} })
@@ -186,8 +177,6 @@ describe('user.controllers', () => {
     })
   })
 
-  // ── loginUser ────────────────────────────────────────────────────────────────
-
   describe('loginUser', () => {
     it('retourne 400 si email ou password manquant', async () => {
       const req = makeReq({ body: { email: 'a@test.com' } })
@@ -273,8 +262,6 @@ describe('user.controllers', () => {
     })
   })
 
-  // ── logoutUser ───────────────────────────────────────────────────────────────
-
   describe('logoutUser', () => {
     it('invalide le refreshToken en base et efface le cookie', async () => {
       const req = makeReq({ cookies: { refreshToken: 'tok' } })
@@ -312,8 +299,6 @@ describe('user.controllers', () => {
       expect(res.status).toHaveBeenCalledWith(500)
     })
   })
-
-  // ── refresh ──────────────────────────────────────────────────────────────────
 
   describe('refresh', () => {
     it('retourne 401 si aucun token n’est présent', async () => {
@@ -379,8 +364,6 @@ describe('user.controllers', () => {
     })
   })
 
-  // ── getCurrentUser ───────────────────────────────────────────────────────────
-
   describe('getCurrentUser', () => {
     it('retourne les infos utilisateur avec interests parsés', async () => {
       const req = makeReq({ user: { id: 1 } })
@@ -423,8 +406,6 @@ describe('user.controllers', () => {
       expect(payload.user.interests).toEqual([])
     })
   })
-
-  // ── updatedProfile ───────────────────────────────────────────────────────────
 
   describe('updatedProfile', () => {
     it('retourne 500 si l’utilisateur n’est pas trouvé', async () => {
