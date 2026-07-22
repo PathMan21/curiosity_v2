@@ -11,7 +11,7 @@ const generateTokens = (userId: number) => {
     expiresIn: 15 * 60,
   })
   const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: 7 * 24 * 60 * 60, 
+    expiresIn: 7 * 24 * 60 * 60,
   })
   return { accessToken, refreshToken }
 }
@@ -114,7 +114,6 @@ const oauthToken = async (req, res) => {
 
     let existingUser = await User.findOne({ where: { email } })
     if (existingUser) {
-
       const { accessToken: jwtAccessToken, refreshToken: jwtRefreshToken } =
         generateTokens(existingUser.id)
       await existingUser.update({ refreshToken: jwtRefreshToken })
@@ -192,7 +191,6 @@ const updateProfile = async (req, res) => {
   if (typeof username !== 'undefined') updateData.username = username
   if (typeof interests !== 'undefined')
     updateData.interests = JSON.stringify(interests)
-
 
   await user.update(updateData)
 

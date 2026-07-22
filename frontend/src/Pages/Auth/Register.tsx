@@ -197,7 +197,6 @@ function Register() {
               'Créer mon compte'
             )}
           </button>
-
         </form>
 
         <div
