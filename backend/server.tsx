@@ -45,7 +45,6 @@ app.use(
 app.use('/api/user/', userRoutes)
 app.use('/api/', authRoutes)
 app.use('/api/', apiroutes)
-app.use('/api/', likesRoutes)
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }))
 if (process.env.NODE_ENV !== 'test') {
   ;(async () => {
