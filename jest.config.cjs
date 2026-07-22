@@ -19,6 +19,8 @@ module.exports = {
   moduleNameMapper: {
     '^react$': '<rootDir>/node_modules/react',
     '^react-dom$': '<rootDir>/node_modules/react-dom',
+    '^react-router-dom$': '<rootDir>/node_modules/react-router-dom',
+    '^react-router$': '<rootDir>/node_modules/react-router',
   },
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest',

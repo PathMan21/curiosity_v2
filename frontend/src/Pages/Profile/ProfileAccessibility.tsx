@@ -47,21 +47,6 @@ function ProfileAccessibility() {
           </select>
         </div>
 
-        {/* Curseur */}
-        <div className="form-check form-switch mb-2">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            id="cursor-switch"
-            role="switch"
-            aria-checked={localCursor}
-            checked={localCursor}
-            onChange={(e) => setLocalCursor(e.target.checked)}
-          />
-          <label className="form-check-label" htmlFor="cursor-switch">
-            Activer le curseur large
-          </label>
-        </div>
 
         {/* Mode sombre */}
         <div className="form-check form-switch mb-3">
