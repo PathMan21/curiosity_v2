@@ -18,7 +18,6 @@ export const task = async () => {
     const queries = await getAllOpenAlexQueries()
 
     for (const query of queries) {
-      console.log("valeur de l'intéret open alex cron => ", query)
       await checkArticles(query)
       await new Promise((resolve) => setTimeout(resolve, 200))
     }

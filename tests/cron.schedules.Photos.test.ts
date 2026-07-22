@@ -15,7 +15,6 @@ jest.mock('../backend/Services/api-externes.services.handleUnsplash', () => ({
   getAllUnsplashQueries: jest.fn(),
 }))
 
-// ─── Imports ──────────────────────────────────────────────────────────────────
 import { task } from '../backend/Helpers/cron.schedules.Photos'
 import cron from 'node-cron'
 import {
@@ -23,7 +22,6 @@ import {
   getAllUnsplashQueries,
 } from '../backend/Services/api-externes.services.handleUnsplash'
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('cron.schedules.Photos', () => {
   beforeEach(() => {
@@ -38,7 +36,6 @@ describe('cron.schedules.Photos', () => {
     jest.restoreAllMocks()
   })
 
-  // ── Planification ────────────────────────────────────────────────────────────
 
   describe('Planification', () => {
     it('planifie le cron avec l\'expression "0 2 * * *"', () => {
@@ -53,7 +50,6 @@ describe('cron.schedules.Photos', () => {
     })
   })
 
-  // ── Exécution normale ─────────────────────────────────────────────────────────
 
   describe('Exécution normale', () => {
     it('appelle getAllUnsplashQueries au démarrage', async () => {
@@ -116,7 +112,6 @@ describe('cron.schedules.Photos', () => {
     })
   })
 
-  // ── Protection isCronRunning ──────────────────────────────────────────────────
 
   describe('Protection isCronRunning', () => {
     it("ne s'exécute pas en parallèle", async () => {
@@ -150,7 +145,7 @@ describe('cron.schedules.Photos', () => {
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
 
       const p1 = task()
-      await task() // deuxième appel → warning
+      await task()
 
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('TOUJOURS EN EXECUTION')
@@ -182,7 +177,6 @@ describe('cron.schedules.Photos', () => {
     })
   })
 
-  // ── Gestion des erreurs ───────────────────────────────────────────────────────
 
   describe('Gestion des erreurs', () => {
     it("ne lève pas d'exception si checkPhotos rejette", async () => {

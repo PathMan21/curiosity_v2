@@ -4,7 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -31,7 +30,6 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('Login page', () => {
   it('affiche les champs email et mot de passe', () => {

@@ -3,25 +3,15 @@ import {
   isPhotosTooOld,
 } from '../backend/Helpers/CheckTooOld'
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('CheckTooOld Helper', () => {
-  // ── isArticlesTooOld ─────────────────────────────────────────────────────────
 
   describe('isArticlesTooOld', () => {
-    // describe sert à englober une suite de tests dans un bloc
-    // - ici on teste si nos articles doivent être mis à jour
 
     it("retourne false si les articles sont récents (aujourd'hui)", () => {
-      // Arrange - première étape : on prépare le contexte
-
       const articles = [{ published: new Date().toISOString() }]
 
-      // Act - deuxième étape : on appelle / exécute la fonction
-
       const result = isArticlesTooOld(articles)
-
-      // Act - troisième étape : on vérifie si le résultat est celui qu'on attendait
 
       expect(result).toBe(false)
     })
@@ -61,7 +51,6 @@ describe('CheckTooOld Helper', () => {
       old.setDate(old.getDate() - 40)
       const recent = new Date()
 
-      // Premier article vieux → true même si le deuxième est récent
       const articles = [
         { published: old.toISOString() },
         { published: recent.toISOString() },
@@ -80,7 +69,6 @@ describe('CheckTooOld Helper', () => {
     })
   })
 
-  // ── isPhotosTooOld ───────────────────────────────────────────────────────────
 
   describe('isPhotosTooOld', () => {
     it("retourne false si les photos sont récentes (aujourd'hui)", () => {

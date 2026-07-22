@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 const ThemeContext = createContext(undefined)
 
 export const ThemeProvider = ({ children }) => {
-  // === États ===
   const [fontSize, setFontSize] = useState(() => {
     const saved = JSON.parse(localStorage.getItem('accessibility') || '{}')
     return saved.fontSize || 'normal-class'

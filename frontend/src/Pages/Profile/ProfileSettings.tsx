@@ -57,14 +57,10 @@ function ProfileSettings() {
       })
 
       if (response.data.status !== 'Success') {
-        console.log(
-          'Erreur lors de la mise à jour du profil',
-          response.data.errors
-        )
+
         return
       }
 
-      // refresh user state
       await fetchUserProfile()
 
       setSuccess('Profil mis à jour avec succès !')

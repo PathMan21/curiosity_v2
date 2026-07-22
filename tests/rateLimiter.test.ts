@@ -1,9 +1,7 @@
-// ─── Imports ──────────────────────────────────────────────────────────────────
 
 import { createRateLimiter } from '../backend/middlewares/rateLimiter'
 import { Request, Response, NextFunction } from 'express'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function mockReq(overrides: Partial<Request> = {}): Partial<Request> {
   return {
@@ -20,14 +18,12 @@ function mockRes(): Partial<Response> {
   return res
 }
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('rateLimiter – createRateLimiter', () => {
   let next: jest.Mock
 
   beforeEach(() => {
     next = jest.fn()
-    // Reset Date.now pour avoir un contrôle déterministe
     jest.spyOn(Date, 'now').mockReturnValue(1000000)
   })
 
@@ -64,10 +60,8 @@ describe('rateLimiter – createRateLimiter', () => {
     const req = mockReq()
     const res = mockRes()
 
-    // 1ère et 2ème : OK
     limiter(req as Request, res as Response, next)
     limiter(req as Request, res as Response, next)
-    // 3ème : bloquée
     limiter(req as Request, res as Response, next)
 
     expect(next).toHaveBeenCalledTimes(2)
@@ -81,20 +75,17 @@ describe('rateLimiter – createRateLimiter', () => {
   })
 
   it('réinitialise le compteur après expiration de la fenêtre', () => {
-    const windowMs = 60000 // 1 minute
+    const windowMs = 60000 
     const limiter = createRateLimiter('test-ip-4', 1, windowMs)
     const req = mockReq()
     const res = mockRes()
 
-    // 1ère requête à t=1000000
     limiter(req as Request, res as Response, next)
     expect(next).toHaveBeenCalledTimes(1)
 
-    // 2ème requête toujours dans la fenêtre → bloquée
     limiter(req as Request, res as Response, next)
     expect((res as any).status).toHaveBeenCalledWith(429)
 
-    // Avancer le temps au-delà de la fenêtre
     ;(Date.now as jest.Mock).mockReturnValue(1000000 + windowMs + 1)
 
     const next2 = jest.fn()
@@ -113,7 +104,6 @@ describe('rateLimiter – createRateLimiter', () => {
     limiter(req1 as Request, res as Response, next)
     limiter(req2 as Request, res as Response, next)
 
-    // Deux utilisateurs différents → les deux passent
     expect(next).toHaveBeenCalledTimes(2)
   })
 

@@ -1,6 +1,5 @@
 import { createUserSchema, updateUserSchema } from '../backend/dtos/User'
 
-// ─── Suite: createUserSchema ──────────────────────────────────────────────────
 
 describe('dtos/User – createUserSchema', () => {
   it('valide un utilisateur complet', () => {
@@ -160,7 +159,6 @@ describe('dtos/User – createUserSchema', () => {
   })
 })
 
-// ─── Suite: updateUserSchema ──────────────────────────────────────────────────
 
 describe('dtos/User – updateUserSchema', () => {
   it('valide une mise à jour avec seulement le username', () => {

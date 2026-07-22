@@ -33,6 +33,22 @@ const User = sequelizeDb.define(
     interests: {
       type: DataTypes.STRING,
       allowNull: true,
+      get() {
+        const rawValue = this.getDataValue('interests')
+        if (!rawValue) return []
+        try {
+          return typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue
+        } catch (e) {
+          return []
+        }
+      },
+      set(val: string[] | null) {
+        if (!val || val.length === 0) {
+          this.setDataValue('interests', null)
+        } else {
+          this.setDataValue('interests', typeof val === 'string' ? val : JSON.stringify(val))
+        }
+      },
     },
     verified: {
       type: DataTypes.BOOLEAN,

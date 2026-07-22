@@ -1,4 +1,3 @@
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 
 process.env.ACCESS_TOKEN_SECRET = 'test-secret-key'
 
@@ -9,7 +8,6 @@ jest.mock('../backend/Models/User', () => ({
   },
 }))
 
-// ─── Imports ──────────────────────────────────────────────────────────────────
 
 import jwt from 'jsonwebtoken'
 import User from '../backend/Models/User'
@@ -19,7 +17,6 @@ import {
   validateUserOauth,
 } from '../backend/middlewares/user.middlewares'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function mockReq(overrides: any = {}): any {
   return {
@@ -36,7 +33,6 @@ function mockRes(): any {
   return res
 }
 
-// ─── Suite: validateUserOauth ─────────────────────────────────────────────────
 
 describe('user.middlewares – validateUserOauth', () => {
   let next: jest.Mock
@@ -185,7 +181,6 @@ describe('user.middlewares – validateUserOauth', () => {
   })
 })
 
-// ─── Suite: validateUser ──────────────────────────────────────────────────────
 
 describe('user.middlewares – validateUser', () => {
   let next: jest.Mock
@@ -304,7 +299,6 @@ describe('user.middlewares – validateUser', () => {
   })
 })
 
-// ─── Suite: authentificatedUser ───────────────────────────────────────────────
 
 describe('user.middlewares – authentificatedUser', () => {
   let next: jest.Mock
@@ -342,7 +336,6 @@ describe('user.middlewares – authentificatedUser', () => {
   })
 
   it('retourne 401 si le token est expiré', async () => {
-    // Créer un token expiré
     const expiredToken = jwt.sign(
       { userId: 1 },
       process.env.ACCESS_TOKEN_SECRET!,
@@ -353,7 +346,6 @@ describe('user.middlewares – authentificatedUser', () => {
     })
     const res = mockRes()
 
-    // Attendre un tick pour que le token expire
     await new Promise((r) => setTimeout(r, 10))
 
     await authentificatedUser(req, res, next)

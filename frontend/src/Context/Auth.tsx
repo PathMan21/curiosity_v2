@@ -32,7 +32,6 @@ export const useAuthentification = () => {
 
 // on check l'utilisateur
 export const AuthentProvider = ({ children }) => {
-  // ici on met l'access token qui va être enregistré en state
   const [accessToken, setAccessToken] = useState(null)
   const [isLogged, setIsLogged] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -74,8 +73,6 @@ export const AuthentProvider = ({ children }) => {
       const res = await privateApi.get('/user/me')
 
       if (res.data.status === 'Success') {
-        console.log(`${res.status} : ${res.data.message}`)
-
         setUser(res.data.user)
       }
     } catch (err) {
@@ -116,7 +113,6 @@ export const AuthentProvider = ({ children }) => {
           setIsLoading(false)
           setIsLogged(false)
 
-          console.log(`Erreur : ${res}`)
           setIsError(response?.data?.message)
 
           applyToken(null)

@@ -1,8 +1,6 @@
-// ─── Env ───────────────────────────────────────────────────────────────────────
 process.env.DB_NAME = 'test_db'
 process.env.DB_USER = 'test_user'
 
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 jest.mock('../backend/Config/dbInit', () => ({
   define: jest.fn(),
   authenticate: jest.fn(),
@@ -21,7 +19,6 @@ jest.mock('../backend/Models/Photo', () => ({
 
 import Photo from '../backend/Models/Photo'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const makePhoto = (overrides: Record<string, any> = {}) => ({
   unsplashId: 'photo-abc123',
@@ -37,14 +34,12 @@ const makePhoto = (overrides: Record<string, any> = {}) => ({
   ...overrides,
 })
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('Photo Model', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  // ── findAll ──────────────────────────────────────────────────────────────────
 
   describe('findAll', () => {
     it("retourne toutes les photos d'un intérêt donné", async () => {
@@ -82,7 +77,6 @@ describe('Photo Model', () => {
     })
   })
 
-  // ── findOne ──────────────────────────────────────────────────────────────────
 
   describe('findOne', () => {
     it('retourne la photo correspondant à unsplashId', async () => {
@@ -107,7 +101,6 @@ describe('Photo Model', () => {
     })
   })
 
-  // ── create ───────────────────────────────────────────────────────────────────
 
   describe('create', () => {
     it('crée une photo avec tous les champs requis', async () => {
@@ -134,7 +127,6 @@ describe('Photo Model', () => {
     })
   })
 
-  // ── bulkCreate ───────────────────────────────────────────────────────────────
 
   describe('bulkCreate', () => {
     it('insère plusieurs photos en une seule transaction', async () => {
@@ -172,7 +164,6 @@ describe('Photo Model', () => {
     })
   })
 
-  // ── destroy ──────────────────────────────────────────────────────────────────
 
   describe('destroy', () => {
     it("supprime les photos d'un intérêt donné", async () => {
@@ -199,7 +190,6 @@ describe('Photo Model', () => {
     })
   })
 
-  // ── Sérialisation ─────────────────────────────────────────────────────────────
 
   describe('Sérialisation toJSON', () => {
     it('sérialise une photo en objet plat', () => {

@@ -3,7 +3,6 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 
 jest.mock('../frontend/src/Assets/interests.json', () => ({
   interests: [{ id: 'ai_ml' }, { id: 'cybersecurity' }, { id: 'robotics' }],
@@ -28,7 +27,6 @@ beforeEach(() => {
   global.fetch = jest.fn()
 })
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('Register page', () => {
   it('affiche tous les champs requis et les centres d’intérêt', () => {
@@ -140,7 +138,6 @@ describe('Register page', () => {
 
   it('déclenche l’appel OAuth Google et redirige vers l’URL reçue', async () => {
     const originalLocation = window.location
-    // @ts-expect-error - on remplace volontairement window.location pour le test
     delete window.location
     window.location = { ...originalLocation, href: '' } as any
     ;(global.fetch as jest.Mock).mockResolvedValue({

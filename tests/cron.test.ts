@@ -36,7 +36,6 @@ import { task as photosTask } from '../backend/Helpers/cron.schedules.Photos'
 describe('cron.schedules.Articles', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    // Mock global setTimeout to execute callback immediately
     jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
       cb()
       return 0 as any

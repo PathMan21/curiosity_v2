@@ -1,10 +1,8 @@
 import { createArticleSchema } from '../backend/dtos/Article'
 import { createPhotosSchema } from '../backend/dtos/Photos'
 
-// ─── Suite ────────────────────────────────────────────────────────────────────
 
 describe('DTOs Zod — Validation des schémas', () => {
-  // ── createArticleSchema ──────────────────────────────────────────────────────
 
   describe('createArticleSchema', () => {
     const validArticle = {
@@ -93,7 +91,6 @@ describe('DTOs Zod — Validation des schémas', () => {
     })
   })
 
-  // ── createPhotosSchema ───────────────────────────────────────────────────────
 
   describe('createPhotosSchema', () => {
     const validPhoto = {

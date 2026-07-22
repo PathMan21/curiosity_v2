@@ -22,7 +22,6 @@ const generateTokens = (userId: number) => ({
 const verifyUser = async (req, res) => {
   try {
     let { userId, uniqueString } = req.params
-    console.log('raq => ', req.params)
 
     const result = await UserVerifications.findOne({
       where: { userId: userId },
@@ -47,21 +46,17 @@ const verifyUser = async (req, res) => {
     )
 
     if (!isValid) {
-      console.error('❌ Bcrypt compare échoué pour userId:', userId)
       return res.status(400).json({
         message: 'Lien de vérification invalide',
       })
     }
-    console.log('Lien valide')
 
     const user = await User.findByPk(userId)
     if (!user) {
-      console.error('❌ Utilisateur non trouvé en DB pour userId:', userId)
       return res.status(404).json({
         message: 'Utilisateur non trouvé',
       })
     }
-    console.log('✅ Utilisateur trouvé:', user.email)
 
     await User.update({ verified: true }, { where: { id: userId } })
 
@@ -80,7 +75,6 @@ const verifyUser = async (req, res) => {
 
     return res.redirect(`/api/user/verified`)
   } catch (error) {
-    console.error('Erreur vérification:', error)
     return res.status(500).json({
       message: "Erreur lors de la vérification de l'email",
     })
@@ -95,11 +89,6 @@ const verifiedPage = async (req, res) => {
 const sendVerificationEmail = async ({ id, email }, res) => {
   try {
     if (!id) {
-      console.error('sendVerificationEmail: id utilisateur manquant', {
-        id,
-        email,
-      })
-
       return res.status(400).json({
         status: 'Failed',
         message: 'ID utilisateur manquant',
@@ -119,8 +108,6 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     const userIdForDb = typeof id === 'string' ? parseInt(id, 10) : id
 
     if (Number.isNaN(userIdForDb)) {
-      console.error('userId invalide pour UserVerifications.create:', id)
-
       return res.status(400).json({
         status: 'Failed',
         message: 'ID utilisateur invalide',
@@ -179,23 +166,18 @@ const sendVerificationEmail = async ({ id, email }, res) => {
     )
 
     if (error) {
-      console.error('Erreur Resend :', error)
-
       return res.status(500).json({
         status: 'Failed',
         message: "Erreur lors de l'envoi de l'email",
       })
     }
 
-    console.log('Email envoyé :', data)
 
     return res.status(200).json({
       status: 'PENDING',
       message: 'Email de vérification envoyé avec succès',
     })
   } catch (error) {
-    console.error('Erreur envoi email :', error)
-
     return res.status(500).json({
       status: 'Failed',
       message: "Erreur lors de l'envoi de l'email de vérification",
