@@ -28,7 +28,6 @@ function expiredToken(secondsAgo = 60): string {
   })
 }
 
-
 describe('useAutoRefreshToken', () => {
   let setToken: jest.Mock
   let logout: jest.Mock
@@ -45,7 +44,6 @@ describe('useAutoRefreshToken', () => {
   afterEach(() => {
     jest.useRealTimers()
   })
-
 
   describe('Token absent', () => {
     it('ne fait rien si token est null', () => {
@@ -74,7 +72,6 @@ describe('useAutoRefreshToken', () => {
     })
   })
 
-
   describe('Token invalide', () => {
     it(' un token malformé sans lever d exception', () => {
       ;(useAuthentification as jest.Mock).mockReturnValue({
@@ -98,7 +95,7 @@ describe('useAutoRefreshToken', () => {
     })
 
     it('gère un token sans champ exp', () => {
-      const noExp = makeToken({ userId: 1 }) 
+      const noExp = makeToken({ userId: 1 })
       ;(useAuthentification as jest.Mock).mockReturnValue({
         token: noExp,
         setToken,
@@ -108,7 +105,6 @@ describe('useAutoRefreshToken', () => {
       expect(() => renderHook(() => useAutoRefreshToken())).not.toThrow()
     })
   })
-
 
   describe('Token déjà expiré', () => {
     it('appelle logout immédiatement si le token est déjà expiré', () => {
@@ -129,7 +125,7 @@ describe('useAutoRefreshToken', () => {
 
     it('nessaie pas de rafraichir un token déjà expiré', () => {
       ;(useAuthentification as jest.Mock).mockReturnValue({
-        token: expiredToken(3600), 
+        token: expiredToken(3600),
         setToken,
         logout,
       })
@@ -142,7 +138,6 @@ describe('useAutoRefreshToken', () => {
       expect(global.fetch).not.toHaveBeenCalled()
     })
   })
-
 
   describe('Token valide â€” planification du refresh', () => {
     it('planifie un timeout pour rafraichir avant expiration', () => {
@@ -167,7 +162,7 @@ describe('useAutoRefreshToken', () => {
         json: jest.fn().mockResolvedValue({ token: newToken }),
       })
       ;(useAuthentification as jest.Mock).mockReturnValue({
-        token: tokenExpiringIn(600), 
+        token: tokenExpiringIn(600),
         setToken,
         logout,
       })
@@ -208,7 +203,6 @@ describe('useAutoRefreshToken', () => {
       }
     })
   })
-
 
   describe('Nettoyage (cleanup)', () => {
     it('annule le timeout', () => {

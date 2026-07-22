@@ -70,7 +70,7 @@ export const createUser = async (req, res) => {
     } catch (emailError) {
       return res.status(500).json({
         status: 'Failed',
-        message: 'Erreur lors de l\'envoi de l\'email de vérification'
+        message: "Erreur lors de l'envoi de l'email de vérification",
       })
     }
 
@@ -212,7 +212,6 @@ export const getCurrentUser = async (req, res) => {
 
     const userData = user.get({ plain: true })
 
-
     return res.json({ status: 'Success', user: userData })
   } catch (err) {
     return res.status(401).json({ status: 'Failed', message: err.message })
@@ -237,8 +236,7 @@ export const updatedProfile = async (req, res) => {
     const updateData = {}
     if (username !== undefined) updateData.username = username
     if (picture !== undefined) updateData.picture = picture
-    if (interests !== undefined)
-      updateData.interests = interests
+    if (interests !== undefined) updateData.interests = interests
 
     await user.update(updateData)
 

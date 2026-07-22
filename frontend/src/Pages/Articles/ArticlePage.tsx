@@ -6,7 +6,6 @@ import Photos from './Photos'
 import { useAuthentification } from '../../Context/Auth'
 import { privateApi } from '../../Context/Interceptor'
 
-
 type FeedItem =
   | {
       id: string
@@ -55,7 +54,6 @@ function ArticlePage() {
 
       const articles = articlesRes.data.articles
       const photos = photosRes.data.photos
-
 
       if (!Array.isArray(articles) || !Array.isArray(photos)) {
         throw new Error('Format de réponse invalide')

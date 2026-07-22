@@ -46,7 +46,10 @@ const User = sequelizeDb.define(
         if (!val || val.length === 0) {
           this.setDataValue('interests', null)
         } else {
-          this.setDataValue('interests', typeof val === 'string' ? val : JSON.stringify(val))
+          this.setDataValue(
+            'interests',
+            typeof val === 'string' ? val : JSON.stringify(val)
+          )
         }
       },
     },

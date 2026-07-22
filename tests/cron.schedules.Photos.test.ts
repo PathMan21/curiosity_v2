@@ -22,7 +22,6 @@ import {
   getAllUnsplashQueries,
 } from '../backend/Services/api-externes.services.handleUnsplash'
 
-
 describe('cron.schedules.Photos', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -36,7 +35,6 @@ describe('cron.schedules.Photos', () => {
     jest.restoreAllMocks()
   })
 
-
   describe('Planification', () => {
     it('planifie le cron avec l\'expression "0 2 * * *"', () => {
       const hasCall = mockCronScheduleCalls.some(
@@ -49,7 +47,6 @@ describe('cron.schedules.Photos', () => {
       expect(typeof task).toBe('function')
     })
   })
-
 
   describe('Exécution normale', () => {
     it('appelle getAllUnsplashQueries au démarrage', async () => {
@@ -111,7 +108,6 @@ describe('cron.schedules.Photos', () => {
       expect(messages.some((m) => m.includes('FINI'))).toBe(true)
     })
   })
-
 
   describe('Protection isCronRunning', () => {
     it("ne s'exécute pas en parallèle", async () => {
@@ -176,7 +172,6 @@ describe('cron.schedules.Photos', () => {
       expect(checkPhotos).toHaveBeenCalledTimes(2)
     })
   })
-
 
   describe('Gestion des erreurs', () => {
     it("ne lève pas d'exception si checkPhotos rejette", async () => {

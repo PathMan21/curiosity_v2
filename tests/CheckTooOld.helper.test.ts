@@ -3,11 +3,8 @@ import {
   isPhotosTooOld,
 } from '../backend/Helpers/CheckTooOld'
 
-
 describe('CheckTooOld Helper', () => {
-
   describe('isArticlesTooOld', () => {
-
     it("retourne false si les articles sont récents (aujourd'hui)", () => {
       const articles = [{ published: new Date().toISOString() }]
 
@@ -68,7 +65,6 @@ describe('CheckTooOld Helper', () => {
       expect(isArticlesTooOld(articles as any)).toBe(true)
     })
   })
-
 
   describe('isPhotosTooOld', () => {
     it("retourne false si les photos sont récentes (aujourd'hui)", () => {

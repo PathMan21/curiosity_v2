@@ -4,7 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -29,7 +28,6 @@ function renderLogin() {
 beforeEach(() => {
   jest.clearAllMocks()
 })
-
 
 describe('Login page', () => {
   it('affiche les champs email et mot de passe', () => {

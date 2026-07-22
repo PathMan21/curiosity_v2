@@ -100,7 +100,6 @@ async function setCache(cacheKey, interest, photos) {
   }
 }
 async function setDbAndCache(cacheKey, interest, photos) {
-
   if (!photos?.length) {
     console.warn(`No photos to save for interest: ${interest}`)
     return
@@ -125,7 +124,7 @@ async function setDbAndCache(cacheKey, interest, photos) {
   try {
     await Photo.bulkCreate(photosArray, {
       transaction: t,
-      ignoreDuplicates: true, 
+      ignoreDuplicates: true,
       logging: false,
     })
 

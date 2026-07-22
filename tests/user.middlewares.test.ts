@@ -1,4 +1,3 @@
-
 process.env.ACCESS_TOKEN_SECRET = 'test-secret-key'
 
 jest.mock('../backend/Models/User', () => ({
@@ -8,7 +7,6 @@ jest.mock('../backend/Models/User', () => ({
   },
 }))
 
-
 import jwt from 'jsonwebtoken'
 import User from '../backend/Models/User'
 import {
@@ -16,7 +14,6 @@ import {
   authentificatedUser,
   validateUserOauth,
 } from '../backend/middlewares/user.middlewares'
-
 
 function mockReq(overrides: any = {}): any {
   return {
@@ -32,7 +29,6 @@ function mockRes(): any {
   res.json = jest.fn().mockReturnValue(res)
   return res
 }
-
 
 describe('user.middlewares – validateUserOauth', () => {
   let next: jest.Mock
@@ -181,7 +177,6 @@ describe('user.middlewares – validateUserOauth', () => {
   })
 })
 
-
 describe('user.middlewares – validateUser', () => {
   let next: jest.Mock
 
@@ -298,7 +293,6 @@ describe('user.middlewares – validateUser', () => {
     expect(res.status).toHaveBeenCalledWith(400)
   })
 })
-
 
 describe('user.middlewares – authentificatedUser', () => {
   let next: jest.Mock

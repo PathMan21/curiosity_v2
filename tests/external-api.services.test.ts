@@ -48,7 +48,6 @@ import {
   isPhotosTooOld,
 } from '../backend/Helpers/CheckTooOld'
 
-
 function makeWork(id = 'W1', score = 0.9) {
   return {
     id: `https://openalex.org/${id}`,
@@ -109,13 +108,11 @@ function mockFailFetch(status = 500) {
   })
 }
 
-
 describe('External API Services', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     global.fetch = jest.fn()
   })
-
 
   describe('OpenAlex Service', () => {
     let fetchInterestFromAPI: any
@@ -167,11 +164,7 @@ describe('External API Services', () => {
           callCount++
           const results =
             callCount === 1
-              ? [
-                  makeWork('W1', 0.9),
-                  makeWork('W2', 0.5), 
-                  makeWork('W3', 0.75), 
-                ]
+              ? [makeWork('W1', 0.9), makeWork('W2', 0.5), makeWork('W3', 0.75)]
               : []
           return Promise.resolve({
             ok: true,
@@ -311,7 +304,6 @@ describe('External API Services', () => {
     })
   })
 
-
   describe('Unsplash Service', () => {
     let checkPhotos: any
     let getAllUnsplashQueries: any
@@ -441,7 +433,6 @@ describe('External API Services', () => {
       })
     })
   })
-
 
   describe('News Service', () => {
     let fetchNews: any

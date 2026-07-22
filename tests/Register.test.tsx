@@ -3,7 +3,6 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-
 jest.mock('../frontend/src/Assets/interests.json', () => ({
   interests: [{ id: 'ai_ml' }, { id: 'cybersecurity' }, { id: 'robotics' }],
 }))
@@ -26,7 +25,6 @@ beforeEach(() => {
   jest.clearAllMocks()
   global.fetch = jest.fn()
 })
-
 
 describe('Register page', () => {
   it('affiche tous les champs requis et les centres d’intérêt', () => {

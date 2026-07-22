@@ -57,7 +57,6 @@ function ProfileSettings() {
       })
 
       if (response.data.status !== 'Success') {
-
         return
       }
 

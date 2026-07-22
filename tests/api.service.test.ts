@@ -2,7 +2,6 @@ import '@testing-library/jest-dom'
 
 global.fetch = jest.fn()
 
-
 describe('API Client Services', () => {
   let fetchWithAuth: any
   let getArticles: any

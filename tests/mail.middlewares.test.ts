@@ -1,4 +1,3 @@
-
 const mockVerify = jest.fn()
 
 jest.mock('../backend/Config/emailConfig', () => {
@@ -10,9 +9,7 @@ jest.mock('../backend/Config/emailConfig', () => {
   }
 })
 
-
 import validateByMail from '../backend/middlewares/mail.middlewares'
-
 
 describe('mail.middlewares – validateByMail', () => {
   beforeEach(() => {

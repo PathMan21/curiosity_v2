@@ -22,7 +22,6 @@ import {
   getAllOpenAlexQueries,
 } from '../backend/Services/api-externes.services.handleOpenAlex'
 
-
 describe('cron.schedules.Articles', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -36,7 +35,6 @@ describe('cron.schedules.Articles', () => {
     jest.restoreAllMocks()
   })
 
-
   describe('Planification', () => {
     it('planifie le cron avec l\'expression "0 2 * * *"', () => {
       const hasCall = mockCronScheduleCalls.some(
@@ -49,7 +47,6 @@ describe('cron.schedules.Articles', () => {
       expect(typeof task).toBe('function')
     })
   })
-
 
   describe('Exécution normale', () => {
     it('appelle getAllOpenAlexQueries au démarrage', async () => {
@@ -128,7 +125,6 @@ describe('cron.schedules.Articles', () => {
     })
   })
 
-
   describe('Protection isCronRunning', () => {
     it("ne s'exécute pas en parallèle", async () => {
       ;(getAllOpenAlexQueries as jest.Mock).mockReturnValue(['1702'])
@@ -169,7 +165,6 @@ describe('cron.schedules.Articles', () => {
       expect(checkArticles).toHaveBeenCalledTimes(2)
     })
   })
-
 
   describe('Gestion des erreurs', () => {
     it("ne lève pas d'exception si checkArticles rejette", async () => {

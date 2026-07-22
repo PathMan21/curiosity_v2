@@ -7,8 +7,7 @@ interface RateLimitStore {
 const store: RateLimitStore = {}
 
 const WINDOW_MS = 15 * 60 * 1000
-const MAX_ATTEMPTS = 5 
-
+const MAX_ATTEMPTS = 5
 
 export const createRateLimiter = (
   key: string | ((req: Request) => string) = (req) => req.ip || 'unknown',

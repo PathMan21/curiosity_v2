@@ -1,7 +1,6 @@
 process.env.ACCESS_TOKEN_SECRET = 'access_secret_test'
 process.env.REFRESH_TOKEN_SECRET = 'refresh_secret_test'
 
-
 jest.mock('../backend/Helpers/configLink', () => ({}))
 
 jest.mock('../backend/Models/User', () => ({
@@ -42,7 +41,6 @@ import {
   updatedProfile,
 } from '../backend/Controllers/user.controllers'
 
-
 function makeRes() {
   const res: any = {}
   res.status = jest.fn().mockReturnValue(res)
@@ -65,9 +63,7 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-
 describe('user.controllers', () => {
-
   describe('createUser', () => {
     it('retourne 400 si la validation du schéma échoue', async () => {
       const req = makeReq({ body: {} })
@@ -181,7 +177,6 @@ describe('user.controllers', () => {
     })
   })
 
-
   describe('loginUser', () => {
     it('retourne 400 si email ou password manquant', async () => {
       const req = makeReq({ body: { email: 'a@test.com' } })
@@ -267,7 +262,6 @@ describe('user.controllers', () => {
     })
   })
 
-
   describe('logoutUser', () => {
     it('invalide le refreshToken en base et efface le cookie', async () => {
       const req = makeReq({ cookies: { refreshToken: 'tok' } })
@@ -305,7 +299,6 @@ describe('user.controllers', () => {
       expect(res.status).toHaveBeenCalledWith(500)
     })
   })
-
 
   describe('refresh', () => {
     it('retourne 401 si aucun token n’est présent', async () => {
@@ -371,7 +364,6 @@ describe('user.controllers', () => {
     })
   })
 
-
   describe('getCurrentUser', () => {
     it('retourne les infos utilisateur avec interests parsés', async () => {
       const req = makeReq({ user: { id: 1 } })
@@ -414,7 +406,6 @@ describe('user.controllers', () => {
       expect(payload.user.interests).toEqual([])
     })
   })
-
 
   describe('updatedProfile', () => {
     it('retourne 500 si l’utilisateur n’est pas trouvé', async () => {

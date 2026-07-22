@@ -172,7 +172,6 @@ const sendVerificationEmail = async ({ id, email }, res) => {
       })
     }
 
-
     return res.status(200).json({
       status: 'PENDING',
       message: 'Email de vérification envoyé avec succès',

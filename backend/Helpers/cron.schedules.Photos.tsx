@@ -20,7 +20,6 @@ export const task = async () => {
 
     const queries = getAllUnsplashQueries()
 
-
     await checkPhotos(queries)
 
     const duration = Date.now() - startTime

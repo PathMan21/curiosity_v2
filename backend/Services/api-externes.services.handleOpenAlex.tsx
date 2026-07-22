@@ -250,8 +250,6 @@ async function handleOpenAlex(req, res) {
 
     let interestsRaw = user.interests
 
-
-
     if (!Array.isArray(interestsRaw) || interestsRaw.length === 0) {
       return res.status(400).json({ message: 'Aucun intérêt défini' })
     }

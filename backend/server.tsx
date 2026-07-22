@@ -59,7 +59,6 @@ if (process.env.NODE_ENV !== 'test') {
         console.log('Tous les crons ont démarré avec succès')
       } catch (error) {
         console.log('Les crons n ont pas démarrés')
-        
       }
     })
   })()

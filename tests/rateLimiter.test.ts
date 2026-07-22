@@ -1,7 +1,5 @@
-
 import { createRateLimiter } from '../backend/middlewares/rateLimiter'
 import { Request, Response, NextFunction } from 'express'
-
 
 function mockReq(overrides: Partial<Request> = {}): Partial<Request> {
   return {
@@ -17,7 +15,6 @@ function mockRes(): Partial<Response> {
   res.json = jest.fn().mockReturnValue(res)
   return res
 }
-
 
 describe('rateLimiter – createRateLimiter', () => {
   let next: jest.Mock
@@ -75,7 +72,7 @@ describe('rateLimiter – createRateLimiter', () => {
   })
 
   it('réinitialise le compteur après expiration de la fenêtre', () => {
-    const windowMs = 60000 
+    const windowMs = 60000
     const limiter = createRateLimiter('test-ip-4', 1, windowMs)
     const req = mockReq()
     const res = mockRes()
@@ -85,7 +82,6 @@ describe('rateLimiter – createRateLimiter', () => {
 
     limiter(req as Request, res as Response, next)
     expect((res as any).status).toHaveBeenCalledWith(429)
-
     ;(Date.now as jest.Mock).mockReturnValue(1000000 + windowMs + 1)
 
     const next2 = jest.fn()

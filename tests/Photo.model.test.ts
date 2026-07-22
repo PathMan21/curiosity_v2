@@ -19,7 +19,6 @@ jest.mock('../backend/Models/Photo', () => ({
 
 import Photo from '../backend/Models/Photo'
 
-
 const makePhoto = (overrides: Record<string, any> = {}) => ({
   unsplashId: 'photo-abc123',
   url: 'https://images.unsplash.com/photo.jpg',
@@ -34,12 +33,10 @@ const makePhoto = (overrides: Record<string, any> = {}) => ({
   ...overrides,
 })
 
-
 describe('Photo Model', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
-
 
   describe('findAll', () => {
     it("retourne toutes les photos d'un intérêt donné", async () => {
@@ -77,7 +74,6 @@ describe('Photo Model', () => {
     })
   })
 
-
   describe('findOne', () => {
     it('retourne la photo correspondant à unsplashId', async () => {
       const photo = makePhoto()
@@ -100,7 +96,6 @@ describe('Photo Model', () => {
       expect(result).toBeNull()
     })
   })
-
 
   describe('create', () => {
     it('crée une photo avec tous les champs requis', async () => {
@@ -126,7 +121,6 @@ describe('Photo Model', () => {
       )
     })
   })
-
 
   describe('bulkCreate', () => {
     it('insère plusieurs photos en une seule transaction', async () => {
@@ -164,7 +158,6 @@ describe('Photo Model', () => {
     })
   })
 
-
   describe('destroy', () => {
     it("supprime les photos d'un intérêt donné", async () => {
       ;(Photo.destroy as jest.Mock).mockResolvedValue(5)
@@ -189,7 +182,6 @@ describe('Photo Model', () => {
       expect(deleted).toBe(0)
     })
   })
-
 
   describe('Sérialisation toJSON', () => {
     it('sérialise une photo en objet plat', () => {
