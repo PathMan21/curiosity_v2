@@ -30,7 +30,7 @@ function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="text-center mb-4">
-          <div className="auth-logo">✦ Curiosity TEST 2</div>
+          <div className="auth-logo">Be curious</div>
           <div className="auth-headline">Bon retour !</div>
           <div className="auth-subline">
             Connectez-vous pour explorer l'actualité
