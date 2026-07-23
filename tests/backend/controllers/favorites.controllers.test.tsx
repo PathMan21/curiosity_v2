@@ -17,7 +17,7 @@ describe('Favorites Controllers Tests', () => {
   describe('addToFavorites', () => {
     it('should accept valid article ID', () => {
       req.body = { articles_id: 'article-123' }
-      expect(req.body.articles_id).toBeDefined ()
+      expect(req.body.articles_id).toBeDefined()
     })
 
     it('should return error if article_id is missing', () => {
@@ -37,7 +37,7 @@ describe('Favorites Controllers Tests', () => {
         { articles_id: 'article-1', user_id: 1 },
         { articles_id: 'article-2', user_id: 1 },
       ]
-      
+
       expect(mockFavorites).toBeInstanceOf(Array)
       expect(mockFavorites.length).toBe(2)
     })
@@ -52,8 +52,8 @@ describe('Favorites Controllers Tests', () => {
         { articles_id: 'article-1', user_id: 1 },
         { articles_id: 'article-2', user_id: 2 },
       ]
-      
-      const userFavorites = mockFavorites.filter(f => f.user_id === 1)
+
+      const userFavorites = mockFavorites.filter((f) => f.user_id === 1)
       expect(userFavorites.length).toBe(1)
       expect(userFavorites[0].user_id).toBe(1)
     })

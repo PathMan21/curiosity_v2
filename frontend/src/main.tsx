@@ -5,7 +5,7 @@ import { ThemeProvider } from './helpers/ChangeStyle'
 
 const container = document.getElementById('root')!
 
-container.classList.add('background');
+container.classList.add('background')
 const root = createRoot(container)
 
 root.render(

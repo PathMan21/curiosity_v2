@@ -1,6 +1,3 @@
-
-
-
 const MAX_ARTICLE_AGE_DAYS = 30
 const MAX_NEWS_AGE_DAYS = 7
 
@@ -18,13 +15,12 @@ function isArticlesTooOld(articles): Boolean {
     const publishedAt = new Date(article.publishedAt)
     return publishedAt < limitDate
   }).length
-  if (tooOldCount > articles.length / 2){
+  if (tooOldCount > articles.length / 2) {
     return true
   } else {
-    return false;
+    return false
   }
 }
-
 
 function isPhotosTooOld(photos): boolean {
   if (!photos || photos.length === 0) {
@@ -34,17 +30,15 @@ function isPhotosTooOld(photos): boolean {
   const limitDate = new Date()
   limitDate.setDate(limitDate.getDate() - MAX_PHOTO_AGE_DAYS)
 
-  const tooOldCount = photos.filter((p) => new Date(p.createdAt) < limitDate).length
-  if (tooOldCount > photos.length / 2){
+  const tooOldCount = photos.filter(
+    (p) => new Date(p.createdAt) < limitDate
+  ).length
+  if (tooOldCount > photos.length / 2) {
     return true
   } else {
-    return false;
+    return false
   }
 }
-
-
-
-
 
 // function isNewsTooOld(articles: any[]): boolean {
 //   if (!articles || articles.length === 0) return true
@@ -70,8 +64,5 @@ function isPhotosTooOld(photos): boolean {
 //   const tooOldCount = books.filter((b) => new Date(b.createdAt) < limitDate).length
 //   return tooOldCount > books.length / 2
 // }
-
-
-
 
 export { isArticlesTooOld, isPhotosTooOld }

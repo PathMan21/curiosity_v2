@@ -34,7 +34,7 @@ describe('User Controllers Tests', () => {
         email: 'test@example.com',
         password: 'password123',
       }
-      
+
       expect(userData.username).toBeDefined()
       expect(userData.email).toBeDefined()
       expect(userData.password).toBeDefined()
@@ -47,7 +47,7 @@ describe('User Controllers Tests', () => {
         email: 'test@example.com',
         password: 'password123',
       }
-      
+
       expect(credentials.email).toBeDefined()
       expect(credentials.password).toBeDefined()
     })
@@ -61,7 +61,7 @@ describe('User Controllers Tests', () => {
       const bcrypt = require('bcrypt')
       const password = 'testPassword123'
       const hashedPassword = await bcrypt.hash(password, 10)
-      
+
       expect(hashedPassword).not.toBe(password)
       expect(hashedPassword).toMatch(/^\$2/)
     })

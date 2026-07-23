@@ -1,10 +1,9 @@
-import { z } from "zod"
+import { z } from 'zod'
 
-const stringOrArray = z.union([
-  z.string(),
-  z.array(z.string())
-]).nullable().optional()
-
+const stringOrArray = z
+  .union([z.string(), z.array(z.string())])
+  .nullable()
+  .optional()
 
 export const createPhotosSchema = z.object({
   unsplashId: z.string(),
@@ -19,11 +18,9 @@ export const createPhotosSchema = z.object({
 
   photographerLink: z.string().url().nullable().optional(),
 
-  type: z.string().default("Photo"),
+  type: z.string().default('Photo'),
 
   interest: z.string(),
 
   downloadLink: z.string().url().nullable().optional(),
-
 })
-

@@ -1,12 +1,24 @@
 import React, { useState } from 'react'
 
-function Photos({ id, title, date, url, description, photographer, photographerUrl }: any) {
-
+function Photos({
+  id,
+  title,
+  date,
+  url,
+  description,
+  photographer,
+  photographerUrl,
+}: any) {
   const formatDate = (dateStr: string) => {
     if (!dateStr) return ''
     try {
-      return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-    } catch { return dateStr }
+      return new Date(dateStr).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+      })
+    } catch {
+      return dateStr
+    }
   }
 
   const truncate = (text: string, max: number = 200) =>
@@ -27,16 +39,10 @@ function Photos({ id, title, date, url, description, photographer, photographerU
 
       <div className="photos-content">
         {/* Badge */}
-        <span className="badge-science photos-badge">
-          📷 Photo
-        </span>
+        <span className="badge-science photos-badge">📷 Photo</span>
 
         {/* Title */}
-        {title && (
-          <h5 className="photos-title">
-            {title}
-          </h5>
-        )}
+        {title && <h5 className="photos-title">{title}</h5>}
 
         {/* Meta */}
         <div className="photos-meta">
@@ -45,22 +51,24 @@ function Photos({ id, title, date, url, description, photographer, photographerU
             <span>
               {' · '}
               {photographerUrl ? (
-                <a href={photographerUrl} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={photographerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {photographer}
                 </a>
-              ) : photographer}
+              ) : (
+                photographer
+              )}
             </span>
           )}
         </div>
 
         {/* Description */}
         {description && (
-          <p className="photos-description">
-            {truncate(description)}
-          </p>
+          <p className="photos-description">{truncate(description)}</p>
         )}
-
-
       </div>
     </article>
   )

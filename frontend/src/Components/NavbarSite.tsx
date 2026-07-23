@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import Switch from "../helpers/darkmode"
+import Switch from '../helpers/darkmode'
 import { useAuthentification } from '../Context/Auth'
 
 function NavbarSite() {
@@ -17,7 +17,9 @@ function NavbarSite() {
   return (
     <nav className="navbar fixed-top navbar-expand-lg">
       <div className="container-fluid px-3">
-        <a className="navbar-brand" href="/Home">✦ be-curious</a>
+        <a className="navbar-brand" href="/Home">
+          ✦ be-curious
+        </a>
 
         <button
           className="navbar-toggler border-0"

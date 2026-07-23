@@ -16,11 +16,13 @@ function formatDate(dateStr?: string) {
     const d = new Date(dateStr)
     const now = new Date()
     const diff = Math.floor((now.getTime() - d.getTime()) / 1000)
-    if (diff < 60) return 'à l\'instant'
+    if (diff < 60) return "à l'instant"
     if (diff < 3600) return `${Math.floor(diff / 60)}min`
     if (diff < 86400) return `${Math.floor(diff / 3600)}h`
     return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-  } catch { return dateStr }
+  } catch {
+    return dateStr
+  }
 }
 
 const topicColors: Record<string, string> = {
@@ -31,14 +33,22 @@ const topicColors: Record<string, string> = {
   histoire: 'rgba(244,162,97,0.12)',
 }
 
-export default function FeedPost({ id, title, excerpt, author, date, topic, url }: FeedPostProps) {
+export default function FeedPost({
+  id,
+  title,
+  excerpt,
+  author,
+  date,
+  topic,
+  url,
+}: FeedPostProps) {
   const [liked, setLiked] = useState(false)
   const [likes, setLikes] = useState(() => Math.floor(Math.random() * 120) + 3)
   const [bookmarked, setBookmarked] = useState(false)
 
   const toggleLike = () => {
     setLiked(!liked)
-    setLikes(prev => liked ? prev - 1 : prev + 1)
+    setLikes((prev) => (liked ? prev - 1 : prev + 1))
   }
 
   const topicKey = topic?.toLowerCase() || ''
@@ -65,16 +75,11 @@ export default function FeedPost({ id, title, excerpt, author, date, topic, url 
               <span className="feed-post-username">
                 @{(author || 'user').toLowerCase().replace(/\s+/g, '')}
               </span>
-              <span className="feed-post-date">
-                · {formatDate(date)}
-              </span>
+              <span className="feed-post-date">· {formatDate(date)}</span>
             </div>
             <div className="d-flex align-items-center gap-2">
               {topic && (
-                <span
-                  className="badge-science"
-                  style={{ background: topicBg }}
-                >
+                <span className="badge-science" style={{ background: topicBg }}>
                   {topic}
                 </span>
               )}
@@ -89,22 +94,13 @@ export default function FeedPost({ id, title, excerpt, author, date, topic, url 
           </div>
 
           {/* Title */}
-          {title && (
-            <h5 className="feed-post-title">
-              {title}
-            </h5>
-          )}
+          {title && <h5 className="feed-post-title">{title}</h5>}
 
           {/* Excerpt */}
-          {excerpt && (
-            <p className="feed-post-excerpt">
-              {excerpt}
-            </p>
-          )}
+          {excerpt && <p className="feed-post-excerpt">{excerpt}</p>}
 
           {/* Actions */}
           <div className="d-flex align-items-center gap-2 mt-2">
-
             {/* <button
               onClick={toggleLike}
               className={`feed-post-like-btn ${liked ? 'liked' : ''}`}

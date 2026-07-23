@@ -1,6 +1,6 @@
-import { renderHook, waitFor } from '@testing-library/react';
-import { useAutoRefreshToken } from '../../../frontend/src/Hooks/useAutoRefreshToken';
-import { useAuth } from '../../../frontend/src/Context/AuthContext';
+import { renderHook, waitFor } from '@testing-library/react'
+import { useAutoRefreshToken } from '../../../frontend/src/Hooks/useAutoRefreshToken'
+import { useAuth } from '../../../frontend/src/Context/AuthContext'
 import '@testing-library/jest-dom'
 
 jest.mock('../../../frontend/src/Context/AuthContext')

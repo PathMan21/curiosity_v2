@@ -1,104 +1,99 @@
-import React, { useState } from "react";
-import { useTheme } from "../../helpers/ChangeStyle";
-import NavbarSite from "../../Components/NavbarSite";
-import FooterSite from "../../Components/FooterSite";
+import React, { useState } from 'react'
+import { useTheme } from '../../helpers/ChangeStyle'
+import NavbarSite from '../../Components/NavbarSite'
+import FooterSite from '../../Components/FooterSite'
 
 function ProfileAccessibility() {
-  const { fontSize, cursor, dark, setFontSize, setCursor, setDark } = useTheme();
+  const { fontSize, cursor, dark, setFontSize, setCursor, setDark } = useTheme()
 
-  const [localFontSize, setLocalFontSize] = useState(fontSize);
-  const [localCursor, setLocalCursor] = useState(cursor);
-  const [localDark, setLocalDark] = useState(dark);
-  const [confirmationMsg, setConfirmationMsg] = useState("");
+  const [localFontSize, setLocalFontSize] = useState(fontSize)
+  const [localCursor, setLocalCursor] = useState(cursor)
+  const [localDark, setLocalDark] = useState(dark)
+  const [confirmationMsg, setConfirmationMsg] = useState('')
 
   function handleChangeStyle() {
-    setFontSize(localFontSize);
-    setCursor(localCursor);
-    setDark(localDark);
-    setConfirmationMsg("Vos paramètres d'accessibilité ont été appliqués.");
-    
+    setFontSize(localFontSize)
+    setCursor(localCursor)
+    setDark(localDark)
+    setConfirmationMsg("Vos paramètres d'accessibilité ont été appliqués.")
   }
 
   return (
     <div>
-    <section
-      className="accessibility-form"
-      aria-labelledby="accessibility-title"
-    >
-      <h3 id="accessibility-title">Paramètres d'accessibilité</h3>
-      <p className="text-muted">
-        Personnalisez l’affichage du site pour améliorer votre confort visuel.
-      </p>
+      <section
+        className="accessibility-form"
+        aria-labelledby="accessibility-title"
+      >
+        <h3 id="accessibility-title">Paramètres d'accessibilité</h3>
+        <p className="text-muted">
+          Personnalisez l’affichage du site pour améliorer votre confort visuel.
+        </p>
 
-      <div className="mb-3">
-        <label htmlFor="font-size-select" className="form-label">
-          Taille de police
-        </label>
-        <select
-          id="font-size-select"
-          className="form-select"
-          aria-label="Changer la taille de la police"
-          value={localFontSize}
-          onChange={(e) => setLocalFontSize(e.target.value)}
+        <div className="mb-3">
+          <label htmlFor="font-size-select" className="form-label">
+            Taille de police
+          </label>
+          <select
+            id="font-size-select"
+            className="form-select"
+            aria-label="Changer la taille de la police"
+            value={localFontSize}
+            onChange={(e) => setLocalFontSize(e.target.value)}
+          >
+            <option value="font-small">Petit</option>
+            <option value="font-normal">Normal</option>
+            <option value="font-large">Moyen</option>
+            <option value="font-xlarge">Grand</option>
+          </select>
+        </div>
+
+        {/* Curseur */}
+        <div className="form-check form-switch mb-2">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="cursor-switch"
+            role="switch"
+            aria-checked={localCursor}
+            checked={localCursor}
+            onChange={(e) => setLocalCursor(e.target.checked)}
+          />
+          <label className="form-check-label" htmlFor="cursor-switch">
+            Activer le curseur large
+          </label>
+        </div>
+
+        {/* Mode sombre */}
+        <div className="form-check form-switch mb-3">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="darkmode-switch"
+            role="switch"
+            aria-checked={localDark}
+            checked={localDark}
+            onChange={(e) => setLocalDark(e.target.checked)}
+          />
+          <label className="form-check-label" htmlFor="darkmode-switch">
+            Activer le mode sombre
+          </label>
+        </div>
+
+        {/* Bouton d’application */}
+        <button
+          className="btn btn-primary"
+          onClick={handleChangeStyle}
+          aria-label="Appliquer les paramètres d'accessibilité"
         >
-          <option value="font-small">Petit</option>
-          <option value="font-normal">Normal</option>
-          <option value="font-large">Moyen</option>
-          <option value="font-xlarge">Grand</option>
-        </select>
-      </div>
+          Valider
+        </button>
 
-      {/* Curseur */}
-      <div className="form-check form-switch mb-2">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          id="cursor-switch"
-          role="switch"
-          aria-checked={localCursor}
-          checked={localCursor}
-          onChange={(e) => setLocalCursor(e.target.checked)}
-        />
-        <label className="form-check-label" htmlFor="cursor-switch">
-          Activer le curseur large
-        </label>
-      </div>
-
-      {/* Mode sombre */}
-      <div className="form-check form-switch mb-3">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          id="darkmode-switch"
-          role="switch"
-          aria-checked={localDark}
-          checked={localDark}
-          onChange={(e) => setLocalDark(e.target.checked)}
-        />
-        <label className="form-check-label" htmlFor="darkmode-switch">
-          Activer le mode sombre
-        </label>
-      </div>
-
-      {/* Bouton d’application */}
-      <button
-        className="btn btn-primary"
-        onClick={handleChangeStyle}
-        aria-label="Appliquer les paramètres d'accessibilité"
-      >
-        Valider
-      </button>
-
-      <div
-        className="visually-hidden"
-        role="status"
-        aria-live="polite"
-      >
-        {confirmationMsg}
-      </div>
-    </section>
+        <div className="visually-hidden" role="status" aria-live="polite">
+          {confirmationMsg}
+        </div>
+      </section>
     </div>
-  );
+  )
 }
 
-export default ProfileAccessibility;
+export default ProfileAccessibility

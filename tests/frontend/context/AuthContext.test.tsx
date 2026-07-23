@@ -1,8 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { AuthentProvider } from '../../../frontend/src/Context/AuthContext';
-import { useAuth } from '../../../frontend/src/Context/AuthContext';
+import { render, screen, waitFor } from '@testing-library/react'
+import { AuthentProvider } from '../../../frontend/src/Context/AuthContext'
+import { useAuth } from '../../../frontend/src/Context/AuthContext'
 import '@testing-library/jest-dom'
-import React from 'react';
+import React from 'react'
 
 jest.mock('../../../frontend/src/Services/apiClient')
 jest.mock('react-router-dom', () => ({

@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import ProfilePage from '../../../frontend/src/Pages/Profile/ProfilePage';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthentProvider } from '../../../frontend/src/Context/AuthContext';
+import { render, screen, waitFor } from '@testing-library/react'
+import ProfilePage from '../../../frontend/src/Pages/Profile/ProfilePage'
+import { BrowserRouter } from 'react-router-dom'
+import { AuthentProvider } from '../../../frontend/src/Context/AuthContext'
 import '@testing-library/jest-dom'
 
 jest.mock('../../../frontend/src/Services/apiClient')
@@ -30,12 +30,10 @@ describe('ProfilePage Component Tests', () => {
   const renderWithProviders = (component: React.ReactElement) => {
     return render(
       <BrowserRouter>
-        <AuthentProvider>
-          {component}
-        </AuthentProvider>
+        <AuthentProvider>{component}</AuthentProvider>
       </BrowserRouter>
-    );
-  };
+    )
+  }
 
   it('should display loading message when user is not loaded', async () => {
     renderWithProviders(<ProfilePage />)

@@ -1,10 +1,10 @@
-'use strict';
-const bcrypt = require('bcrypt');
+'use strict'
+const bcrypt = require('bcrypt')
 
 module.exports = {
   async up(queryInterface, Sequelize) {
     try {
-      const hashedPassword = await bcrypt.hash('Password123!', 10);
+      const hashedPassword = await bcrypt.hash('Password123!', 10)
 
       await queryInterface.bulkInsert('User', [
         {
@@ -39,14 +39,13 @@ module.exports = {
         },
       ])
     } catch (err) {
-
-      throw err;
+      throw err
     }
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('User', {
-      email: ['alice@example.com', 'bob@example.com', 'charlie@example.com']
-    });
-  }
-};
+      email: ['alice@example.com', 'bob@example.com', 'charlie@example.com'],
+    })
+  },
+}

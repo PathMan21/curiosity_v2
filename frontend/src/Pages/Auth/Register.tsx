@@ -1,16 +1,16 @@
 import { useState } from 'react'
-import { useAuthentification } from '../../Context/Auth';
-import interestsValues from "../../Assets/interests.json"
-const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
+import { useAuthentification } from '../../Context/Auth'
+import interestsValues from '../../Assets/interests.json'
+const API_URL = `${import.meta.env.VITE_SERVER_URL}`
 
 const handleOAuthRegister = async () => {
   try {
-    const response = await fetch(`${API_URL}/api/auth/google/url`, { method: 'GET' })
+    const response = await fetch(`${API_URL}/api/auth/google/url`, {
+      method: 'GET',
+    })
     const data = await response.json()
     window.location.href = data.url
-  } catch (err) {
-
-  }
+  } catch (err) {}
 }
 
 function Register() {
@@ -20,9 +20,9 @@ function Register() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedInterests, setSelectedInterests] = useState([])
-  const [isError, setIsError] = useState('');
+  const [isError, setIsError] = useState('')
 
-  const [isErrorBool, setIsErrorBool] = useState(false);
+  const [isErrorBool, setIsErrorBool] = useState(false)
 
   function handleInterests(value: string) {
     setSelectedInterests((prev) =>
@@ -31,24 +31,27 @@ function Register() {
   }
 
   const handleForm = async (e: React.FormEvent) => {
-
     e.preventDefault()
     setLoading(true)
     try {
       const response = await fetch(`${API_URL}/api/user/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, interests: selectedInterests }),
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          interests: selectedInterests,
+        }),
       })
       const data = await response.json()
       if (!response.ok) {
-        throw new Error(data?.message || 'Erreur lors de l\'inscription');
+        throw new Error(data?.message || "Erreur lors de l'inscription")
       }
       setSuccess(true)
     } catch (err) {
       setIsError(err)
       setIsErrorBool(true)
-
     } finally {
       setIsErrorBool(false)
       setIsError('')
@@ -66,7 +69,9 @@ function Register() {
           <p className="register-success-text">
             Votre compte a bien été créé. Vous pouvez maintenant vous connecter.
           </p>
-          <a href="/login" className="btn btn-primary w-100">Se connecter →</a>
+          <a href="/login" className="btn btn-primary w-100">
+            Se connecter →
+          </a>
         </div>
       </div>
     )
@@ -82,14 +87,17 @@ function Register() {
         </div>
 
         {isErrorBool && (
-          <div className="alert alert-danger mb-3" role="alert" aria-live="assertive">
+          <div
+            className="alert alert-danger mb-3"
+            role="alert"
+            aria-live="assertive"
+          >
             {isError}
           </div>
         )}
 
         <form onSubmit={handleForm} noValidate>
           <div className="container">
-
             <div className="row justify-content-around">
               <div className="col-12 col-md-6 col-lg-5">
                 <div className="mb-3">
@@ -101,7 +109,7 @@ function Register() {
                     type="text"
                     className="form-control"
                     value={username}
-                    onChange={e => setUsername(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value)}
                     placeholder="votre_pseudo"
                     required
                     autoComplete="username"
@@ -118,7 +126,7 @@ function Register() {
                     className="form-control"
                     placeholder="votre@email.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
                   />
@@ -134,7 +142,7 @@ function Register() {
                     className="form-control"
                     placeholder="••••••••"
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="new-password"
                   />
@@ -149,9 +157,7 @@ function Register() {
                       {interestsValues.interests.map((value, index) => {
                         const valueCleaned = value.id.split('_').join(' ')
                         return (
-
                           <div key={index} className="col-6">
-
                             <input
                               type="checkbox"
                               className="btn-check"
@@ -166,14 +172,14 @@ function Register() {
                             >
                               {valueCleaned}
                             </label>
-                          </div>)
+                          </div>
+                        )
                       })}
                     </div>
                   </div>
                 </fieldset>
               </div>
             </div>
-
           </div>
           <button
             type="submit"
@@ -185,7 +191,9 @@ function Register() {
                 <span className="spinner-border spinner-border-sm" />
                 Inscription…
               </span>
-            ) : "Créer mon compte"}
+            ) : (
+              'Créer mon compte'
+            )}
           </button>
 
           {/* <div className="register-divider-container">
@@ -193,7 +201,7 @@ function Register() {
             <span className="register-divider-text">ou</span>
             <div className="register-divider-line" />
           </div> */}
-{/* 
+          {/* 
           <button
             type="button"
             className="btn btn-outline-primary w-100 mb-3 d-flex align-items-center justify-content-center gap-2"
@@ -207,14 +215,17 @@ function Register() {
             </svg>
             Continuer avec Google
           </button> */}
-
         </form>
 
-
-
-        <div className="text-center" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        <div
+          className="text-center"
+          style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}
+        >
           Déjà un compte ?{' '}
-          <a href="/login" style={{ fontWeight: 600, color: 'var(--accent-purple)' }}>
+          <a
+            href="/login"
+            style={{ fontWeight: 600, color: 'var(--accent-purple)' }}
+          >
             Se connecter
           </a>
         </div>

@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-import "../Helpers/configLink";
+import '../Helpers/configLink'
 export const transport = nodemailer.createTransport({
   service: 'gmail',
   auth: {

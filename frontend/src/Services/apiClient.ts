@@ -1,8 +1,3 @@
-
-
-
- 
-
 interface RefreshResponse {
   status: string
   accessToken: string

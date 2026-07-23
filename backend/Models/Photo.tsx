@@ -43,9 +43,8 @@ const Photo = sequelizeDb.define('Photo', {
   type: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: "photo"
-
-  }
+    defaultValue: 'photo',
+  },
 })
 
 export default Photo

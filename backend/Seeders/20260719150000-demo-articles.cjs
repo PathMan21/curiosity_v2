@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 // Données de test — ces Article sont fictifs, générés pour le développement local.
 // Ils remplacent les appels réels à l'API OpenAlex (désactivés en local, voir README).
@@ -15,29 +15,31 @@ const INTERESTS = [
   { id: 'databases', label: 'Bases de Données' },
   { id: 'distributed-systems', label: 'Systèmes Distribués & Cloud' },
   { id: 'quantum-computing', label: 'Informatique Quantique' },
-];
+]
 
 const TEMPLATES = [
   {
-    titleSuffix: 'état de l\'art et perspectives 2026',
-    summary: 'Cet Article de test passe en revue les avancées récentes du domaine et propose des pistes de recherche pour les prochaines années. Contenu généré pour les besoins du développement local.',
+    titleSuffix: "état de l'art et perspectives 2026",
+    summary:
+      'Cet Article de test passe en revue les avancées récentes du domaine et propose des pistes de recherche pour les prochaines années. Contenu généré pour les besoins du développement local.',
     year: 2026,
   },
   {
-    titleSuffix: 'une approche pratique appliquée à l\'industrie',
-    summary: 'Une étude de cas fictive illustrant l\'application des concepts du domaine dans un contexte industriel. Article de test destiné au seed de la base locale.',
+    titleSuffix: "une approche pratique appliquée à l'industrie",
+    summary:
+      "Une étude de cas fictive illustrant l'application des concepts du domaine dans un contexte industriel. Article de test destiné au seed de la base locale.",
     year: 2025,
   },
-];
+]
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const now = new Date();
-    const rows = [];
+    const now = new Date()
+    const rows = []
 
     INTERESTS.forEach((interest, interestIndex) => {
       TEMPLATES.forEach((template, templateIndex) => {
-        const n = interestIndex * TEMPLATES.length + templateIndex + 1;
+        const n = interestIndex * TEMPLATES.length + templateIndex + 1
 
         rows.push({
           openAlexId: `test-W${String(n).padStart(4, '0')}`,
@@ -60,16 +62,16 @@ module.exports = {
           subfield: interest.label,
           createdAt: now,
           updatedAt: now,
-        });
-      });
-    });
+        })
+      })
+    })
 
-    await queryInterface.bulkInsert('Article', rows);
+    await queryInterface.bulkInsert('Article', rows)
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('Article', {
-      openAlexId: { [Sequelize.Op.like]: 'test-W%' }
-    });
-  }
-};
+      openAlexId: { [Sequelize.Op.like]: 'test-W%' },
+    })
+  },
+}

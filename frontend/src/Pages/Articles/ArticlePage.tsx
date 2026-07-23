@@ -52,13 +52,11 @@ function ArticlePage() {
 
       const [articlesRes, photosRes] = await Promise.all([
         privateApi.get('/articles/'),
-        privateApi.get('/photos/')
+        privateApi.get('/photos/'),
       ])
 
       const articles = articlesRes.data.articles
       const photos = photosRes.data.photos
-
-
 
       if (!Array.isArray(articles) || !Array.isArray(photos)) {
         throw new Error('Format de réponse invalide')
@@ -72,7 +70,7 @@ function ArticlePage() {
         description: a.summary || a.excerpt || a.description,
         author: a.authors?.[0] || a.author || a.source,
         date: a.published || a.date || a.publishedAt,
-        url: a.link || a.url
+        url: a.link || a.url,
       }))
 
       const normalizedPhotos: FeedItem[] = photos.map((p: any) => ({
@@ -82,16 +80,15 @@ function ArticlePage() {
         image: p.url,
         description: p.description,
         author: p.photographer,
-        date: p.published
+        date: p.published,
       }))
 
-      const merged = shuffleArray([
-        ...normalizedArticles,
-        ...normalizedPhotos
-      ], 20)
+      const merged = shuffleArray(
+        [...normalizedArticles, ...normalizedPhotos],
+        20
+      )
 
       setItems(merged)
-
     } catch (err: any) {
       const status = err?.response?.status
       const msg = err?.response?.data?.message
@@ -122,8 +119,7 @@ function ArticlePage() {
   const filtered = useMemo(() => {
     if (activeTopic === 'Tout') return items
 
-    return items.filter(item => {
-
+    return items.filter((item) => {
       if (!item.type) return false
       return item.topic?.toLowerCase() === activeTopic.toLowerCase()
     })
@@ -178,56 +174,38 @@ function ArticlePage() {
 
   return (
     <div className="page-with-nav article-page-container">
-
       <div className="article-page-content">
-
         {/* HEADER */}
         <div className="glass-card p-4 mb-4 article-header-card">
           <div className="d-flex align-items-center gap-3">
-
             <div className="article-user-avatar">
               {user?.username ? user.username[0].toUpperCase() : '✦'}
             </div>
 
             <div>
-              <div className="article-greeting-text">
-                {greeting()}
-              </div>
+              <div className="article-greeting-text">{greeting()}</div>
 
               <div className="article-username-text">
                 {user?.username || 'Curieux'} !
               </div>
             </div>
-
-
           </div>
         </div>
 
-        <div className="section-title mb-3">
-          Vos articles
-        </div>
+        <div className="section-title mb-3">Vos articles</div>
 
         {/* ERROR */}
-        {error && (
-          <div className="alert alert-warning">
-            {error}
-          </div>
-        )}
+        {error && <div className="alert alert-warning">{error}</div>}
 
         {/* LOADING */}
         {loading ? (
           <div className="d-flex flex-column align-items-center py-5 gap-3">
-
             <div className="spinner-border" role="status" />
 
-            <span className="article-loading-text">
-              Chargement du fil…
-            </span>
-
+            <span className="article-loading-text">Chargement du fil…</span>
           </div>
         ) : (
           <div className="article-items-container">
-
             {filtered.length === 0 && !error && (
               <div className="glass-card p-4 text-center">
                 Aucun contenu pour ce thème.
@@ -235,10 +213,8 @@ function ArticlePage() {
             )}
 
             {filtered.map(renderItem)}
-
           </div>
         )}
-
       </div>
     </div>
   )

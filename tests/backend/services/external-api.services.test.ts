@@ -19,16 +19,16 @@ describe('External API Services Tests', () => {
         json: jest.fn().mockResolvedValue(mockArticles),
       })
 
-      const response = await (global.fetch as jest.Mock)('http://api.openalex.org/works')
+      const response = await (global.fetch as jest.Mock)(
+        'http://api.openalex.org/works'
+      )
       const data = await response.json()
 
       expect(data).toEqual(mockArticles)
     })
 
     it('should handle API errors gracefully', async () => {
-      ;(global.fetch as jest.Mock).mockRejectedValueOnce(
-        new Error('API Error')
-      )
+      ;(global.fetch as jest.Mock).mockRejectedValueOnce(new Error('API Error'))
 
       try {
         await (global.fetch as jest.Mock)('http://api.openalex.org/works')
@@ -54,7 +54,9 @@ describe('External API Services Tests', () => {
         json: jest.fn().mockResolvedValue(mockImages),
       })
 
-      const response = await (global.fetch as jest.Mock)('https://api.unsplash.com/photos')
+      const response = await (global.fetch as jest.Mock)(
+        'https://api.unsplash.com/photos'
+      )
       const data = await response.json()
 
       expect(data).toEqual(mockImages)
@@ -67,7 +69,9 @@ describe('External API Services Tests', () => {
         json: jest.fn().mockResolvedValue({ error: 'Unauthorized' }),
       })
 
-      const response = await (global.fetch as jest.Mock)('https://api.unsplash.com/photos')
+      const response = await (global.fetch as jest.Mock)(
+        'https://api.unsplash.com/photos'
+      )
 
       expect(response.status).toBe(401)
     })
@@ -92,7 +96,9 @@ describe('External API Services Tests', () => {
         json: jest.fn().mockResolvedValue({ articles: mockNews }),
       })
 
-      const response = await (global.fetch as jest.Mock)('https://newsapi.org/v2/everything')
+      const response = await (global.fetch as jest.Mock)(
+        'https://newsapi.org/v2/everything'
+      )
       const data = await response.json()
 
       expect(data.articles).toEqual(mockNews)
@@ -110,7 +116,9 @@ describe('External API Services Tests', () => {
         json: jest.fn().mockResolvedValue({ articles: [] }),
       })
 
-      await (global.fetch as jest.Mock)(`https://newsapi.org/v2/top-headlines?${query}`)
+      await (global.fetch as jest.Mock)(
+        `https://newsapi.org/v2/top-headlines?${query}`
+      )
 
       expect(global.fetch).toHaveBeenCalled()
     })

@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import ArticlePage from '../../../frontend/src/Pages/Articles/ArticlePage';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthentProvider } from '../../../frontend/src/Context/AuthContext';
+import { render, screen, waitFor } from '@testing-library/react'
+import ArticlePage from '../../../frontend/src/Pages/Articles/ArticlePage'
+import { BrowserRouter } from 'react-router-dom'
+import { AuthentProvider } from '../../../frontend/src/Context/AuthContext'
 import '@testing-library/jest-dom'
 
 jest.mock('../../../frontend/src/Services/apiClient')
@@ -20,12 +20,10 @@ describe('ArticlePage Component Tests', () => {
   const renderWithProviders = (component: React.ReactElement) => {
     return render(
       <BrowserRouter>
-        <AuthentProvider>
-          {component}
-        </AuthentProvider>
+        <AuthentProvider>{component}</AuthentProvider>
       </BrowserRouter>
-    );
-  };
+    )
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -62,16 +60,17 @@ describe('ArticlePage Component Tests', () => {
   })
 
   it('should display error message on fetch error', async () => {
-    ;(global.fetch as jest.Mock).mockRejectedValue(
-      new Error('Network error')
-    )
+    ;(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
 
     renderWithProviders(<ArticlePage />)
 
-    await waitFor(() => {
-      // Check if error message is displayed
-      expect(screen.getByText(/Cannot read properties/i)).toBeInTheDocument()
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        // Check if error message is displayed
+        expect(screen.getByText(/Cannot read properties/i)).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
   })
 
   it('should fetch and display articles', async () => {

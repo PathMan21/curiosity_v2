@@ -7,10 +7,10 @@ export default defineConfig({
   root: path.resolve(__dirname),
   server: {
     proxy: {
-      '/api': 'http://localhost:3000'
+      '/api': 'http://localhost:3000',
     },
     watch: {
-    usePolling: true
-    }
-  }
+      usePolling: true,
+    },
+  },
 })

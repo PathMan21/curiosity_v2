@@ -14,7 +14,7 @@ function CompleteInscription() {
   const [searchParams] = useSearchParams()
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
 
-  const API_URL = `${import.meta.env.VITE_SERVER_URL}`;
+  const API_URL = `${import.meta.env.VITE_SERVER_URL}`
 
   function handleInterests(value: string) {
     setSelectedInterests((prev) =>
@@ -37,14 +37,14 @@ function CompleteInscription() {
     try {
       const interests = selectedInterests
       const response = await fetch(
-        `${ API_URL }/api/auth/complete-inscription-oauth`,
+        `${API_URL}/api/auth/complete-inscription-oauth`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
           },
-          credentials: 'include', 
+          credentials: 'include',
           body: JSON.stringify({ username, password, interests }),
         }
       )
@@ -52,12 +52,14 @@ function CompleteInscription() {
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
         throw new Error(
-          data?.message || data?.status || 'Erreur lors de la mise à jour du profil'
+          data?.message ||
+            data?.status ||
+            'Erreur lors de la mise à jour du profil'
         )
       }
 
       const data = await response.json().catch(() => ({}))
-      
+
       await fetchUserProfile()
 
       navigate('/Home')
@@ -76,7 +78,6 @@ function CompleteInscription() {
         <div className="col-md-8">
           <div className="card shadow">
             <div className="card-body p-5">
-
               <h1 className="text-center mb-4">Finalisez votre inscription</h1>
 
               {error && (
@@ -91,11 +92,9 @@ function CompleteInscription() {
               )}
 
               <form onSubmit={handleSubmit} noValidate>
-
                 <div className="mb-3">
                   <label htmlFor="complete-username" className="form-label">
-                    Nom d'utilisateur{' '}
-                    <span aria-hidden="true">*</span>
+                    Nom d'utilisateur <span aria-hidden="true">*</span>
                     <span className="visually-hidden">(obligatoire)</span>
                   </label>
                   <input
@@ -142,8 +141,7 @@ function CompleteInscription() {
 
                 <div className="mb-3">
                   <label htmlFor="complete-password" className="form-label">
-                    Mot de passe{' '}
-                    <span aria-hidden="true">*</span>
+                    Mot de passe <span aria-hidden="true">*</span>
                     <span className="visually-hidden">(obligatoire)</span>
                   </label>
                   <input
@@ -167,7 +165,6 @@ function CompleteInscription() {
                 >
                   {loading ? 'Mise à jour…' : "Compléter l'inscription"}
                 </button>
-
               </form>
             </div>
           </div>

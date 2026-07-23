@@ -15,7 +15,7 @@
 // }
 
 // function mapInterestsToNewsMech(interestIds) {
-  
+
 //   return interestIds.reduce((categories, interestId) => {
 //     const interest = interestsData.interests.find((i) => i.id === interestId)
 
@@ -39,8 +39,7 @@
 //   return shuffled
 // }
 
-
-// // Cache reddis 
+// // Cache reddis
 
 // async function getFromCache(cacheKey: string) {
 //   try {
@@ -221,7 +220,7 @@
 //       toFetch.push(category)
 //     })
 //   )
-//   // si on ne trouve rien dans redis et la bdd on appel l'api 
+//   // si on ne trouve rien dans redis et la bdd on appel l'api
 //   if (toFetch.length > 0) {
 //     const apiArticles = await callApi(toFetch, baseurl, apiKey)
 //     allArticles.push(...apiArticles)

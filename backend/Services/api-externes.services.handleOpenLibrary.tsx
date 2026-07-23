@@ -53,13 +53,11 @@
 //   return categories
 // }
 
-
-
 // async function getFromCache(cacheKey: string) {
 //   try {
 //     const raw = await redisClient.get(cacheKey)
 //     if (!raw) return null
-    
+
 //     const rawString = raw.toString();
 //     if (!rawString.trim()) return null
 
@@ -248,7 +246,7 @@
 // // CRON: Récupérer tous les sujets et mettre à jour les livres
 // export async function getAllLibraryCategories() {
 //   const allInterestIds = []
-  
+
 //   interestsData_local.interests.forEach(interest => {
 //     if (interest.id) allInterestIds.push(interest.id)
 //   })

@@ -7,14 +7,13 @@ on:
   pull_request:
     branches: [main]
 
-
 permissions:
   contents: read
 
 jobs:
   test:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15 
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -23,7 +22,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          
 
       - name: Install Dependencies
         run: npm ci --ignore-scripts
@@ -38,4 +36,3 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 30
-      
