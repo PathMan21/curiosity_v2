@@ -99,7 +99,7 @@ const photosArray = photos.map(photo =>
       JSON.stringify({ photosArray })
     )
   } catch (err) {
-    console.error('[CRON] Unsplash cache write failed:', err instanceof Error ? err.message : err)
+
   }
 }
 async function setDbAndCache(
@@ -107,9 +107,9 @@ async function setDbAndCache(
   interest,
   photos
 ) {
-  console.log("set db and cache - interest:", interest, "photos count:", photos?.length)
+
   if (!photos?.length) {
-    console.warn(`No photos to save for interest: ${interest}`)
+
     return
   }
 
@@ -138,7 +138,7 @@ async function setDbAndCache(
     })
 
     await t.commit()
-    console.log(`✅ Successfully saved ${photosArray.length} photos for interest: ${interest}`)
+
 
     // Then save to cache
     try {
@@ -147,13 +147,13 @@ async function setDbAndCache(
         CACHE_TTL,
         JSON.stringify({ photosArray })
       )
-      console.log(`✅ Cache set for: ${cacheKey}`)
+
     } catch (cacheErr) {
-      console.warn('Redis cache write failed (non-critical):', cacheErr)
+
     }
   } catch (err) {
     await t.rollback()
-    console.error('[CRON] Unsplash DB write failed for interest:', interest, 'Error:', err)
+
   }
 }
 
@@ -189,7 +189,7 @@ async function fetchPhotosFromAPI(
       downloadLink: photo.links.download,
     }))
   } catch (error) {
-    console.error('error => ', error)
+
     return []
   }
 }
@@ -231,22 +231,22 @@ async function handleUnsplash(req, res) {
     try {
       interests = typeof user.interests === 'string' ? JSON.parse(user.interests) : user.interests
     } catch (e) {
-      console.error("Erreur parsing intérêts:", e)
+
       return res.status(400).json({ message: 'Format des intérêts invalide' })
     }
 
     if (!interests.length) {
-      console.error("Intérets vide");
+
       return res.status(400).json({ message: 'Aucun intérêt défini' })
     }
 
     const sent = mapInterestsToSentences(interests)
     const photos = await fetchGlobal(sent)
-    console.log("photos backend => ", photos);
+
 
     return res.json({ photos })
   } catch (err) {
-    console.error(err)
+
     return res.status(500).json({ message: `Problèmes serveur => ${err}` })
   }
 }
@@ -276,7 +276,7 @@ export async function checkPhotos(queries) {
       }
 
       const photos = await fetchPhotosFromAPI(interest, clientId)
-      console.log("photos fetched =>", photos.length)
+
       if (!photos.length) {
         continue
       }
@@ -285,11 +285,11 @@ export async function checkPhotos(queries) {
 
     } catch (err) {
       resultsInfo.errors++
-      console.error(`CRON UNSPLASH erreur => "${interest}" : `, err)
+
     }
   }
 
-  console.log(`CRON UNSPLASH : caché ${resultsInfo.cached}, db ${resultsInfo.db}, réussis ${resultsInfo.synced}, errors ${resultsInfo.errors}`)
+
 }
 
 export default handleUnsplash

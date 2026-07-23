@@ -68,7 +68,7 @@ export const AuthentProvider = ({ children }) => {
             const msg = err.response?.data?.message;
             setIsError(msg)
 
-            console.error(status, msg)
+
 
             applyToken(null)
             setIsLogged(false)
@@ -82,7 +82,7 @@ export const AuthentProvider = ({ children }) => {
 
             if (res.data.status === 'Success') {
 
-                console.log(`${res.status} : ${res.data.message}`)
+
 
                 setUser(res.data.user)
 
@@ -139,7 +139,7 @@ export const AuthentProvider = ({ children }) => {
                     setIsLoading(false);
                     setIsLogged(false);
 
-                    console.log(`Erreur : ${res}`);
+
                     setIsError(response?.data?.message)
 
                     applyToken(null)

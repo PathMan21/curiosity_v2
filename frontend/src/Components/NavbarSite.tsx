@@ -17,7 +17,7 @@ function NavbarSite() {
   return (
     <nav className="navbar fixed-top navbar-expand-lg">
       <div className="container-fluid px-3">
-        <a className="navbar-brand" href="/Home">✦ Curiosity</a>
+        <a className="navbar-brand" href="/Home">✦ be-curious</a>
 
         <button
           className="navbar-toggler border-0"

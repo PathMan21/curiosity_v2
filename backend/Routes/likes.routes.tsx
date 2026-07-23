@@ -5,7 +5,7 @@ import { toggleLikes, getUserLikes, checkLikeStatus } from '../Controllers/likes
 
 const router = Router()
 
-// ✅ FIX: Préfixe /likes/ pour éviter les collisions avec d'autres routes /api/
+// FIX: Préfixe /likes/ pour éviter les collisions avec d'autres routes /api/
 // Avant : POST /api/toggle  →  Après : POST /api/likes/toggle
 router.post('/likes/toggle', bodyParser.json(), authentificatedUser, toggleLikes)
 router.get('/likes/user', authentificatedUser, getUserLikes)

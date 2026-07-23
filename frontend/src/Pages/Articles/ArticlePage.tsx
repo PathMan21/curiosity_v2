@@ -58,7 +58,7 @@ function ArticlePage() {
       const articles = articlesRes.data.articles
       const photos = photosRes.data.photos
 
-      console.log("photos => ", photos);
+
 
       if (!Array.isArray(articles) || !Array.isArray(photos)) {
         throw new Error('Format de réponse invalide')
@@ -123,7 +123,7 @@ function ArticlePage() {
     if (activeTopic === 'Tout') return items
 
     return items.filter(item => {
-      console.log(item);
+
       if (!item.type) return false
       return item.topic?.toLowerCase() === activeTopic.toLowerCase()
     })

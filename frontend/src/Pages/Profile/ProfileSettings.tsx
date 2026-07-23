@@ -63,7 +63,7 @@ function ProfileSettings() {
             })
 
             if (response.data.status !== "Success") {
-                console.log("Erreur lors de la mise à jour du profil", response.data.errors)
+
                 return
             }
 
@@ -75,7 +75,7 @@ function ProfileSettings() {
             setTimeout(() => setSuccess(""), 3000)
 
         } catch (err) {
-            console.error("Erreur mise à jour profil:", err)
+
             setError(err.message || "Erreur serveur")
         } finally {
             setLoading(false)
@@ -88,8 +88,6 @@ function ProfileSettings() {
 
     return (
         <main id="contenu-principal" className="container py-5">
-
-            <h1 className="mb-4">Paramètres du profil</h1>
 
             <div
                 ref={statusRef}

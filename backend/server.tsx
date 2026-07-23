@@ -1,5 +1,4 @@
 import express from 'express'
-import rateLimit from "express-rate-limit";
 import { createServer } from 'http'
 import cors from 'cors'
 import cookieParser from "cookie-parser";
@@ -25,20 +24,10 @@ import './Models/Photo';
 const app = express()
 const server = createServer(app)
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,                 
-  message: {
-    error: "Trop de requêtes, veuillez réessayer plus tard."
-  },
-  standardHeaders: true,    
-  legacyHeaders: false    
-});
 
 ;(async () => {
     await connectDB();
     app.use(cookieParser())
-    app.use(limiter);
 
     app.use(session({
         secret: process.env.SESSION_SECRET,
@@ -77,13 +66,13 @@ const limiter = rateLimit({
 
       const PORT = process.env.PORT
    server.listen(PORT, async () => {
-    console.log(`Serveur lancé sur le port ${PORT}`)
+
     try {
       await import('./Helpers/cron.schedules.Photos')
       await import('./Helpers/cron.schedules.Articles')
-      console.log('✅ Tous les crons ont démarré avec succès')
+
     } catch (error) {
-      console.error('❌ Erreur lors du démarrage des crons:', error)
+
     }
   })
 })();

@@ -1,7 +1,7 @@
 import Likes from "../Models/Likes";
 
 const toggleLikes = async (req, res) => {
-    // ✅ FIX: req.user.id (set by authentificatedUser middleware) instead of req.userId (always undefined)
+    // FIX: req.user.id (set by authentificatedUser middleware) instead of req.userId (always undefined)
     const userId = req.user?.id;
     const { contentId, contentType } = req.body;
 
@@ -9,7 +9,7 @@ const toggleLikes = async (req, res) => {
         return res.status(401).json({ status: 'Failed', message: 'Utilisateur non authentifié' });
     }
 
-    // ✅ FIX: Validate inputs
+    // FIX: Validate inputs
     if (!contentId || !contentType) {
         return res.status(400).json({ status: 'Failed', message: 'contentId et contentType sont requis' });
     }
@@ -35,13 +35,13 @@ const toggleLikes = async (req, res) => {
             return res.json({ message: 'Like added', liked: true });
         }
     } catch (error) {
-        console.error('Error toggling like:', error);
+
         return res.status(500).json({ status: 'Failed', message: 'Internal server error' });
     }
 };
 
 const getUserLikes = async (req, res) => {
-    // ✅ FIX: req.user.id instead of req.userId
+    // FIX: req.user.id instead of req.userId
     const userId = req.user?.id;
 
     if (!userId) {
@@ -62,13 +62,13 @@ const getUserLikes = async (req, res) => {
 
         return res.json({ likes: likesByType });
     } catch (error) {
-        console.error('Error getting user likes:', error);
+
         return res.status(500).json({ status: 'Failed', message: 'Internal server error' });
     }
 };
 
 const checkLikeStatus = async (req, res) => {
-    // ✅ FIX: req.user.id instead of req.userId
+    // FIX: req.user.id instead of req.userId
     const userId = req.user?.id;
     const { contentId, contentType } = req.query;
 
@@ -84,7 +84,7 @@ const checkLikeStatus = async (req, res) => {
         const like = await Likes.findOne({ where: { userId, contentId, contentType } });
         return res.json({ liked: !!like });
     } catch (error) {
-        console.error('Error checking like status:', error);
+
         return res.status(500).json({ status: 'Failed', message: 'Internal server error' });
     }
 };

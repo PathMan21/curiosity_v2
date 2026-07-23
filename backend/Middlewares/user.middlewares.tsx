@@ -81,7 +81,7 @@ const authentificatedUser = async (req, res, next) => {
     next()
 
   } catch (error) {
-    console.error('Erreur authentification:', error)
+
     return res.status(500).json({ error: "Erreur serveur" })
   }
 }

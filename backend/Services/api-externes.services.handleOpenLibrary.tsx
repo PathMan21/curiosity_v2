@@ -160,7 +160,7 @@
 //       type: 'book',
 //     }
 //   } catch (err) {
-//     console.error('❌ Erreur fetch livre:', err.message)
+//     console.error('Erreur fetch livre:', err.message)
 //     return null
 //   }
 // }
@@ -194,7 +194,7 @@
 //       // 1. Cache Redis
 //       const cached = await getFromCache(cacheKey)
 //       if (cached) {
-//         console.log(`✅ Cache hit — ${cacheKey}`)
+//         console.log(`Cache hit — ${cacheKey}`)
 //         allBooks.push(...cached)
 //         return
 //       }
@@ -202,7 +202,7 @@
 //       // 2. BDD
 //       const fromDB = await getFromDB(cacheKey)
 //       if (fromDB) {
-//         console.log(`✅ BDD hit — ${cacheKey}`)
+//         console.log(`BDD hit — ${cacheKey}`)
 //         allBooks.push(...fromDB)
 //         await redisClient.setEx(
 //           cacheKey,
@@ -240,7 +240,7 @@
 
 //     return res.json({ status: 'Success', totalResults: books.length, data: books })
 //   } catch (err) {
-//     console.error('❌ Erreur handleOpenLibrary:', err)
+//     console.error('Erreur handleOpenLibrary:', err)
 //     return res.status(500).json({ status: 'Failed', message: 'Erreur serveur' })
 //   }
 // }
@@ -259,10 +259,10 @@
 //   try {
 //     console.log('📚 [CRON] Mise à jour OpenLibrary - Catégories:', categories?.length || 0)
 //     const books = await resolveCategories(categories)
-//     console.log('✅ [CRON] Livres mis à jour:', books.length)
+//     console.log('[CRON] Livres mis à jour:', books.length)
 //     return books
 //   } catch (error) {
-//     console.error('❌ [CRON] Erreur OpenLibrary:', error.message)
+//     console.error('[CRON] Erreur OpenLibrary:', error.message)
 //     throw error
 //   }
 // }

@@ -39,7 +39,7 @@ module.exports = {
         },
       ])
     } catch (err) {
-      console.error('DETAIL ERREUR:', err.errors || err);
+
       throw err;
     }
   },

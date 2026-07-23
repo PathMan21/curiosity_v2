@@ -32,10 +32,5 @@ const sequelizeDb = new Sequelize(
   }
 )
 
-if (!process.env.DB_NAME || !process.env.DB_USER) {
-  console.warn(
-    "Variables DB non chargées — vérifie le chemin vers Config/.env et les noms d'environnement"
-  )
-}
 
 export default sequelizeDb

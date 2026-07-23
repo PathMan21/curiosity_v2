@@ -36,6 +36,8 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write .",
     "start": "tsx backend/server.tsx",
     "dev:backend": "tsx watch backend/server.ts",
     "dev": "tsx watch backend/server.tsx",

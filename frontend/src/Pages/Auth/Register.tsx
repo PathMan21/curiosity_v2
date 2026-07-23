@@ -9,7 +9,7 @@ const handleOAuthRegister = async () => {
     const data = await response.json()
     window.location.href = data.url
   } catch (err) {
-    console.error('Erreur:', err)
+
   }
 }
 
@@ -48,7 +48,7 @@ function Register() {
     } catch (err) {
       setIsError(err)
       setIsErrorBool(true)
-      console.error('Erreur inscription:', err)
+
     } finally {
       setIsErrorBool(false)
       setIsError('')
@@ -61,7 +61,7 @@ function Register() {
       <div className="auth-page">
         <div className="auth-card text-center">
           <div className="register-celebration">🎉</div>
-          <div className="auth-logo">✦ Curiosity</div>
+          <div className="auth-logo">✦ be-curious</div>
           <h2 className="register-success-heading">Compte créé !</h2>
           <p className="register-success-text">
             Votre compte a bien été créé. Vous pouvez maintenant vous connecter.
@@ -76,7 +76,7 @@ function Register() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="text-center mb-4">
-          <div className="auth-logo">✦ Curiosity</div>
+          <div className="auth-logo">✦ be-curious</div>
           <div className="auth-headline">Rejoignez-nous</div>
           <div className="auth-subline">Créez votre espace de curiosité</div>
         </div>

@@ -36,7 +36,7 @@ const INTERESTS_MAP = {
 }
 export function getAllSubfields(): string[] {
   let subfield = Object.values(INTERESTS_MAP)
-  console.log("subfield ", subfield)
+
   return subfield
 }
 /* ---------------- UTILS ---------------- */
@@ -107,7 +107,7 @@ async function setCache(
       JSON.stringify(articlesArray)
     )
   } catch (err) {
-    console.error('CRON openalex cache error => ', err)
+
   }
 }
 
@@ -120,7 +120,7 @@ async function setDbAndCache(
   if (!articles?.length) {
     return
   }
-  console.log("set db and cache")
+
   const articlesArray = articles.map(art => {
     const topTopic = art.topics?.find(t => {
       Number(t?.score) >= TOPIC_SCORE_THRESHOLD
@@ -165,7 +165,7 @@ async function setDbAndCache(
     )
   } catch (err) {
     await t.rollback()
-    console.error('CRON openalex error => ', err)
+
   }
 }
 
@@ -178,7 +178,7 @@ export async function fetchInterestFromAPI(interestID) {
 
   // Validate interestID to prevent injection
   if (!/^\d+$/.test(interestID)) {
-    console.error('Invalid interest ID format:', interestID)
+
     return []
   }
 
@@ -251,7 +251,7 @@ export async function checkArticles(int) {
 
   } catch (err) {
     resultsInfo.errors++
-    console.error(`CRON OpenAlex error pour "${int}" =>`, "error => ", err)
+
   }
 
   console.log(
@@ -284,7 +284,7 @@ async function handleOpenAlex(req, res) {
       try {
         interestsRaw = JSON.parse(interestsRaw)
       } catch (e) {
-        console.error('Error parsing interests:', e)
+
         return res.status(400).json({ message: 'Format des intérêts invalide' })
       }
     }
@@ -330,7 +330,7 @@ async function handleOpenAlex(req, res) {
     })
 
   } catch (err) {
-    console.error('handleOpenAlex error:', err)
+
     return res.status(500).json({
       message: 'Erreur serveur'
     })

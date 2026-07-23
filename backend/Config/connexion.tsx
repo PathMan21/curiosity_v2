@@ -7,7 +7,7 @@ const connectDB = async () => {
     await sequelizeDb.authenticate()
     await sequelizeDb.sync({ })
   } catch (err) {
-    console.error('Erreur connection/sync :', err)
+
     throw err
   }
 }

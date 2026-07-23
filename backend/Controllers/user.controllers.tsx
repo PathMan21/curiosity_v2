@@ -74,7 +74,6 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    console.log("test");
     const { email, password } = req.body
 
     if (!email || !password) {
@@ -95,7 +94,7 @@ export const loginUser = async (req, res) => {
     setRefreshCookie(res, refreshToken)
 
     const userData = formatUser(user)
-    // Parse interests if they are a JSON string
+
     if (userData.interests && typeof userData.interests === 'string') {
       try {
         userData.interests = JSON.parse(userData.interests)

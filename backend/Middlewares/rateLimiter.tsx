@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
-// ✅ CORRECTION: Ajouter rate limiting pour éviter les attaques par brute force
+// CORRECTION: Ajouter rate limiting pour éviter les attaques par brute force
 interface RateLimitStore {
   [key: string]: { attempts: number; timestamp: number }
 }
