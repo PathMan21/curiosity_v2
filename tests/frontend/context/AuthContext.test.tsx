@@ -43,7 +43,6 @@ describe('AuthContext Tests', () => {
   it('should restore token from localStorage on mount', async () => {
     localStorage.setItem('authToken', 'test-token-123')
     localStorage.setItem('refreshToken', 'refresh-token-123')
-
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       status: 200,

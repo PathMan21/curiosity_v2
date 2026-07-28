@@ -75,7 +75,7 @@ export const createUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body
-    console.error("LOGIN controller", );
+    console.error('LOGIN controller')
 
     if (!email || !password) {
       throw new Error('Email ou mot de passe incorrect')
@@ -110,7 +110,7 @@ export const loginUser = async (req, res) => {
       user: userData,
     })
   } catch (error) {
-       console.error("LOGIN FAILED:", error);
+    console.error('LOGIN FAILED:', error)
 
     return res.status(500).json({
       status: 'Failed',

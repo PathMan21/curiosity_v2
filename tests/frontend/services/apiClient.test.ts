@@ -8,7 +8,6 @@ describe('API Client Tests', () => {
   describe('fetchWithAuth', () => {
     it('should add authorization header when token exists', async () => {
       localStorage.setItem('authToken', 'test-token-123')
-
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         status: 200,
