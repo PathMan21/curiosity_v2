@@ -9,7 +9,7 @@ const generateTokens = (userId: number) => ({
     expiresIn: '15m',
   }),
   refreshToken: jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '60s',
+    expiresIn: '15m',
   }),
 })
 
