@@ -4,6 +4,12 @@ import { isArticlesTooOld } from '../Helpers/CheckTooOld'
 import Article from '../Models/Article'
 import { createArticleSchema } from '../dtos/Article'
 import sequelizeDb from '../Config/dbInit'
+import { redisCacheHits, redisCacheMisses } from '../metrics/globals'
+import {
+  externalApiCalls,
+  externalApiDuration,
+  externalApiErrors,
+} from '../metrics/globals'
 
 /* ---------------- CONFIG ---------------- */
 
@@ -50,20 +56,21 @@ function mapInterestsToSubfields(interests) {
 async function getFromCache(key) {
   const raw = await redisClient.get(key)
   if (!raw) {
+    redisCacheMisses.inc()
     return null
   }
-
   try {
     const parsed = JSON.parse(raw)
     if (parsed?.articles) {
+      redisCacheHits.inc()
       return parsed
-    } else {
-      return null
     }
+    return null
   } catch {
     return null
   }
 }
+
 async function setCache(cacheKey, interest, articles) {
   if (!articles?.length) {
     return
@@ -157,6 +164,9 @@ export async function fetchInterestFromAPI(interestID) {
   const currentYear = new Date().getFullYear()
   const all = []
 
+  externalApiCalls.inc({ source: 'openalex' })
+  const start = Date.now()
+
   // Validate interestID to prevent injection
   if (!/^\d+$/.test(interestID)) {
     return []
@@ -175,6 +185,10 @@ export async function fetchInterestFromAPI(interestID) {
       headers: OPENALEX_HEADERS,
     })
     if (!res.ok) {
+      externalApiErrors.inc({
+        source: 'openalex',
+        reason: res.status === 429 ? 'rate_limit' : 'error',
+      })
       break
     }
 
@@ -182,6 +196,11 @@ export async function fetchInterestFromAPI(interestID) {
 
     all.push(...data.results)
   }
+
+  externalApiDuration.observe(
+    { source: 'openalex' },
+    (Date.now() - start) / 1000
+  )
 
   return all.filter((work) =>
     work.topics.some((t) => Number(t?.score) >= TOPIC_SCORE_THRESHOLD)

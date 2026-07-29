@@ -125,6 +125,44 @@ services:
       - prometheus
     networks:
       - appnet
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mysqld-exporter
+    restart: unless-stopped
+    command:
+      - '--config.my-cnf=/etc/.my.cnf'
+    volumes:
+      - ./.my.cnf:/etc/.my.cnf:ro
+    ports:
+      - '9104:9104'
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - appnet
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    restart: unless-stopped
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+    ports:
+      - '9121:9121'
+    depends_on:
+      - redis
+    networks:
+      - appnet
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    ports:
+      - '8080:8080'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
 volumes:
   db_data:
   prometheus_data:

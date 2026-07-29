@@ -2,8 +2,19 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'backend'
-
+  - job_name: curiosity-backend
+    metrics_path: /metrics
     static_configs:
-      - targets:
-          - backend:3000
+      - targets: [backend:3000]
+
+  - job_name: mariadb
+    static_configs:
+      - targets: [mysqld-exporter:9104]
+
+  - job_name: redis
+    static_configs:
+      - targets: [redis-exporter:9121]
+
+  - job_name: docker-containers
+    static_configs:
+      - targets: [cadvisor:8080]

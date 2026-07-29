@@ -1,6 +1,9 @@
 import { httpRequests, httpDuration } from '../metrics/globals'
 
 export default function metrics(req, res, next) {
+  if (req.path === '/metrics') {
+    return next()
+  }
   const start = Date.now()
 
   res.on('finish', () => {
@@ -11,14 +14,14 @@ export default function metrics(req, res, next) {
     httpRequests.inc({
       method: req.method,
       route,
-      status: res.statusCode,
+      status_code: res.statusCode,
     })
 
     httpDuration.observe(
       {
         method: req.method,
         route,
-        status: res.statusCode,
+        status_code: res.statusCode,
       },
       duration
     )
