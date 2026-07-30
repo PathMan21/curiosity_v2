@@ -1,4 +1,4 @@
-# Changelog — Curiosity
+# Changelog: be curious
 
 Toutes les modifications notables de ce projet seront documentées ici
 
