@@ -2,7 +2,7 @@
 
 Toutes les modifications notables de ce projet seront documentées ici
 
-## v0.1.0 - Initialisation du projet
+## v0.1.0: Initialisation du projet
 
 ### Added
 
@@ -25,7 +25,7 @@ Toutes les modifications notables de ce projet seront documentées ici
 - Première configuration Docker
 - Volumes persistants MariaDB
 
-## v0.2.0 - Authentification
+## v0.2.0: Authentification
 
 ### Added
 
